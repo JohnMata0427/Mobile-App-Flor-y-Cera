@@ -1,75 +1,104 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Header } from '@/components/Header';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import {
+  Image,
+  ScrollView,
+  Text,
+  View,
+  type ImageSourcePropType,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const primaryColor1 = '#9F93E7';
+const primaryColor2 = '#9FD6CF';
 
 export default function HomeScreen() {
+  const { top } = useSafeAreaInsets();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
+    <ScrollView>
+      <Header top={top} />
+      <View style={{ position: 'relative' }}>
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+          style={{ width: '100%', height: 250 }}
+          source={require('../../assets/banner-example.png')}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <MaterialCommunityIcons
+          style={{
+            position: 'absolute',
+            top: 110,
+            left: 5,
+          }}
+          name="arrow-left-bold-circle"
+          size={40}
+          color={primaryColor2}
+        />
+        <MaterialCommunityIcons
+          style={{
+            position: 'absolute',
+            top: 110,
+            right: 5,
+          }}
+          name="arrow-right-bold-circle"
+          size={40}
+          color={primaryColor2}
+        />
+      </View>
+      <View style={{ padding: 10 }}>
+        <Text
+          style={{
+            fontFamily: 'PlayfairDisplay',
+            fontSize: 16,
+            alignSelf: 'center',
+          }}
+        >
+          Beneficios o Características Clave
+        </Text>
+        <View style={{ flexDirection: 'row', rowGap: 10 }}>
+          <Card
+            source={require('../../assets/1.png')}
+            title="Ingredientes naturales"
+            description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
+          />
+          <Card
+            source={require('../../assets/2.png')}
+            title="Producción artesanal"
+            description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
+          />
+        </View>
+        <View style={{ flexDirection: 'row', rowGap: 10 }}>
+          <Card
+            source={require('../../assets/3.png')}
+            title="Personalización"
+            description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
+          />
+          <Card
+            source={require('../../assets/4.png')}
+            title="Beneficios ecológicos"
+            description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
+          />
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+function Card({
+  source,
+  title,
+  description,
+}: {
+  source: ImageSourcePropType;
+  title: string;
+  description: string;
+}) {
+  return (
+    <View style={{ width: '50%', padding: 10, alignItems: 'center' }}>
+      <Image source={source} />
+      <Text style={{ fontFamily: 'PlayfairDisplay' }}>{title}</Text>
+      <Text style={{ fontFamily: 'PontanoSans', textAlign: 'center' }}>
+        {description}
+      </Text>
+    </View>
+  );
+}

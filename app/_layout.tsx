@@ -1,29 +1,37 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { PlayfairDisplay, PontanoSans } from '@/constants/Fonts';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const isAdmin = true;
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    [PlayfairDisplay.regular]: require('@/assets/fonts/PlayfairDisplay-Regular.ttf'),
+    [PlayfairDisplay.bold]: require('@/assets/fonts/PlayfairDisplay-Bold.ttf'),
+    [PlayfairDisplay.black]: require('@/assets/fonts/PlayfairDisplay-Black.ttf'),
+    [PontanoSans.regular]: require('@/assets/fonts/PontanoSans-Regular.ttf'),
+    [PontanoSans.semibold]: require('@/assets/fonts/PontanoSans-SemiBold.ttf'),
+    [PontanoSans.bold]: require('@/assets/fonts/PontanoSans-Bold.ttf'),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+    <>
       <StatusBar style="auto" />
-    </ThemeProvider>
+
+      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+        <Stack.Screen name="(auth)" />
+
+        <Stack.Protected guard={isAdmin}>
+          <Stack.Screen name="(admin)" />
+        </Stack.Protected>
+
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
+      </Stack>
+    </>
   );
 }
