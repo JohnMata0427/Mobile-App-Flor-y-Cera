@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { SECONDARY_COLOR } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   Image,
@@ -8,9 +9,6 @@ import {
   type ImageSourcePropType,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const primaryColor1 = '#9F93E7';
-const primaryColor2 = '#9FD6CF';
 
 export default function HomeScreen() {
   const { top } = useSafeAreaInsets();
@@ -31,7 +29,7 @@ export default function HomeScreen() {
           }}
           name="arrow-left-bold-circle"
           size={40}
-          color={primaryColor2}
+          color={SECONDARY_COLOR}
         />
         <MaterialCommunityIcons
           style={{
@@ -41,7 +39,7 @@ export default function HomeScreen() {
           }}
           name="arrow-right-bold-circle"
           size={40}
-          color={primaryColor2}
+          color={SECONDARY_COLOR}
         />
       </View>
       <View style={{ padding: 10 }}>

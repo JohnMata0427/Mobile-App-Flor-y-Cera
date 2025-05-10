@@ -1,4 +1,5 @@
-import { PontanoSans } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { PRIMARY_COLOR } from '@/constants/Colors';
 import { Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 
 export function Field({
@@ -6,6 +7,7 @@ export function Field({
   placeholder,
   secureTextEntry = false,
   keyboardType = 'default',
+  textContentType = 'none',
   errorField,
   onChangeText,
   children,
@@ -14,6 +16,7 @@ export function Field({
   placeholder: string;
   secureTextEntry?: boolean;
   keyboardType?: KeyboardTypeOptions;
+  textContentType?: 'none' | 'emailAddress' | 'password' | 'username';
   errorField: string;
   onChangeText: (text: string) => void;
   children?: React.ReactNode;
@@ -24,7 +27,7 @@ export function Field({
     <View style={{ rowGap: 5 }}>
       <Text
         style={{
-          fontFamily: PontanoSans.semibold,
+          fontFamily: BOLD_BODY_FONT,
           color,
         }}
       >
@@ -40,13 +43,17 @@ export function Field({
             borderColor: color,
             color,
             paddingHorizontal: 40,
-            fontFamily: PontanoSans.regular,
+            fontFamily: BODY_FONT,
           }}
           placeholder={placeholder}
-          placeholderTextColor={color}
+          placeholderTextColor={errorField ? 'red' : '#AFAFAF'}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           onChangeText={onChangeText}
+          textContentType={textContentType}
+          autoCapitalize="none"
+          autoCorrect={false}
+          selectionColor={PRIMARY_COLOR}
         />
         {children}
 
@@ -54,7 +61,7 @@ export function Field({
           <Text
             style={{
               color: 'red',
-              fontFamily: PontanoSans.regular,
+              fontFamily: BODY_FONT,
               fontSize: 12,
               marginTop: 3,
             }}
