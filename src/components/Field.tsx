@@ -1,5 +1,5 @@
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { PRIMARY_COLOR } from '@/constants/Colors';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { Text, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 
 export function Field({

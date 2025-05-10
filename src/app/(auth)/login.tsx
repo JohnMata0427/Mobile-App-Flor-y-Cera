@@ -1,4 +1,5 @@
 import { Field } from '@/components/Field';
+import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -39,7 +40,7 @@ export default function Login() {
   const handleSubmit = async () => {
     setIsLoading(true);
     const response = await fetch(
-      'https://tesis-ecommerce.onrender.com/api/login',
+      `${EXPO_PUBLIC_BACKEND_URL}/login`,
       {
         method: 'POST',
         headers: {

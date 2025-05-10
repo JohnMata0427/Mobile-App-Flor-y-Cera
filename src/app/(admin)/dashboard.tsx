@@ -1,4 +1,4 @@
-import { TERTIARY_COLOR } from '@/constants/Colors';
+import { PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image, ScrollView, Text, TextInput, View } from 'react-native';
@@ -77,10 +77,10 @@ export default function AdminDashboard() {
             <MaterialCommunityIcons
               name="account-multiple-plus"
               size={24}
-              color={TERTIARY_COLOR}
+              color={PRIMARY_COLOR}
               style={{
                 padding: 5,
-                borderColor: TERTIARY_COLOR,
+                borderColor: PRIMARY_COLOR,
                 borderWidth: 2,
                 borderRadius: 50,
               }}
@@ -103,10 +103,10 @@ export default function AdminDashboard() {
             <MaterialCommunityIcons
               name="briefcase-check"
               size={24}
-              color={TERTIARY_COLOR}
+              color={SECONDARY_COLOR}
               style={{
                 padding: 5,
-                borderColor: TERTIARY_COLOR,
+                borderColor: SECONDARY_COLOR,
                 borderWidth: 2,
                 borderRadius: 50,
               }}

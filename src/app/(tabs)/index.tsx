@@ -19,7 +19,7 @@ export default function HomeScreen() {
       <View style={{ position: 'relative' }}>
         <Image
           style={{ width: '100%', height: 250 }}
-          source={require('../../assets/banner-example.png')}
+          source={require('@/assets/banner-example.png')}
         />
         <MaterialCommunityIcons
           style={{
@@ -54,24 +54,24 @@ export default function HomeScreen() {
         </Text>
         <View style={{ flexDirection: 'row', rowGap: 10 }}>
           <Card
-            source={require('../../assets/1.png')}
+            source={require('@/assets/1.png')}
             title="Ingredientes naturales"
             description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
           />
           <Card
-            source={require('../../assets/2.png')}
+            source={require('@/assets/2.png')}
             title="Producción artesanal"
             description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
           />
         </View>
         <View style={{ flexDirection: 'row', rowGap: 10 }}>
           <Card
-            source={require('../../assets/3.png')}
+            source={require('@/assets/3.png')}
             title="Personalización"
             description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
           />
           <Card
-            source={require('../../assets/4.png')}
+            source={require('@/assets/4.png')}
             title="Beneficios ecológicos"
             description="PayPal es un servicio global que te permite enviar pagos a la cuenta del vendedor con tu tarjeta de crédito"
           />

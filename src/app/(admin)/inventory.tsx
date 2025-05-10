@@ -1,4 +1,5 @@
 import { ProductModal } from '@/components/ProductModal';
+import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
 import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
@@ -20,7 +21,8 @@ import {
   View,
 } from 'react-native';
 
-export default function AdminProducts() {
+export default function AdminInventory() {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function AdminProducts() {
   useEffect(() => {
     (async () => {
       const response = await fetch(
-        'https://tesis-ecommerce.onrender.com/api/productos?page=1&limit=10',
+        `${EXPO_PUBLIC_BACKEND_URL}/productos?page=1&limit=10`,
         {
           method: 'GET',
           headers: {
@@ -70,6 +72,7 @@ export default function AdminProducts() {
             </Text>
           </View>
           <ProductModal
+            data={selectedProduct}
             isVisible={modalVisible}
             setIsVisible={setModalVisible}
           />
@@ -81,7 +84,10 @@ export default function AdminProducts() {
               flexDirection: 'row',
               columnGap: 5,
             }}
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              setModalVisible(true);
+              setSelectedProduct(null);
+            }}
           >
             <MaterialCommunityIcons name="plus" size={14} color="white" />
             <Text
@@ -114,7 +120,7 @@ export default function AdminProducts() {
               refreshing={isLoading}
               onRefresh={() => {
                 setIsLoading(true);
-                setRefreshing(prev => prev++);
+                setRefreshing(prev => prev + 1);
               }}
               colors={[PRIMARY_COLOR]}
             />
@@ -124,20 +130,21 @@ export default function AdminProducts() {
           contentContainerStyle={{ rowGap: 10 }}
           keyExtractor={({ _id }) => _id}
           scrollEnabled={false}
-          renderItem={({ item: { imagen, nombre, precio, stock } }) => (
+          renderItem={({ item }) => (
             <View
               style={{
                 backgroundColor: 'white',
                 borderRadius: 10,
                 overflow: 'hidden',
-                flex: 1,
+                width: '48.45%',
               }}
             >
               <Image
-                source={{ uri: imagen }}
+                source={{ uri: item.imagen }}
                 style={{
                   width: '100%',
                   height: 150,
+                  padding: 10,
                 }}
               />
               <View
@@ -147,9 +154,11 @@ export default function AdminProducts() {
                   paddingHorizontal: 15,
                 }}
               >
-                <Text style={{ fontFamily: BOLD_BODY_FONT }}>{nombre}</Text>
+                <Text style={{ fontFamily: BOLD_BODY_FONT }}>
+                  {item.nombre}
+                </Text>
                 <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
-                  ${precio} USD
+                  ${item.precio} USD
                 </Text>
                 <Text
                   style={{
@@ -157,7 +166,7 @@ export default function AdminProducts() {
                     color: 'green',
                   }}
                 >
-                  • {stock} en stock
+                  • {item.stock} en stock
                 </Text>
                 <View style={{ flexDirection: 'row', columnGap: 5 }}>
                   <MaterialCommunityIcons
@@ -165,11 +174,18 @@ export default function AdminProducts() {
                     size={24}
                     color={PRIMARY_COLOR}
                   />
-                  <MaterialCommunityIcons
-                    name="pencil"
-                    size={24}
-                    color={SECONDARY_COLOR}
-                  />
+                  <Pressable
+                    onPress={() => {
+                      setModalVisible(true);
+                      setSelectedProduct(item);
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="pencil"
+                      size={24}
+                      color={SECONDARY_COLOR}
+                    />
+                  </Pressable>
                   <MaterialCommunityIcons
                     name="trash-can"
                     size={24}

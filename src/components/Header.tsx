@@ -15,7 +15,7 @@ export function Header({ top }: { top: number }) {
       }}
     >
       <Image
-        source={require('../assets/images/icon.png')}
+        source={require('@/assets/images/icon.png')}
         style={{
           width: 40,
           height: 40,

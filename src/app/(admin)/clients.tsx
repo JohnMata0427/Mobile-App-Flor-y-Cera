@@ -1,4 +1,5 @@
-import { TERTIARY_COLOR } from '@/constants/Colors';
+import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
+import { PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import type { Client } from '@/interfaces/Client';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -22,7 +23,7 @@ export default function AdminUsers() {
   useEffect(() => {
     (async () => {
       const response = await fetch(
-        'https://tesis-ecommerce.onrender.com/api/admin/clientes?page=1&limit=10',
+        `${EXPO_PUBLIC_BACKEND_URL}/admin/clientes?page=1&limit=10`,
         {
           method: 'GET',
           headers: {
@@ -72,9 +73,9 @@ export default function AdminUsers() {
               refreshing={isLoading}
               onRefresh={() => {
                 setIsLoading(true);
-                setRefreshing(prev => prev++);
+                setRefreshing(prev => prev + 1);
               }}
-              colors={[TERTIARY_COLOR]}
+              colors={[PRIMARY_COLOR]}
             />
           }
           renderItem={({
@@ -100,7 +101,7 @@ export default function AdminUsers() {
                     height: 40,
                     borderRadius: 50,
                     borderWidth: 2,
-                    borderColor: TERTIARY_COLOR,
+                    borderColor: SECONDARY_COLOR,
                   }}
                 />
                 <View>
@@ -120,7 +121,7 @@ export default function AdminUsers() {
               <MaterialCommunityIcons
                 name="information"
                 size={30}
-                color={TERTIARY_COLOR}
+                color={PRIMARY_COLOR}
                 style={{ position: 'absolute', right: 15, top: 25 }}
               />
             </View>

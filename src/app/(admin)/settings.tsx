@@ -1,7 +1,8 @@
+import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
+import { HEADING_FONT } from '@/constants/Fonts';
 import { useRouter } from 'expo-router';
 import { setItemAsync } from 'expo-secure-store';
 import { Button, Image, ScrollView, Text, TextInput, View } from 'react-native';
-import { HEADING_FONT } from '@/constants/Fonts';
 
 export default function AdminSettings() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function AdminSettings() {
           title="Refresh Token"
           onPress={async () => {
             const response = await fetch(
-              'https://tesis-ecommerce.onrender.com/api/login',
+              `${EXPO_PUBLIC_BACKEND_URL}/login`,
               {
                 method: 'POST',
                 headers: {
