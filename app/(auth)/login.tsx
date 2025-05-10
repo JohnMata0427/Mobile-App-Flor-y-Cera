@@ -1,14 +1,16 @@
 import { Field } from '@/components/Field';
-import { Colors } from '@/constants/Colors';
-import { PlayfairDisplay, PontanoSans } from '@/constants/Fonts';
+import { PRIMARY_COLOR, SECONDARY_COLOR } from '@/constants/Colors';
+import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link, useRouter } from 'expo-router';
+import { setItemAsync } from 'expo-secure-store';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  KeyboardAvoidingView,
+  ImageBackground,
   Pressable,
+  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -23,10 +25,9 @@ export default function Login() {
     email: '',
     password: '',
   });
-  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({
-    email: '',
-    password: '',
-  });
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
+    form,
+  );
 
   const handleChange = (name: string, value: string) => {
     setForm(prev => ({ ...prev, [name]: value }));
@@ -51,7 +52,12 @@ export default function Login() {
     const data = await response.json();
 
     if (response.ok) {
-      router.navigate('/(tabs)');
+      setItemAsync('token', data.token);
+      router.navigate('/(admin)/dashboard');
+      setForm({
+        email: '',
+        password: '',
+      });
     } else {
       const { details = [] } = data;
 
@@ -62,162 +68,167 @@ export default function Login() {
       setFieldErrors(errors);
 
       setErrorMessage(data.msg ?? 'Ha ocurrido un error inesperado');
-      console.log(data);
     }
     setIsLoading(false);
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: Colors.primary, paddingTop: top * 3 }}
-    >
-      <View
-        style={{
-          flex: 1,
-          padding: 30,
-          backgroundColor: '#fff',
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
-        }}
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ImageBackground
+        style={{ paddingTop: top * 3.5 }}
+        source={require('@/assets/bg-auth.png')}
       >
         <View
           style={{
-            rowGap: 5,
-            marginBottom: top * 1.5,
+            padding: 35,
+            backgroundColor: 'white',
+            borderTopLeftRadius: 25,
+            borderTopRightRadius: 25,
+            height: '100%',
           }}
         >
-          <Image
-            source={require('@/assets/images/icon.png')}
-            style={{ width: 100, height: 100, alignSelf: 'center' }}
-          />
-          <Text
+          <View
             style={{
-              fontFamily: PlayfairDisplay.bold,
-              fontSize: 24,
-              textAlign: 'center',
+              rowGap: 5,
+              marginBottom: top * 1.5,
             }}
           >
-            Ingresa tu cuenta
-          </Text>
-          <Text
-            style={{
-              fontFamily: PontanoSans.regular,
-              textAlign: 'center',
-              fontSize: 12,
-            }}
-          >
-            Ingresa tu correo y contraseña para acceder a tu cuenta.
-          </Text>
-        </View>
-        <View style={{ rowGap: 10 }}>
-          <Field
-            label="Correo electrónico:"
-            placeholder="correo@ejemplo.com"
-            onChangeText={text => handleChange('email', text)}
-            errorField={fieldErrors.email}
-          >
-            <MaterialCommunityIcons
-              style={{
-                position: 'absolute',
-                top: 8,
-                left: 8,
-                zIndex: 1,
-              }}
-              name="account-outline"
-              color={fieldErrors.email ? 'red' : 'black'}
-              size={24}
+            <Image
+              source={require('@/assets/images/icon.png')}
+              style={{ width: 100, height: 100, alignSelf: 'center' }}
             />
-          </Field>
-
-          <Field
-            label="Contraseña:"
-            placeholder="••••••••••"
-            onChangeText={text => handleChange('password', text)}
-            errorField={fieldErrors.password}
-            secureTextEntry={true}
-            keyboardType="visible-password"
-          >
-            <MaterialCommunityIcons
-              style={{
-                position: 'absolute',
-                top: 8,
-                left: 8,
-                zIndex: 1,
-              }}
-              name="lock-outline"
-              color={fieldErrors.password ? 'red' : 'black'}
-              size={24}
-            />
-            <MaterialCommunityIcons
-              style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                zIndex: 1,
-              }}
-              name="eye-outline"
-              color={fieldErrors.password ? 'red' : 'black'}
-              size={24}
-            />
-          </Field>
-          <Link href="/login">
             <Text
               style={{
-                fontFamily: PontanoSans.semibold,
-                textAlign: 'right',
-                textDecorationLine: 'underline',
-                color: Colors.secondary,
+                fontFamily: HEADING_FONT,
+                fontSize: 24,
+                textAlign: 'center',
               }}
             >
-              ¿Olvidaste tu contraseña?
+              Ingresa tu cuenta
             </Text>
-          </Link>
-          <Pressable
-            onPress={handleSubmit}
-            style={{
-              backgroundColor: Colors.primary,
-              height: 40,
-              borderRadius: 10,
-              marginTop: 10,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              columnGap: 5,
-            }}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <>
-                <Text
-                  style={{
-                    fontFamily: PontanoSans.bold,
-                    color: 'white',
-                    fontSize: 16,
-                  }}
-                >
-                  Iniciar sesión
-                </Text>
-                <MaterialCommunityIcons
-                  name="arrow-right-bold-hexagon-outline"
-                  size={20}
-                  color="white"
-                />
-              </>
-            )}
-          </Pressable>
-          <Text
-            style={{
-              fontFamily: PontanoSans.regular,
-              color: 'red',
-              textAlign: 'center',
-              fontSize: 12,
-            }}
-          >
-            {errorMessage}
-          </Text>
+            <Text
+              style={{
+                fontFamily: BODY_FONT,
+                textAlign: 'center',
+                fontSize: 12,
+              }}
+            >
+              Ingresa tu correo y contraseña para acceder a tu cuenta.
+            </Text>
+          </View>
+          <View style={{ rowGap: 10 }}>
+            <Field
+              label="Correo electrónico:"
+              placeholder="correo@ejemplo.com"
+              onChangeText={text => handleChange('email', text)}
+              errorField={fieldErrors.email}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+            >
+              <MaterialCommunityIcons
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  zIndex: 1,
+                }}
+                name="account-outline"
+                color={fieldErrors.email ? 'red' : 'black'}
+                size={24}
+              />
+            </Field>
+
+            <Field
+              label="Contraseña:"
+              placeholder="••••••••••"
+              onChangeText={text => handleChange('password', text)}
+              errorField={fieldErrors.password}
+              secureTextEntry={true}
+              keyboardType="visible-password"
+              textContentType="password"
+            >
+              <MaterialCommunityIcons
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  zIndex: 1,
+                }}
+                name="lock-outline"
+                color={fieldErrors.password ? 'red' : 'black'}
+                size={24}
+              />
+              <MaterialCommunityIcons
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  zIndex: 1,
+                }}
+                name="eye-outline"
+                color={fieldErrors.password ? 'red' : 'black'}
+                size={24}
+              />
+            </Field>
+            <Link href="/login">
+              <Text
+                style={{
+                  fontFamily: BOLD_BODY_FONT,
+                  textAlign: 'right',
+                  textDecorationLine: 'underline',
+                  color: SECONDARY_COLOR,
+                }}
+              >
+                ¿Olvidaste tu contraseña?
+              </Text>
+            </Link>
+            <Pressable
+              onPress={handleSubmit}
+              style={{
+                backgroundColor: PRIMARY_COLOR,
+                height: 40,
+                borderRadius: 10,
+                marginTop: 10,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                columnGap: 5,
+              }}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <>
+                  <Text
+                    style={{
+                      fontFamily: BOLD_BODY_FONT,
+                      color: 'white',
+                      fontSize: 16,
+                    }}
+                  >
+                    Iniciar sesión
+                  </Text>
+                  <MaterialCommunityIcons
+                    name="login"
+                    size={20}
+                    color="white"
+                  />
+                </>
+              )}
+            </Pressable>
+            <Text
+              style={{
+                fontFamily: BODY_FONT,
+                color: 'red',
+                textAlign: 'center',
+                fontSize: 12,
+              }}
+            >
+              {errorMessage}
+            </Text>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </ImageBackground>
+    </ScrollView>
   );
 }

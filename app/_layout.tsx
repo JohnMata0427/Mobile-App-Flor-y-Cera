@@ -1,33 +1,35 @@
-import { PlayfairDisplay, PontanoSans } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import { getItemAsync } from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-const isAdmin = true;
-
 export default function RootLayout() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoggedIn(!!(await getItemAsync('token')));
+    })();
+  }, []);
+
   const [loaded] = useFonts({
-    [PlayfairDisplay.regular]: require('@/assets/fonts/PlayfairDisplay-Regular.ttf'),
-    [PlayfairDisplay.bold]: require('@/assets/fonts/PlayfairDisplay-Bold.ttf'),
-    [PlayfairDisplay.black]: require('@/assets/fonts/PlayfairDisplay-Black.ttf'),
-    [PontanoSans.regular]: require('@/assets/fonts/PontanoSans-Regular.ttf'),
-    [PontanoSans.semibold]: require('@/assets/fonts/PontanoSans-SemiBold.ttf'),
-    [PontanoSans.bold]: require('@/assets/fonts/PontanoSans-Bold.ttf'),
+    [HEADING_FONT]: require('@/assets/fonts/PlayfairDisplay-Black.ttf'),
+    [BODY_FONT]: require('@/assets/fonts/PontanoSans-Regular.ttf'),
+    [BOLD_BODY_FONT]: require('@/assets/fonts/PontanoSans-Bold.ttf'),
   });
 
   if (!loaded) return null;
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar hidden style="auto" />
 
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+        <Stack.Screen name="(admin)" />
         <Stack.Screen name="(auth)" />
-
-        <Stack.Protected guard={isAdmin}>
-          <Stack.Screen name="(admin)" />
-        </Stack.Protected>
 
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
