@@ -1,11 +1,3 @@
-export const PlayfairDisplay = {
-  regular: 'PlayfairDisplay-Regular',
-  bold: 'PlayfairDisplay-Bold',
-  black: 'PlayfairDisplay-Black',
-};
-
-export const PontanoSans = {
-  regular: 'PontanoSans-Regular',
-  semibold: 'PontanoSans-SemiBold',
-  bold: 'PontanoSans-Bold',
-};
+export const HEADING_FONT = 'PlayfairDisplay-Black';
+export const BODY_FONT = 'PontanoSans-Regular';
+export const BOLD_BODY_FONT = 'PontanoSans-Bold';
