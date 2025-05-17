@@ -1,11 +1,23 @@
-import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
 import { HEADING_FONT } from '@/constants/Fonts';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useRouter } from 'expo-router';
-import { setItemAsync } from 'expo-secure-store';
+import { useState } from 'react';
 import { Button, Image, ScrollView, Text, TextInput, View } from 'react-native';
 
 export default function AdminSettings() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { logout, login } = useAuthStore();
+
+  const refreshTokenRequest = async () => {
+    setIsLoading(true);
+    const { msg } = await login({
+      email: 'estefi2000ms2@gmail.com',
+      password: 'NuevaPass123$',
+    });
+    console.log(msg);
+    setIsLoading(false);
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -33,36 +45,14 @@ export default function AdminSettings() {
         <Button
           title="Cerrar sesión"
           color="red"
-          onPress={async () => {
-            await setItemAsync('token', '');
+          onPress={() => {
+            logout();
             router.push('/(auth)/login');
-            console.log('Logged out successfully!');
           }}
         />
         <Button
-          title="Refresh Token"
-          onPress={async () => {
-            const response = await fetch(
-              `${EXPO_PUBLIC_BACKEND_URL}/login`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  email: 'estefi2000ms2@gmail.com',
-                  password: 'NuevaPass123$',
-                }),
-              },
-            );
-            const data = await response.json();
-            if (response.ok) {
-              setItemAsync('token', data.token);
-              console.log('Token refreshed successfully!');
-            } else {
-              console.error('Failed to refresh token:', data.msg);
-            }
-          }}
+          title={isLoading ? 'Cargando...' : 'Refrescar token'}
+          onPress={refreshTokenRequest}
         />
       </View>
     </ScrollView>

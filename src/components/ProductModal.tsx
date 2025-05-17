@@ -1,10 +1,18 @@
-import { PRIMARY_COLOR, SECONDARY_COLOR } from '@/constants/Colors';
+import {
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+  SECONDARY_COLOR,
+  SECONDARY_COLOR_DARK,
+} from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { IngredientsContext } from '@/contexts/IngredientsContext';
+import { ProductsContext } from '@/contexts/ProductsContext';
+import type { Product } from '@/interfaces/Product';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { getItemAsync } from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
   Image,
@@ -16,34 +24,48 @@ import {
   View,
 } from 'react-native';
 
+type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
+
 export function ProductModal({
   data,
+  action = 'Agregar',
   isVisible,
   setIsVisible,
 }: {
-  data?: any;
+  data?: Product;
+  action?: Action;
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const action = data ? 'Actualizar' : 'Agregar';
   const [typeValues, setTypeValues] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    data?.id_categoria?._id ?? '',
+  );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [form, setForm] = useState({
-    nombre: 'Vela artesanal de canela',
-    descripcion:
-      'Vela natural con aroma a canela, ideal para relajarse, meditar y dormir mejor.',
-    beneficios: ['Aroma relajante', 'Ayuda a dormir mejor'],
-    id_categoria: '680fd248f613dc80267ba5d7',
-    precio: '9.99',
-    stock: '100',
-    imagen: '',
-    descuento: '10',
-    ingredientes: ['Cera de soya', 'Aceite esencial de canela'],
-    aroma: 'Canela',
-    tipo: 'decorativa',
+  const { ingredients } = use(IngredientsContext);
+  const { createProduct, updateProduct } = use(ProductsContext);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+    reset,
+    setValue,
+  } = useForm({
+    defaultValues: {
+      nombre: '',
+      descripcion: '',
+      beneficios: [] as string[],
+      id_categoria: '',
+      precio: '',
+      stock: '',
+      imagen: '',
+      descuento: '5', // Se debe eliminar este campo en el backend
+      ingredientes: [] as string[],
+      aroma: '',
+      tipo: '',
+    },
   });
 
   const pickImage = async () => {
@@ -52,79 +74,90 @@ export function ProductModal({
       aspect: [1, 1],
     });
 
-    console.log(assets?.[0].uri);
-
-    !canceled && setSelectedImage(assets[0].uri);
+    if (!canceled) {
+      const { uri } = assets[0];
+      setSelectedImage(uri);
+      setValue('imagen', uri);
+      clearErrors('imagen');
+    }
   };
 
-  const handleSubmit = async () => {
+  const toFormData = (data: any) => {
     const formData = new FormData();
-
-    if (selectedImage) {
-      const fileType = selectedImage.split('.').pop();
-
-      formData.append('imagen', {
-        uri: selectedImage,
-        name: `photo.${fileType}`,
-        type: `image/${fileType}`,
-      } as any);
-    }
-
-    Object.entries(form).forEach(([key, value]) => {
+    Object.entries(data).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach(item => formData.append(key + '[]', item));
+      } else if (key === 'imagen' && selectedImage) {
+        const fileType = selectedImage.split('.').pop();
+        formData.append('imagen', {
+          uri: selectedImage,
+          name: `photo.${fileType}`,
+          type: `image/${fileType}`,
+        } as any);
       } else {
-        formData.append(key, value);
+        formData.append(key, value as any);
       }
     });
 
+    return formData;
+  };
+
+  const onSubmit = async (form: any) => {
+    const formData = toFormData(form);
+
     setIsLoading(true);
 
-    const url = `https://flor-y-cera-backend.onrender.com/api/productos/${data?._id ?? ''}`;
+    const { msg } =
+      action === 'Agregar'
+        ? await createProduct(formData)
+        : await updateProduct(data?._id ?? '', formData);
 
-    const response = await fetch(url, {
-      method: action === 'Actualizar' ? 'PUT' : 'POST',
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${await getItemAsync('token')}`,
-      },
-    });
-    const recived = await response.json();
-    alert(recived.msg);
+    alert(msg);
     setIsLoading(false);
-    setSelectedImage(null);
-
     setIsVisible(false);
   };
 
   useEffect(() => {
-    if (form.id_categoria === '680fd248f613dc80267ba5d7') {
-      setTypeValues(['Seca', 'Grasa', 'Mixta']);
-      setIngredients([
-        'Fragancia de lavanda',
-        'Fragancia de rosa',
-        'Fragancia de eucalipto',
-        'Fragancia de canela',
-      ]);
-    } else if (form.id_categoria === '68128844e4d236cfe51a6fd6') {
-      setTypeValues(['Decorativa', 'Ambiental', 'Relajante']);
-      setIngredients([
-        'Mecha de algodón',
-        'Cera de soya',
-        'Aceite esencial de canela',
-        'Colorante natural',
-        'Vainilla',
-        'Lavanda',
-      ]);
+    if (selectedCategory === '680fd248f613dc80267ba5d7') {
+      setTypeValues(['Seca', 'Húmeda', 'Mixta']);
+    } else if (selectedCategory === '68128844e4d236cfe51a6fd6') {
+      setTypeValues(['Aroma', 'Decorativa']);
     }
-  }, [form.id_categoria]);
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (data) {
-      const { imagen, id_categoria } = data;
-      data.id_categoria = id_categoria?._id;
-      setForm(data);
+      const {
+        imagen,
+        nombre,
+        descripcion,
+        beneficios,
+        id_categoria,
+        precio,
+        stock,
+        descuento,
+        ingredientes,
+        aroma,
+        tipo,
+      } = data;
       setSelectedImage(imagen);
+      setValue('imagen', imagen);
+      setValue('nombre', nombre);
+      setValue('descripcion', descripcion);
+      setValue('beneficios', beneficios);
+      setValue('id_categoria', id_categoria?._id);
+      setValue('precio', precio.toString());
+      setValue('stock', stock.toString());
+      setValue('descuento', descuento.toString());
+      setValue(
+        'ingredientes',
+        ingredientes.map(({ _id }: any) => _id),
+      );
+      setValue('aroma', aroma);
+      setValue('tipo', tipo);
+    } else {
+      setSelectedImage(null);
+      reset();
     }
   }, [data]);
 
@@ -142,8 +175,6 @@ export function ProductModal({
           margin: 'auto',
           width: '85%',
           maxHeight: '90%',
-          borderColor: PRIMARY_COLOR,
-          borderWidth: 2,
           borderRadius: 10,
           backgroundColor: 'white',
         }}
@@ -174,262 +205,632 @@ export function ProductModal({
           >
             Todos los campos son obligatorios
           </Text>
-          <Text
-            style={{
-              fontFamily: BOLD_BODY_FONT,
-              fontSize: 12,
-            }}
-          >
-            Imagen <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <Pressable
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              borderStyle: 'dashed',
-              columnGap: 5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              aspectRatio: 1,
-              width: '85%',
-              alignSelf: 'center',
-              overflow: 'hidden',
-            }}
-            onPress={pickImage}
-          >
-            {selectedImage ? (
-              <Image
-                source={{ uri: selectedImage }}
-                style={{ height: '100%', width: '100%' }}
-                resizeMode="cover"
-              />
-            ) : (
-              <>
-                <MaterialCommunityIcons name="camera-iris" size={20} />
-                <Text
-                  style={{
-                    fontFamily: BOLD_BODY_FONT,
-                    textAlign: 'center',
-                    fontSize: 12,
-                  }}
-                >
-                  Agrega una imagen
-                </Text>
-              </>
-            )}
-          </Pressable>
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Nombre <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <TextInput
-            style={{
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              fontSize: 12,
-              borderWidth: 1,
-              fontFamily: BODY_FONT,
-            }}
-            placeholder="Ej: Vela de soya"
-            value={form.nombre}
-            onChangeText={nombre => setForm({ ...form, nombre })}
-          />
-          <View style={{ flexDirection: 'row', columnGap: 10, width: '100%' }}>
-            <View style={{ flex: 1, rowGap: 5 }}>
-              <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                Aroma <Text style={{ color: 'red' }}>*</Text>
-              </Text>
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  paddingHorizontal: 10,
-                  fontSize: 12,
-                  borderWidth: 1,
-                  fontFamily: BODY_FONT,
-                }}
-                placeholder="Ej: Soya"
-                value={form.aroma}
-                onChangeText={aroma => setForm({ ...form, aroma })}
-              />
-            </View>
-            <View style={{ flex: 1, rowGap: 5 }}>
-              <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                Precio <Text style={{ color: 'red' }}>*</Text>
-              </Text>
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  paddingHorizontal: 10,
-                  fontSize: 12,
-                  borderWidth: 1,
-                  fontFamily: BODY_FONT,
-                }}
-                placeholder="Ej: 10.00"
-                keyboardType="numeric"
-                value={form.precio.toString()}
-                onChangeText={precio => setForm({ ...form, precio })}
-              />
-            </View>
-            <View style={{ flex: 1, rowGap: 5 }}>
-              <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                Stock <Text style={{ color: 'red' }}>*</Text>
-              </Text>
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  paddingHorizontal: 10,
-                  fontSize: 12,
-                  borderWidth: 1,
-                  fontFamily: BODY_FONT,
-                }}
-                placeholder="Ej: 25"
-                keyboardType="numeric"
-                value={form.stock.toString()}
-                onChangeText={stock => setForm({ ...form, stock })}
-              />
-            </View>
-          </View>
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Descripción <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <TextInput
-            style={{
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              fontSize: 12,
-              borderWidth: 1,
-              height: 75,
-              fontFamily: BODY_FONT,
-            }}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            placeholder="Ej: Vela natural con aroma a lavanda"
-            value={form.descripcion}
-            onChangeText={descripcion => setForm({ ...form, descripcion })}
-          />
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Beneficios <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <TextInput
-            style={{
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              fontSize: 12,
-              borderWidth: 1,
-              fontFamily: BODY_FONT,
-            }}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            placeholder="Ej: Aroma relajante, ayuda a dormir mejor, etc."
-            value={form.beneficios.join(', ')}
-            onChangeText={beneficios =>
-              setForm({
-                ...form,
-                beneficios: beneficios.split(',').map(item => item.trim()),
-              })
-            }
-          />
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Categoría <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <View style={{ borderWidth: 1, borderRadius: 10 }}>
-            <Picker
-              selectedValue={form.id_categoria}
-              onValueChange={id_categoria => setForm({ ...form, id_categoria })}
-              mode="dropdown"
-              prompt="Seleccionar categoría"
-            >
-              <Picker.Item
-                label="Seleccionar categoría"
-                value=""
-                enabled={false}
-                style={{
-                  color: '#AFAFAF',
-                  fontSize: 12,
-                  fontFamily: BODY_FONT,
-                }}
-              />
-              <Picker.Item
-                style={{
-                  fontSize: 12,
-                  fontFamily: BODY_FONT,
-                }}
-                label="Velas artesanales"
-                value="68128844e4d236cfe51a6fd6"
-              />
-              <Picker.Item
-                style={{
-                  fontSize: 12,
-                  fontFamily: BODY_FONT,
-                }}
-                label="Jabones artesanales"
-                value="680fd248f613dc80267ba5d7"
-              />
-            </Picker>
-          </View>
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Tipo <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          <View style={{ borderWidth: 1, borderRadius: 10 }}>
-            <Picker
-              selectedValue={form.tipo}
-              onValueChange={tipo => setForm({ ...form, tipo })}
-              mode="dropdown"
-            >
-              <Picker.Item
-                label={
-                  form.id_categoria === '680fd248f613dc80267ba5d7'
-                    ? 'Seleccionar tipo de piel'
-                    : 'Seleccionar tipo de vela'
-                }
-                value=""
-                enabled={false}
-                style={{
-                  color: '#AFAFAF',
-                  fontSize: 12,
-                  fontFamily: BODY_FONT,
-                }}
-              />
-              {typeValues.map((item, index) => (
-                <Picker.Item
-                  key={index}
-                  style={{
-                    fontSize: 12,
-                    fontFamily: BODY_FONT,
-                  }}
-                  label={item}
-                  value={item.toLowerCase()}
-                />
-              ))}
-            </Picker>
-          </View>
+          <Controller
+            control={control}
+            name="imagen"
+            rules={{ required: 'Debe seleccionar una imagen' }}
+            render={() => {
+              const { message = '' } = errors.imagen || {};
+              const color = message ? 'red' : 'black';
 
-          <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-            Ingredientes <Text style={{ color: 'red' }}>*</Text>
-          </Text>
-          {ingredients.map((item, index) => (
-            <CheckBox
-              key={index}
-              label={item}
-              value={form.ingredientes.includes(item)}
-              onPress={value => {
-                if (value) {
-                  setForm(prev => ({
-                    ...prev,
-                    ingredientes: prev.ingredientes.concat(item),
-                  }));
-                } else {
-                  setForm(prev => ({
-                    ...prev,
-                    ingredientes: prev.ingredientes.filter(
-                      (i: any) => i !== item,
-                    ),
-                  }));
-                }
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text
+                    style={{
+                      fontFamily: BOLD_BODY_FONT,
+                      fontSize: 12,
+                    }}
+                  >
+                    Imagen <Text style={{ color: 'red' }}>*</Text>
+                  </Text>
+                  <Pressable
+                    style={{
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      borderColor: color,
+                      borderStyle: 'dashed',
+                      columnGap: 5,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      aspectRatio: 1,
+                      width: '85%',
+                      alignSelf: 'center',
+                      overflow: 'hidden',
+                    }}
+                    onPress={pickImage}
+                  >
+                    {selectedImage ? (
+                      <Image
+                        source={{ uri: selectedImage }}
+                        style={{ height: '100%', width: '100%' }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <>
+                        <MaterialCommunityIcons name="camera-iris" size={20} />
+                        <Text
+                          style={{
+                            fontFamily: BOLD_BODY_FONT,
+                            textAlign: 'center',
+                            fontSize: 12,
+                          }}
+                        >
+                          Agrega una imagen
+                        </Text>
+                        <Text
+                          style={{
+                            fontFamily: BODY_FONT,
+                            fontSize: 12,
+                            textAlign: 'center',
+                            color: '#AFAFAF',
+                          }}
+                        >
+                          Toca para seleccionar una imagen
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+
+          <Controller
+            control={control}
+            name="nombre"
+            rules={{
+              required: 'Este campo es obligatorio',
+              minLength: {
+                value: 3,
+                message: 'El nombre debe tener al menos 3 caracteres',
+              },
+              pattern: {
+                value: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/,
+                message: 'El nombre solo debe contener caracteres',
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const { message = '' } = errors.nombre || {};
+              const color = message ? 'red' : 'black';
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Nombre <Text style={{ color: 'red' }}>*</Text>
+                  </Text>
+                  <TextInput
+                    style={{
+                      borderRadius: 10,
+                      paddingHorizontal: 10,
+                      fontSize: 12,
+                      borderWidth: 1,
+                      fontFamily: BODY_FONT,
+                      borderColor: color,
+                      color,
+                    }}
+                    placeholder="Ej: Vela de canela"
+                    placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    textContentType="name"
+                    selectionColor={PRIMARY_COLOR}
+                  />
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+
+          <View style={{ flexDirection: 'row', columnGap: 10, width: '100%' }}>
+            <Controller
+              control={control}
+              name="aroma"
+              rules={{
+                required: 'Este campo es obligatorio',
+                minLength: {
+                  value: 3,
+                  message: 'El aroma debe tener al menos 3 caracteres',
+                },
+                pattern: {
+                  value: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/,
+                  message: 'El aroma solo debe contener caracteres',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const { message = '' } = errors.aroma || {};
+                const color = message ? 'red' : 'black';
+
+                return (
+                  <View style={{ flex: 1, rowGap: 3 }}>
+                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                      Aroma <Text style={{ color: 'red' }}>*</Text>
+                    </Text>
+                    <TextInput
+                      style={{
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        fontSize: 12,
+                        borderWidth: 1,
+                        fontFamily: BODY_FONT,
+                        borderColor: color,
+                        color,
+                      }}
+                      placeholder="Ej: Canela"
+                      placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      textContentType="name"
+                      selectionColor={PRIMARY_COLOR}
+                    />
+                    {message && (
+                      <Text
+                        style={{
+                          fontFamily: BODY_FONT,
+                          fontSize: 12,
+                          color: 'red',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {message as string}
+                      </Text>
+                    )}
+                  </View>
+                );
               }}
             />
-          ))}
+            <Controller
+              control={control}
+              name="precio"
+              rules={{
+                required: 'Este campo es obligatorio',
+                pattern: {
+                  value: /^\d+(\.\d{1,2})?$/,
+                  message: 'El precio debe ser un número válido',
+                },
+                min: {
+                  value: 0.99,
+                  message: 'El precio debe ser mayor a $ 0.99',
+                },
+                max: {
+                  value: 99.99,
+                  message: 'El precio no puede ser mayor a $ 99.99',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const { message = '' } = errors.precio || {};
+                const color = message ? 'red' : 'black';
+
+                return (
+                  <View style={{ flex: 1, rowGap: 3 }}>
+                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                      Precio <Text style={{ color: 'red' }}>*</Text>
+                    </Text>
+                    <TextInput
+                      style={{
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        fontSize: 12,
+                        borderWidth: 1,
+                        fontFamily: BODY_FONT,
+                        borderColor: color,
+                        color,
+                      }}
+                      placeholder="Ej: 9.99"
+                      placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      textContentType="flightNumber"
+                      keyboardType="numeric"
+                      selectionColor={PRIMARY_COLOR}
+                    />
+                    {message && (
+                      <Text
+                        style={{
+                          fontFamily: BODY_FONT,
+                          fontSize: 12,
+                          color: 'red',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {message as string}
+                      </Text>
+                    )}
+                  </View>
+                );
+              }}
+            />
+            <Controller
+              control={control}
+              name="stock"
+              rules={{
+                required: 'Este campo es obligatorio',
+                pattern: {
+                  value: /^\d+$/,
+                  message: 'El stock debe ser un número entero',
+                },
+                min: {
+                  value: 1,
+                  message: 'El stock debe ser al menos 1',
+                },
+                max: {
+                  value: 100,
+                  message: 'El stock no puede ser mayor a 100',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const { message = '' } = errors.stock || {};
+                const color = message ? 'red' : 'black';
+
+                return (
+                  <View style={{ flex: 1, rowGap: 3 }}>
+                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                      Stock <Text style={{ color: 'red' }}>*</Text>
+                    </Text>
+                    <TextInput
+                      style={{
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        fontSize: 12,
+                        borderWidth: 1,
+                        fontFamily: BODY_FONT,
+                        borderColor: color,
+                        color,
+                      }}
+                      placeholder="Ej: 100"
+                      placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      value={value}
+                      keyboardType="numeric"
+                      selectionColor={PRIMARY_COLOR}
+                    />
+                    {message && (
+                      <Text
+                        style={{
+                          fontFamily: BODY_FONT,
+                          fontSize: 12,
+                          color: 'red',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {message as string}
+                      </Text>
+                    )}
+                  </View>
+                );
+              }}
+            />
+          </View>
+          <Controller
+            control={control}
+            name="descripcion"
+            rules={{
+              required: 'Este campo es obligatorio',
+              minLength: {
+                value: 10,
+                message: 'La descripción debe tener al menos 10 caracteres',
+              },
+              pattern: {
+                message: 'La descripcion debe tener al menos 8 letras',
+                value: /^(?=.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]).{8,}$/,
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const { message = '' } = errors.descripcion || {};
+              const color = message ? 'red' : 'black';
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Descripción <Text style={{ color: 'red' }}>*</Text>
+                  </Text>
+                  <TextInput
+                    style={{
+                      borderRadius: 10,
+                      paddingHorizontal: 10,
+                      fontSize: 12,
+                      borderWidth: 1,
+                      fontFamily: BODY_FONT,
+                      borderColor: color,
+                      color,
+                    }}
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    placeholder="Ej: Vela natural con aroma a canela, ideal para relajarse, meditar y dormir mejor."
+                    placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    selectionColor={PRIMARY_COLOR}
+                  />
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="beneficios"
+            rules={{
+              validate: {
+                minLength: value =>
+                  value.length > 1 || 'Este campo es obligatorio',
+                maxLength: value =>
+                  value.length < 4 || 'No puede agregar más de 3 beneficios',
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const { message = '' } = errors.beneficios || {};
+              const color = message ? 'red' : 'black';
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Beneficios (separados por coma)
+                    <Text style={{ color: 'red' }}> *</Text>
+                  </Text>
+                  <TextInput
+                    style={{
+                      borderRadius: 10,
+                      paddingHorizontal: 10,
+                      fontSize: 12,
+                      borderWidth: 1,
+                      fontFamily: BODY_FONT,
+                      borderColor: color,
+                      color,
+                    }}
+                    placeholder="Ej: Aroma relajante, ayuda a dormir mejor"
+                    placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                    onChangeText={text => onChange(text.split(','))}
+                    onBlur={onBlur}
+                    value={value.join(',')}
+                    selectionColor={PRIMARY_COLOR}
+                  />
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="id_categoria"
+            rules={{ required: 'Este campo es obligatorio' }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const { message = '' } = errors.id_categoria || {};
+              const color = message ? 'red' : 'black';
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Categoría <Text style={{ color: 'red' }}>*</Text>
+                  </Text>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      borderColor: color,
+                    }}
+                  >
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={value => {
+                        onChange(value);
+                        setSelectedCategory(value);
+                      }}
+                      onBlur={onBlur}
+                      style={{
+                        color: color,
+                        fontSize: 12,
+                        fontFamily: BODY_FONT,
+                      }}
+                    >
+                      <Picker.Item
+                        label="Seleccionar categoría"
+                        value=""
+                        enabled={false}
+                        style={{
+                          color: '#AFAFAF',
+                          fontSize: 12,
+                          fontFamily: BODY_FONT,
+                        }}
+                      />
+                      <Picker.Item
+                        style={{
+                          fontFamily: BODY_FONT,
+                          fontSize: 12,
+                        }}
+                        label="Jabones artesanales"
+                        value="680fd248f613dc80267ba5d7"
+                      />
+                      <Picker.Item
+                        style={{
+                          fontFamily: BODY_FONT,
+                          fontSize: 12,
+                        }}
+                        label="Velas artesanales"
+                        value="68128844e4d236cfe51a6fd6"
+                      />
+                    </Picker>
+                  </View>
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="tipo"
+            rules={{ required: 'Este campo es obligatorio' }}
+            render={({ field: { onChange, onBlur, value } }) => {
+              const { message = '' } = errors.tipo || {};
+              const color = message ? 'red' : 'black';
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Tipo <Text style={{ color: 'red' }}>*</Text>
+                  </Text>
+                  <View
+                    style={{
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      borderColor: color,
+                    }}
+                  >
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      onBlur={onBlur}
+                      style={{
+                        color: color,
+                        fontSize: 12,
+                        fontFamily: BODY_FONT,
+                      }}
+                    >
+                      <Picker.Item
+                        label="Seleccionar tipo"
+                        value=""
+                        enabled={false}
+                        style={{
+                          color: '#AFAFAF',
+                          fontSize: 12,
+                          fontFamily: BODY_FONT,
+                        }}
+                      />
+                      {typeValues.map(type => (
+                        <Picker.Item
+                          key={type}
+                          style={{
+                            fontFamily: BODY_FONT,
+                            fontSize: 12,
+                          }}
+                          label={type}
+                          value={type.toLocaleLowerCase()}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
+
+          <Controller
+            control={control}
+            name="ingredientes"
+            rules={{
+              validate: {
+                minLength: value =>
+                  value.length > 1 || 'Este campo es obligatorio',
+              },
+            }}
+            render={({ field: { onChange, value } }) => {
+              const { message = '' } = errors.ingredientes || {};
+
+              return (
+                <View style={{ rowGap: 3 }}>
+                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                    Selecciona dos ingredientes
+                    <Text style={{ color: 'red' }}> *</Text>
+                  </Text>
+                  <View>
+                    {ingredients.map(({ _id, nombre }) => (
+                      <CheckBox
+                        key={_id}
+                        label={nombre}
+                        value={value.includes(_id)}
+                        onPress={pressed => {
+                          if (pressed && value.length < 2) {
+                            onChange([...value, _id]);
+                          } else {
+                            onChange(value.filter(i => i !== _id));
+                          }
+                        }}
+                      />
+                    ))}
+                  </View>
+                  {message && (
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 12,
+                        color: 'red',
+                      }}
+                    >
+                      {message as string}
+                    </Text>
+                  )}
+                </View>
+              );
+            }}
+          />
 
           <View
             style={{
@@ -448,8 +849,11 @@ export function ProductModal({
                 columnGap: 5,
                 width: '40%',
                 justifyContent: 'center',
+                borderColor: PRIMARY_COLOR_DARK,
+                borderBottomWidth: 2,
+                borderRightWidth: 2,
               }}
-              onPress={handleSubmit}
+              onPress={handleSubmit(onSubmit)}
             >
               {isLoading ? (
                 <ActivityIndicator size={14} color="white" />
@@ -480,6 +884,9 @@ export function ProductModal({
                 columnGap: 5,
                 width: '40%',
                 backgroundColor: SECONDARY_COLOR,
+                borderColor: SECONDARY_COLOR_DARK,
+                borderBottomWidth: 2,
+                borderRightWidth: 2,
                 justifyContent: 'center',
               }}
               onPress={() => setIsVisible(false)}

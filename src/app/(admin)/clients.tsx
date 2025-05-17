@@ -1,13 +1,16 @@
-import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
-import { PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR } from '@/constants/Colors';
+import {
+  DARK_GRAY_COLOR,
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+} from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
-import type { Client } from '@/interfaces/Client';
+import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { getItemAsync } from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { use } from 'react';
 import {
   FlatList,
   Image,
+  Pressable,
   RefreshControl,
   ScrollView,
   Text,
@@ -15,31 +18,34 @@ import {
   View,
 } from 'react-native';
 
-export default function AdminUsers() {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(0);
-
-  useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        `${EXPO_PUBLIC_BACKEND_URL}/admin/clientes?page=1&limit=10`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${await getItemAsync('token')}`,
-          },
-        },
-      );
-      const data = await response.json();
-      setClients(data.clientes);
-      setIsLoading(false);
-    })();
-  }, [refreshing]);
+function Clients() {
+  const {
+    clients,
+    loading,
+    refreshing,
+    page,
+    totalPages,
+    setRefreshing,
+    setPage,
+    getClients,
+    activateClientAccount,
+    deleteClientAccount,
+  } = use(ClientsContext);
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={async () => {
+            setRefreshing(true);
+            await getClients();
+          }}
+          colors={[PRIMARY_COLOR]}
+        />
+      }
+    >
       <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
         <View
           style={{ flexDirection: 'row', columnGap: 20, alignItems: 'center' }}
@@ -59,75 +65,274 @@ export default function AdminUsers() {
             paddingHorizontal: 20,
             fontSize: 12,
           }}
-          placeholder="Buscar por nombre..."
+          placeholder="Buscar cliente por nombre..."
         />
         <FlatList
-          style={{ minHeight: '100%' }}
-          showsVerticalScrollIndicator={false}
           data={clients}
           scrollEnabled={false}
           contentContainerStyle={{ rowGap: 10 }}
           keyExtractor={({ _id }) => _id}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={() => {
-                setIsLoading(true);
-                setRefreshing(prev => prev + 1);
-              }}
-              colors={[PRIMARY_COLOR]}
-            />
-          }
           renderItem={({
-            item: { nombre, apellido, email, genero, imagen },
-          }) => (
-            <View
-              style={{
-                backgroundColor: 'white',
-                borderRadius: 15,
-                padding: 20,
-                rowGap: 5,
-              }}
-            >
-              <View style={{ flexDirection: 'row', columnGap: 10 }}>
-                <Image
-                  source={{
-                    uri:
-                      imagen ??
-                      'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg',
-                  }}
+            item: {
+              _id,
+              nombre,
+              apellido,
+              email,
+              genero,
+              imagen,
+              direccion,
+              estado,
+              createdAt,
+            },
+          }) => {
+            const isActive = estado === 'activo';
+            return (
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  padding: 12,
+                  rowGap: 5,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <View
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 50,
-                    borderWidth: 2,
-                    borderColor: SECONDARY_COLOR,
+                    flexDirection: 'row',
+                    columnGap: 10,
+                    alignItems: 'center',
                   }}
-                />
-                <View>
-                  <Text style={{ fontFamily: BODY_FONT }}>
-                    {nombre} {apellido}
-                    <MaterialCommunityIcons
-                      name={
-                        genero === 'Masculino' ? 'gender-male' : 'gender-female'
-                      }
-                      size={20}
-                      color={TERTIARY_COLOR}
+                >
+                  <View style={{ rowGap: 4, justifyContent: 'center' }}>
+                    <Image
+                      resizeMode="cover"
+                      source={{
+                        uri:
+                          imagen ??
+                          'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg',
+                      }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 50,
+                        borderWidth: 2,
+                        borderColor: DARK_GRAY_COLOR,
+                      }}
                     />
-                  </Text>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT }}>{email}</Text>
+                    <Text
+                      style={{
+                        fontFamily: BODY_FONT,
+                        fontSize: 10,
+                        textAlign: 'center',
+                        backgroundColor: isActive ? '#CBF9E1' : '#FCDBDB',
+                        color: isActive ? '#095841' : '#942D2D',
+                        borderColor: isActive ? '#095841' : '#942D2D',
+                        borderWidth: 0.5,
+                        paddingHorizontal: 2,
+                        borderRadius: 20,
+                      }}
+                    >
+                      {estado}
+                    </Text>
+                  </View>
+                  <View style={{ rowGap: 2 }}>
+                    <View style={{ flexDirection: 'row', columnGap: 2 }}>
+                      <Text style={{ fontFamily: BOLD_BODY_FONT }}>
+                        {nombre} {apellido}
+                      </Text>
+                      <MaterialCommunityIcons
+                        name={
+                          genero === 'Masculino'
+                            ? 'gender-male'
+                            : 'gender-female'
+                        }
+                        size={18}
+                        color={genero === 'Masculino' ? '#007AFF' : '#FF1493'}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        columnGap: 2,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="email-check-outline"
+                        size={14}
+                        color={DARK_GRAY_COLOR}
+                      />
+                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
+                        {email}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        columnGap: 2,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="home-outline"
+                        size={14}
+                        color={DARK_GRAY_COLOR}
+                      />
+                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
+                        {direccion ?? 'Dirección no registrada'}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        columnGap: 2,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="calendar"
+                        size={14}
+                        color={DARK_GRAY_COLOR}
+                      />
+                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
+                        Registrado el{' '}
+                        {new Date(createdAt).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={{ rowGap: 5 }}>
+                  <Pressable
+                    style={{
+                      backgroundColor: PRIMARY_COLOR,
+                      borderRadius: 5,
+                      padding: 2,
+                      borderBottomWidth: 2,
+                      borderRightWidth: 2,
+                      borderColor: PRIMARY_COLOR_DARK,
+                    }}
+                    onPress={() => {}}
+                  >
+                    <MaterialCommunityIcons
+                      name="information-variant"
+                      size={20}
+                      color="white"
+                    />
+                  </Pressable>
+                  <Pressable
+                    style={{
+                      backgroundColor: isActive ? '#ED8363' : '#1EC295',
+                      borderRadius: 5,
+                      padding: 2,
+                      borderBottomWidth: 2,
+                      borderRightWidth: 2,
+                      borderColor: isActive ? '#B85F52' : '#128C70',
+                    }}
+                    onPress={() => {
+                      isActive
+                        ? deleteClientAccount(_id)
+                        : activateClientAccount(_id);
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name={isActive ? 'account-lock' : 'account-lock-open'}
+                      size={20}
+                      color="white"
+                    />
+                  </Pressable>
                 </View>
               </View>
-              <MaterialCommunityIcons
-                name="information"
-                size={30}
-                color={PRIMARY_COLOR}
-                style={{ position: 'absolute', right: 15, top: 25 }}
-              />
+            );
+          }}
+          ListEmptyComponent={
+            loading ? (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontFamily: BODY_FONT }}>Cargando datos...</Text>
+              </View>
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  rowGap: 5,
+                }}
+              >
+                <MaterialCommunityIcons name="account-off" size={30} />
+                <Text style={{ fontFamily: BODY_FONT }}>
+                  No se encontraron clientes, intente más tarde.
+                </Text>
+              </View>
+            )
+          }
+          ListFooterComponent={
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+              }}
+            >
+              {page !== 1 && (
+                <Pressable
+                  onPress={() => setPage(prev => prev - 1)}
+                  style={{
+                    backgroundColor: DARK_GRAY_COLOR,
+                    borderRadius: 5,
+                    padding: 2,
+                    borderBottomWidth: 2,
+                    borderRightWidth: 2,
+                    borderColor: 'black',
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="chevron-left"
+                    size={20}
+                    color="white"
+                  />
+                </Pressable>
+              )}
+              {page < totalPages && (
+                <Pressable
+                  onPress={() => setPage(prev => prev - 1)}
+                  style={{
+                    backgroundColor: DARK_GRAY_COLOR,
+                    borderRadius: 5,
+                    padding: 2,
+                    borderBottomWidth: 2,
+                    borderRightWidth: 2,
+                    borderColor: 'black',
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="chevron-right"
+                    size={20}
+                    color="white"
+                  />
+                </Pressable>
+              )}
             </View>
-          )}
+          }
         />
       </View>
     </ScrollView>
+  );
+}
+
+export default function AdminClients() {
+  return (
+    <ClientsProvider>
+      <Clients />
+    </ClientsProvider>
   );
 }

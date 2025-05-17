@@ -7,7 +7,7 @@ export const ADMIN_TABS = [
 	{
 		name: 'clients',
 		title: 'Clientes',
-		icon: 'calendar-account',
+		icon: 'account-supervisor-circle',
 	},
 	{
 		name: 'inventory',
@@ -17,13 +17,13 @@ export const ADMIN_TABS = [
 	{
 		name: 'invoices',
 		title: 'Facturas',
-		icon: 'palette-swatch-outline',
+		icon: 'script-text-outline',
 		tabBarBadge: 2,
 	},
 	{
 		name: 'promotions',
 		title: 'Promociones',
-		icon: 'tag-multiple-outline',
+		icon: 'bullhorn-variant-outline',
 		tabBarBadge: 3,
 	},
 	{
