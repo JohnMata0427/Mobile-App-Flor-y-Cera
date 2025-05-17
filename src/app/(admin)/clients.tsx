@@ -149,7 +149,7 @@ function Clients() {
                     </Text>
                   </View>
                   <View style={{ rowGap: 2 }}>
-                    <View style={{ flexDirection: 'row', columnGap: 2 }}>
+                    <View style={{ flexDirection: 'row', columnGap: 3, alignItems: 'center' }}>
                       <Text style={{ fontFamily: BOLD_BODY_FONT }}>
                         {nombre} {apellido}
                       </Text>
@@ -159,7 +159,7 @@ function Clients() {
                             ? 'gender-male'
                             : 'gender-female'
                         }
-                        size={18}
+                        size={14}
                         color={genero === 'Masculino' ? '#007AFF' : '#FF1493'}
                       />
                     </View>

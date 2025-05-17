@@ -204,7 +204,7 @@ function Invoices() {
                   <View style={{ alignItems: 'center' }}>
                     <MaterialCommunityIcons
                       name="cash-multiple"
-                      size={25}
+                      size={26}
                       color={GRAY_COLOR_DARK}
                     />
                     <Text style={{ fontFamily: BOLD_BODY_FONT }}>

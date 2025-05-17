@@ -50,10 +50,10 @@ export default function AdminLayout() {
                   style={{
                     backgroundColor: focused ? PRIMARY_COLOR_LIGHT : '',
                     width: 55,
-                    height: 35,
-                    borderRadius: 30,
+                    height: 30,
+                    borderRadius: 10,
                     textAlign: 'center',
-                    lineHeight: 35,
+                    lineHeight: 30,
                   }}
                 />
               ),

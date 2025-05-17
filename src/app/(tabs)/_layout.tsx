@@ -10,7 +10,7 @@ export default function TabLayout() {
         options={{
           title: 'Inicio',
           tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="house" color={color} />
+            <MaterialIcons size={26} name="house" color={color} />
           ),
         }}
       />
@@ -19,7 +19,7 @@ export default function TabLayout() {
         options={{
           title: 'Explorar',
           tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="explore" color={color} />
+            <MaterialIcons size={26} name="explore" color={color} />
           ),
         }}
       />
