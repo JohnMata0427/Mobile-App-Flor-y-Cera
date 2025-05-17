@@ -1,4 +1,9 @@
-import { PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR } from '@/constants/Colors';
+import {
+  DARK_GRAY_COLOR,
+  PRIMARY_COLOR,
+  SECONDARY_COLOR,
+  TERTIARY_COLOR,
+} from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image, ScrollView, Text, TextInput, View } from 'react-native';
@@ -52,10 +57,13 @@ export default function AdminDashboard() {
           >
             <MaterialCommunityIcons name="bell" size={24} />
             <Image
-              source={require('@/assets/profile.png')}
+              source={require('@/assets/profile.jpg')}
               style={{
                 width: 40,
                 height: 40,
+                borderRadius: 50,
+                borderWidth: 2,
+                borderColor: DARK_GRAY_COLOR,
               }}
             />
           </View>
@@ -68,10 +76,17 @@ export default function AdminDashboard() {
               flex: 1,
               padding: 10,
               alignItems: 'center',
+              justifyContent: 'space-between',
               rowGap: 10,
             }}
           >
-            <Text style={{ fontFamily: BODY_FONT, fontSize: 10 }}>
+            <Text
+              style={{
+                fontFamily: BODY_FONT,
+                fontSize: 10,
+                textAlign: 'center',
+              }}
+            >
               Usuarios registrados
             </Text>
             <MaterialCommunityIcons
@@ -94,10 +109,17 @@ export default function AdminDashboard() {
               flex: 1,
               padding: 10,
               alignItems: 'center',
+              justifyContent: 'space-between',
               rowGap: 10,
             }}
           >
-            <Text style={{ fontFamily: BODY_FONT, fontSize: 10 }}>
+            <Text
+              style={{
+                fontFamily: BODY_FONT,
+                fontSize: 10,
+                textAlign: 'center',
+              }}
+            >
               Productos vendidos
             </Text>
             <MaterialCommunityIcons
@@ -120,10 +142,17 @@ export default function AdminDashboard() {
               flex: 1,
               padding: 10,
               alignItems: 'center',
+              justifyContent: 'center',
               rowGap: 10,
             }}
           >
-            <Text style={{ fontFamily: BODY_FONT, fontSize: 10 }}>
+            <Text
+              style={{
+                fontFamily: BODY_FONT,
+                fontSize: 10,
+                textAlign: 'center',
+              }}
+            >
               Productos activos
             </Text>
             <MaterialCommunityIcons

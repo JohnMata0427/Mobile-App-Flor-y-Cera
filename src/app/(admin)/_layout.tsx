@@ -1,5 +1,5 @@
-import { PRIMARY_COLOR, SECONDARY_COLOR } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
+import { PRIMARY_COLOR } from '@/constants/Colors';
+import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ADMIN_TABS } from '@/constants/Tabs';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
@@ -18,20 +18,24 @@ export default function AdminLayout() {
             name={name}
             options={{
               title,
-              tabBarLabelStyle: {
-                fontFamily: BODY_FONT,
-              },
               tabBarBadge,
               tabBarBadgeStyle: {
-                backgroundColor: SECONDARY_COLOR,
-                fontFamily: BODY_FONT,
+                backgroundColor: PRIMARY_COLOR,
+                fontFamily: BOLD_BODY_FONT,
                 fontSize: 12,
                 padding: 2,
               },
-              tabBarActiveTintColor: PRIMARY_COLOR,
+              tabBarStyle: {
+                height: 60,
+              },
+              tabBarLabelStyle: {
+                fontFamily: BOLD_BODY_FONT,
+              },
+              tabBarInactiveTintColor: 'gray',
+              tabBarActiveTintColor: 'black',
               tabBarIcon: ({ color }) => (
                 <MaterialCommunityIcons
-                  size={24}
+                  size={26}
                   name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
                   color={color}
                 />
