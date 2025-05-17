@@ -1,7 +1,15 @@
 import {
-  DARK_GRAY_COLOR,
+  GRAY_COLOR,
+  GRAY_COLOR_DARK,
+  GRAY_COLOR_LIGHT,
+  GREEN_COLOR,
+  GREEN_COLOR_DARK,
+  GREEN_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  RED_COLOR,
+  RED_COLOR_DARK,
+  RED_COLOR_LIGHT,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
@@ -96,6 +104,9 @@ function Clients() {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  borderColor: GRAY_COLOR_LIGHT,
+                  borderBottomWidth: 2,
+                  borderRightWidth: 2,
                 }}
               >
                 <View
@@ -114,11 +125,11 @@ function Clients() {
                           'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg',
                       }}
                       style={{
-                        width: 40,
-                        height: 40,
+                        width: 45,
+                        height: 45,
                         borderRadius: 50,
                         borderWidth: 2,
-                        borderColor: DARK_GRAY_COLOR,
+                        borderColor: GRAY_COLOR,
                       }}
                     />
                     <Text
@@ -126,9 +137,9 @@ function Clients() {
                         fontFamily: BODY_FONT,
                         fontSize: 10,
                         textAlign: 'center',
-                        backgroundColor: isActive ? '#CBF9E1' : '#FCDBDB',
-                        color: isActive ? '#095841' : '#942D2D',
-                        borderColor: isActive ? '#095841' : '#942D2D',
+                        backgroundColor: isActive ? GREEN_COLOR_LIGHT : RED_COLOR_LIGHT,
+                        color: isActive ? GREEN_COLOR_DARK : RED_COLOR_DARK,
+                        borderColor: isActive ? GREEN_COLOR_DARK : RED_COLOR_DARK,
                         borderWidth: 0.5,
                         paddingHorizontal: 2,
                         borderRadius: 20,
@@ -162,7 +173,7 @@ function Clients() {
                       <MaterialCommunityIcons
                         name="email-check-outline"
                         size={14}
-                        color={DARK_GRAY_COLOR}
+                        color={GRAY_COLOR_DARK}
                       />
                       <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
                         {email}
@@ -178,7 +189,7 @@ function Clients() {
                       <MaterialCommunityIcons
                         name="home-outline"
                         size={14}
-                        color={DARK_GRAY_COLOR}
+                        color={GRAY_COLOR_DARK}
                       />
                       <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
                         {direccion ?? 'Dirección no registrada'}
@@ -194,7 +205,7 @@ function Clients() {
                       <MaterialCommunityIcons
                         name="calendar"
                         size={14}
-                        color={DARK_GRAY_COLOR}
+                        color={GRAY_COLOR_DARK}
                       />
                       <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
                         Registrado el{' '}
@@ -227,12 +238,12 @@ function Clients() {
                   </Pressable>
                   <Pressable
                     style={{
-                      backgroundColor: isActive ? '#ED8363' : '#1EC295',
+                      backgroundColor: isActive ? RED_COLOR : GREEN_COLOR,
                       borderRadius: 5,
                       padding: 2,
                       borderBottomWidth: 2,
                       borderRightWidth: 2,
-                      borderColor: isActive ? '#B85F52' : '#128C70',
+                      borderColor: isActive ? RED_COLOR_DARK : GREEN_COLOR_DARK,
                     }}
                     onPress={() => {
                       isActive
@@ -287,7 +298,7 @@ function Clients() {
                 <Pressable
                   onPress={() => setPage(prev => prev - 1)}
                   style={{
-                    backgroundColor: DARK_GRAY_COLOR,
+                    backgroundColor: GRAY_COLOR_DARK,
                     borderRadius: 5,
                     padding: 2,
                     borderBottomWidth: 2,
@@ -306,7 +317,7 @@ function Clients() {
                 <Pressable
                   onPress={() => setPage(prev => prev - 1)}
                   style={{
-                    backgroundColor: DARK_GRAY_COLOR,
+                    backgroundColor: GRAY_COLOR_DARK,
                     borderRadius: 5,
                     padding: 2,
                     borderBottomWidth: 2,

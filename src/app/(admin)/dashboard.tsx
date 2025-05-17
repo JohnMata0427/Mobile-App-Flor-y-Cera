@@ -1,5 +1,7 @@
 import {
-  DARK_GRAY_COLOR,
+  GRAY_COLOR,
+  GRAY_COLOR_DARK,
+  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
@@ -37,12 +39,15 @@ export default function AdminDashboard() {
             backgroundColor: 'white',
             borderRadius: 15,
             paddingVertical: 20,
-            paddingHorizontal: 40,
+            paddingHorizontal: 30,
             flexDirection: 'row',
             justifyContent: 'space-between',
+            borderColor: GRAY_COLOR_LIGHT,
+            borderBottomWidth: 2,
+            borderRightWidth: 2,
           }}
         >
-          <View style={{ rowGap: 5 }}>
+          <View style={{ rowGap: 3 }}>
             <Text style={{ fontFamily: BODY_FONT }}>Buenas tardes</Text>
             <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 18 }}>
               Estefanía Sanchez
@@ -55,7 +60,11 @@ export default function AdminDashboard() {
               alignItems: 'center',
             }}
           >
-            <MaterialCommunityIcons name="bell" size={24} />
+            <MaterialCommunityIcons
+              name="bell"
+              size={24}
+              color={GRAY_COLOR_DARK}
+            />
             <Image
               source={require('@/assets/profile.jpg')}
               style={{
@@ -63,7 +72,7 @@ export default function AdminDashboard() {
                 height: 40,
                 borderRadius: 50,
                 borderWidth: 2,
-                borderColor: DARK_GRAY_COLOR,
+                borderColor: GRAY_COLOR,
               }}
             />
           </View>
@@ -78,11 +87,14 @@ export default function AdminDashboard() {
               alignItems: 'center',
               justifyContent: 'space-between',
               rowGap: 10,
+              borderColor: GRAY_COLOR_LIGHT,
+              borderBottomWidth: 2,
+              borderRightWidth: 2,
             }}
           >
             <Text
               style={{
-                fontFamily: BODY_FONT,
+                fontFamily: BOLD_BODY_FONT,
                 fontSize: 10,
                 textAlign: 'center',
               }}
@@ -111,11 +123,14 @@ export default function AdminDashboard() {
               alignItems: 'center',
               justifyContent: 'space-between',
               rowGap: 10,
+              borderColor: GRAY_COLOR_LIGHT,
+              borderBottomWidth: 2,
+              borderRightWidth: 2,
             }}
           >
             <Text
               style={{
-                fontFamily: BODY_FONT,
+                fontFamily: BOLD_BODY_FONT,
                 fontSize: 10,
                 textAlign: 'center',
               }}
@@ -144,11 +159,14 @@ export default function AdminDashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               rowGap: 10,
+              borderColor: GRAY_COLOR_LIGHT,
+              borderBottomWidth: 2,
+              borderRightWidth: 2,
             }}
           >
             <Text
               style={{
-                fontFamily: BODY_FONT,
+                fontFamily: BOLD_BODY_FONT,
                 fontSize: 10,
                 textAlign: 'center',
               }}

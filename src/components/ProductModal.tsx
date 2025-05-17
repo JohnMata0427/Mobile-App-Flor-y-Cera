@@ -120,7 +120,7 @@ export function ProductModal({
   useEffect(() => {
     if (selectedCategory === '680fd248f613dc80267ba5d7') {
       setTypeValues(['Seca', 'Húmeda', 'Mixta']);
-    } else if (selectedCategory === '68128844e4d236cfe51a6fd6') {
+    } else if (selectedCategory === '6823a6c096655bcbe4971062') {
       setTypeValues(['Aroma', 'Decorativa']);
     }
   }, [selectedCategory]);
@@ -145,7 +145,7 @@ export function ProductModal({
       setValue('nombre', nombre);
       setValue('descripcion', descripcion);
       setValue('beneficios', beneficios);
-      setValue('id_categoria', id_categoria?._id);
+      setValue('id_categoria', id_categoria._id);
       setValue('precio', precio.toString());
       setValue('stock', stock.toString());
       setValue('descuento', descuento.toString());
@@ -694,7 +694,7 @@ export function ProductModal({
                           fontSize: 12,
                         }}
                         label="Velas artesanales"
-                        value="68128844e4d236cfe51a6fd6"
+                        value="6823a6c096655bcbe4971062"
                       />
                     </Picker>
                   </View>
@@ -840,42 +840,44 @@ export function ProductModal({
               justifyContent: 'center',
             }}
           >
-            <Pressable
-              style={{
-                backgroundColor: PRIMARY_COLOR,
-                padding: 10,
-                borderRadius: 10,
-                flexDirection: 'row',
-                columnGap: 5,
-                width: '40%',
-                justifyContent: 'center',
-                borderColor: PRIMARY_COLOR_DARK,
-                borderBottomWidth: 2,
-                borderRightWidth: 2,
-              }}
-              onPress={handleSubmit(onSubmit)}
-            >
-              {isLoading ? (
-                <ActivityIndicator size={14} color="white" />
-              ) : (
-                <>
-                  <Text
-                    style={{
-                      fontFamily: BOLD_BODY_FONT,
-                      color: 'white',
-                      fontSize: 12,
-                    }}
-                  >
-                    {action}
-                  </Text>
-                  <MaterialCommunityIcons
-                    name="content-save"
-                    size={14}
-                    color="white"
-                  />
-                </>
-              )}
-            </Pressable>
+            {action !== 'Visualizar' && (
+              <Pressable
+                style={{
+                  backgroundColor: PRIMARY_COLOR,
+                  padding: 10,
+                  borderRadius: 10,
+                  flexDirection: 'row',
+                  columnGap: 5,
+                  width: '40%',
+                  justifyContent: 'center',
+                  borderColor: PRIMARY_COLOR_DARK,
+                  borderBottomWidth: 2,
+                  borderRightWidth: 2,
+                }}
+                onPress={handleSubmit(onSubmit)}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size={14} color="white" />
+                ) : (
+                  <>
+                    <Text
+                      style={{
+                        fontFamily: BOLD_BODY_FONT,
+                        color: 'white',
+                        fontSize: 12,
+                      }}
+                    >
+                      {action}
+                    </Text>
+                    <MaterialCommunityIcons
+                      name="content-save"
+                      size={14}
+                      color="white"
+                    />
+                  </>
+                )}
+              </Pressable>
+            )}
             <Pressable
               style={{
                 padding: 10,

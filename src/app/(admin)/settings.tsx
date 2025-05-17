@@ -1,23 +1,11 @@
 import { HEADING_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Button, Image, ScrollView, Text, TextInput, View } from 'react-native';
 
 export default function AdminSettings() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const { logout, login } = useAuthStore();
-
-  const refreshTokenRequest = async () => {
-    setIsLoading(true);
-    const { msg } = await login({
-      email: 'estefi2000ms2@gmail.com',
-      password: 'NuevaPass123$',
-    });
-    console.log(msg);
-    setIsLoading(false);
-  };
+  const { logout } = useAuthStore();
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -49,10 +37,6 @@ export default function AdminSettings() {
             logout();
             router.push('/(auth)/login');
           }}
-        />
-        <Button
-          title={isLoading ? 'Cargando...' : 'Refrescar token'}
-          onPress={refreshTokenRequest}
         />
       </View>
     </ScrollView>

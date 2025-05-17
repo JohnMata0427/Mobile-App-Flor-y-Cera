@@ -1,6 +1,7 @@
 import { ProductModal } from '@/components/ProductModal';
 import {
-  DARK_GRAY_COLOR,
+  GRAY_COLOR_DARK,
+  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR,
@@ -146,20 +147,26 @@ function Inventory() {
                 width: '48.45%',
                 paddingHorizontal: 12,
                 justifyContent: 'space-between',
+                borderColor: GRAY_COLOR_LIGHT,
+                borderBottomWidth: 2,
+                borderRightWidth: 2,
               }}
             >
               <Image
                 source={{ uri: item.imagen }}
+                resizeMode="cover"
                 style={{
                   width: '100%',
                   height: 150,
-                  padding: 10,
                 }}
               />
               <View
                 style={{
                   rowGap: 3,
-                  paddingVertical: 10,
+                  paddingTop: 5,
+                  paddingBottom: 10,
+                  borderTopColor: GRAY_COLOR_LIGHT,
+                  borderTopWidth: 1,
                 }}
               >
                 <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 15 }}>
@@ -343,7 +350,7 @@ function Inventory() {
                 <Pressable
                   onPress={() => setPage(prev => prev - 1)}
                   style={{
-                    backgroundColor: DARK_GRAY_COLOR,
+                    backgroundColor: GRAY_COLOR_DARK,
                     borderRadius: 5,
                     padding: 2,
                     borderBottomWidth: 2,
@@ -362,7 +369,7 @@ function Inventory() {
                 <Pressable
                   onPress={() => setPage(prev => prev - 1)}
                   style={{
-                    backgroundColor: DARK_GRAY_COLOR,
+                    backgroundColor: GRAY_COLOR_DARK,
                     borderRadius: 5,
                     padding: 2,
                     borderBottomWidth: 2,

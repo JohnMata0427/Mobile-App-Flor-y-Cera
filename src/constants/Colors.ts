@@ -10,4 +10,14 @@ export const TERTIARY_COLOR = '#C35FDB';
 export const TERTIARY_COLOR_DARK = '#8C2E9D';
 export const TERTIARY_COLOR_LIGHT = '#E5B5F2';
 
-export const DARK_GRAY_COLOR = '#3C3C3B';
+export const GREEN_COLOR = '#1EC295';
+export const GREEN_COLOR_DARK = '#128C70';
+export const GREEN_COLOR_LIGHT = '#CBF9E1';
+
+export const RED_COLOR = '#ED8363';
+export const RED_COLOR_DARK = '#B85F52';
+export const RED_COLOR_LIGHT = '#FCDBDB';
+
+export const GRAY_COLOR = '#898887';
+export const GRAY_COLOR_DARK = '#3C3C3B';
+export const GRAY_COLOR_LIGHT = '#E0E0E0';
