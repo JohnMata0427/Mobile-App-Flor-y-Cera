@@ -1,18 +1,16 @@
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { useAuthStore } from '@/store/useAuthStore';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { getItemAsync } from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { isAuthenticated, checkAuth } = useAuthStore();
 
   useEffect(() => {
-    (async () => {
-      setLoggedIn(!!(await getItemAsync('token')));
-    })();
+    checkAuth();
   }, []);
 
   const [loaded] = useFonts({
@@ -25,14 +23,19 @@ export default function RootLayout() {
 
   return (
     <>
-      <StatusBar hidden style="auto" />
+      <StatusBar style="dark" />
 
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-        <Stack.Screen name="(admin)" />
-        <Stack.Screen name="(auth)" />
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(admin)" />
+        </Stack.Protected>
 
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" options={{ title: 'Not Found' }} />
+        <Stack.Screen name="+not-found" />
       </Stack>
     </>
   );

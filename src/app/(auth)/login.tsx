@@ -1,11 +1,10 @@
-import { Field } from '@/components/Field';
-import { EXPO_PUBLIC_BACKEND_URL } from '@/constants/BackendUrl';
 import { PRIMARY_COLOR, SECONDARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link, useRouter } from 'expo-router';
-import { setItemAsync } from 'expo-secure-store';
 import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
   Image,
@@ -13,6 +12,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,57 +20,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Login() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
-  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>(
-    form,
-  );
 
-  const handleChange = (name: string, value: string) => {
-    setForm(prev => ({ ...prev, [name]: value }));
-    if (fieldErrors[name]) {
-      setFieldErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
+  const { login } = useAuthStore();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const handleSubmit = async () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+
+  const onSubmit = async (form: any) => {
     setIsLoading(true);
-    const response = await fetch(
-      `${EXPO_PUBLIC_BACKEND_URL}/login`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      },
-    );
 
-    const data = await response.json();
+    const { msg, success } = await login(form);
 
-    if (response.ok) {
-      setItemAsync('token', data.token);
-      router.navigate('/(admin)/dashboard');
-      setForm({
-        email: '',
-        password: '',
-      });
-    } else {
-      const { details = [] } = data;
-
-      const errors: { [key: string]: string } = {};
-      details.forEach(({ path, msg }: { path: string; msg: string }) => {
-        errors[path] = msg;
-      });
-      setFieldErrors(errors);
-
-      setErrorMessage(data.msg ?? 'Ha ocurrido un error inesperado');
-    }
+    setMessage(msg);
     setIsLoading(false);
+
+    if (success) router.push('/(admin)/dashboard');
   };
 
   return (
@@ -117,60 +87,166 @@ export default function Login() {
               Ingresa tu correo y contraseña para acceder a tu cuenta.
             </Text>
           </View>
-          <View style={{ rowGap: 10 }}>
-            <Field
-              label="Correo electrónico:"
-              placeholder="correo@ejemplo.com"
-              onChangeText={text => handleChange('email', text)}
-              errorField={fieldErrors.email}
-              keyboardType="email-address"
-              textContentType="emailAddress"
-            >
-              <MaterialCommunityIcons
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  zIndex: 1,
-                }}
-                name="account-outline"
-                color={fieldErrors.email ? 'red' : 'black'}
-                size={24}
-              />
-            </Field>
+          <View style={{ rowGap: 5 }}>
+            <Controller
+              control={control}
+              name="email"
+              rules={{
+                required: 'El correo electrónico es requerido',
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: 'El formato del correo electrónico no es válido',
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const { message = '' } = errors.email || {};
+                const color = message ? 'red' : 'black';
 
-            <Field
-              label="Contraseña:"
-              placeholder="••••••••••"
-              onChangeText={text => handleChange('password', text)}
-              errorField={fieldErrors.password}
-              secureTextEntry={true}
-              keyboardType="visible-password"
-              textContentType="password"
-            >
-              <MaterialCommunityIcons
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  zIndex: 1,
-                }}
-                name="lock-outline"
-                color={fieldErrors.password ? 'red' : 'black'}
-                size={24}
-              />
-              <MaterialCommunityIcons
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  zIndex: 1,
-                }}
-                name="eye-outline"
-                color={fieldErrors.password ? 'red' : 'black'}
-                size={24}
-              />
-            </Field>
+                return (
+                  <View style={{ rowGap: 5 }}>
+                    <Text
+                      style={{
+                        fontFamily: BOLD_BODY_FONT,
+                        color,
+                      }}
+                    >
+                      Correo electrónico:
+                    </Text>
+                    <View style={{ position: 'relative' }}>
+                      <TextInput
+                        style={{
+                          paddingHorizontal: 40,
+                          paddingVertical: 10,
+                          borderRadius: 10,
+                          borderWidth: 1,
+                          color,
+                          borderColor: color,
+                          fontFamily: BODY_FONT,
+                        }}
+                        placeholder="correo@ejemplo.com"
+                        placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        textContentType="emailAddress"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        selectionColor={PRIMARY_COLOR}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: BODY_FONT,
+                          marginTop: 3,
+                          fontSize: 12,
+                          color,
+                        }}
+                      >
+                        {message as string}
+                      </Text>
+                      <MaterialCommunityIcons
+                        style={{
+                          position: 'absolute',
+                          top: 8,
+                          left: 8,
+                          zIndex: 1,
+                        }}
+                        name="email-outline"
+                        color={color}
+                        size={24}
+                      />
+                    </View>
+                  </View>
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name="password"
+              rules={{
+                required: 'La contraseña es requerida',
+              }}
+              render={({ field: { onChange, onBlur, value } }) => {
+                const { message = '' } = errors.password || {};
+                const color = message ? 'red' : 'black';
+
+                return (
+                  <View style={{ rowGap: 5 }}>
+                    <Text
+                      style={{
+                        fontFamily: BOLD_BODY_FONT,
+                        color,
+                      }}
+                    >
+                      Contraseña:
+                    </Text>
+                    <View style={{ position: 'relative' }}>
+                      <TextInput
+                        style={{
+                          paddingHorizontal: 40,
+                          paddingVertical: 10,
+                          borderRadius: 10,
+                          borderWidth: 1,
+                          color,
+                          borderColor: color,
+                          fontFamily: BODY_FONT,
+                        }}
+                        placeholder="••••••••••"
+                        placeholderTextColor={message ? 'red' : '#AFAFAF'}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        textContentType="password"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        selectionColor={PRIMARY_COLOR}
+                        secureTextEntry={!showPassword}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: BODY_FONT,
+                          marginTop: 3,
+                          fontSize: 12,
+                          color,
+                        }}
+                      >
+                        {message as string}
+                      </Text>
+                      <MaterialCommunityIcons
+                        style={{
+                          position: 'absolute',
+                          top: 8,
+                          left: 8,
+                          zIndex: 1,
+                        }}
+                        name="lock-outline"
+                        color={color}
+                        size={24}
+                      />
+                      <Pressable
+                        onPress={() => setShowPassword(!showPassword)}
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          zIndex: 1,
+                          padding: 7,
+                        }}
+                      >
+                        <MaterialCommunityIcons
+                          name={
+                            showPassword ? 'eye-outline' : 'eye-off-outline'
+                          }
+                          color={color}
+                          size={24}
+                        />
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              }}
+            />
+
             <Link href="/login">
               <Text
                 style={{
@@ -184,7 +260,7 @@ export default function Login() {
               </Text>
             </Link>
             <Pressable
-              onPress={handleSubmit}
+              onPress={handleSubmit(onSubmit)}
               style={{
                 backgroundColor: PRIMARY_COLOR,
                 height: 40,
@@ -225,7 +301,7 @@ export default function Login() {
                 fontSize: 12,
               }}
             >
-              {errorMessage}
+              {message}
             </Text>
           </View>
         </View>
