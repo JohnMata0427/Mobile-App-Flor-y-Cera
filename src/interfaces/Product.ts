@@ -9,7 +9,7 @@ export interface Product {
   createdAt: Date;
   descripcion: string;
   descuento: string;
-  id_categoria: IDCategoria;
+  id_categoria: IDCategoria | string;
   imagen: string;
   imagen_id: string;
   ingredientes: string[] | Ingredient[];

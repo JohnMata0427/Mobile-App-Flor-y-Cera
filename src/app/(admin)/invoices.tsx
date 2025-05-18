@@ -1,3 +1,5 @@
+import { AdminHeader } from '@/components/AdminHeader';
+import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
@@ -9,18 +11,17 @@ import {
   RED_COLOR,
   RED_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { InvoicesContext, InvoicesProvider } from '@/contexts/InvoicesContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { use } from 'react';
 import {
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
@@ -34,11 +35,12 @@ function Invoices() {
     setPage,
     setRefreshing,
     getInvoices,
+    updateInvoiceStatus,
   } = use(InvoicesContext);
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerStyle={styles.scrollViewContent}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -50,31 +52,12 @@ function Invoices() {
         />
       }
     >
-      <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
-        <View
-          style={{ flexDirection: 'row', columnGap: 20, alignItems: 'center' }}
-        >
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={require('@/assets/images/icon.png')}
-          />
-          <Text style={{ fontFamily: HEADING_FONT, fontSize: 18 }}>
-            Flor & Cera
-          </Text>
-        </View>
-        <TextInput
-          style={{
-            borderRadius: 25,
-            backgroundColor: 'white',
-            paddingHorizontal: 20,
-            fontSize: 12,
-          }}
-          placeholder="Buscar por nombre..."
-        />
+      <View style={styles.container}>
+        <AdminHeader />
         <FlatList
           data={invoices}
           scrollEnabled={false}
-          contentContainerStyle={{ rowGap: 10 }}
+          contentContainerStyle={styles.listContent}
           keyExtractor={({ _id }) => _id}
           renderItem={({
             item: {
@@ -89,138 +72,82 @@ function Invoices() {
             const isPending = estado === 'pendiente';
 
             return (
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 10,
-                  padding: 12,
-                  rowGap: 5,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  borderColor: GRAY_COLOR_LIGHT,
-                  borderBottomWidth: 2,
-                  borderRightWidth: 2,
-                }}
-              >
-                <View style={{ rowGap: 2 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT }}>
+              <View style={styles.invoiceCard}>
+                <View style={styles.invoiceInfo}>
+                  <Text style={styles.customerName}>
                     {nombre} {apellido}
                   </Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      columnGap: 3,
-                      alignItems: 'center',
-                    }}
-                  >
+                  <View style={styles.detailRow}>
                     <MaterialCommunityIcons
                       name="email-check-outline"
                       size={14}
                       color={GRAY_COLOR_DARK}
                     />
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                      }}
-                    >
-                      {email}
-                    </Text>
+                    <Text style={styles.detailText}>{email}</Text>
                   </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      columnGap: 3,
-                      alignItems: 'center',
-                    }}
-                  >
+                  <View style={styles.detailRow}>
                     <MaterialCommunityIcons
                       name="calendar"
                       size={14}
                       color={GRAY_COLOR_DARK}
                     />
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                      }}
-                    >
+                    <Text style={styles.detailText}>
                       {new Intl.DateTimeFormat('es-ES', {
                         dateStyle: 'long',
                       }).format(new Date(fecha_venta))}
                     </Text>
                   </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      columnGap: 3,
-                      alignItems: 'center',
-                    }}
-                  >
+                  <View style={styles.detailRow}>
                     <MaterialCommunityIcons
                       name="format-list-bulleted"
                       size={14}
                       color={GRAY_COLOR_DARK}
                     />
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                      }}
-                    >
-                      {length} producto
-                      {length > 1 ? 's' : ''}
+                    <Text style={styles.detailText}>
+                      {length + (length > 1 ? ' productos' : ' producto')}
                     </Text>
                   </View>
                   <View
-                    style={{
-                      flexDirection: 'row',
-                      columnGap: 3,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: GRAY_COLOR_LIGHT,
-                      padding: 2,
-                      borderRadius: 5,
-                    }}
+                    style={[
+                      styles.detailRow,
+                      styles.statusBadge,
+                      {
+                        backgroundColor: isPending
+                          ? GRAY_COLOR_LIGHT
+                          : GREEN_COLOR_LIGHT,
+                      },
+                    ]}
                   >
                     <MaterialCommunityIcons
                       name="file-document-outline"
                       size={14}
-                      color={isPending ? GRAY_COLOR_DARK : GREEN_COLOR_LIGHT}
+                      color={isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK}
                     />
                     <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: isPending ? GRAY_COLOR_DARK : GREEN_COLOR_LIGHT,
-                      }}
+                      style={[
+                        styles.detailText,
+                        {
+                          color: isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK,
+                          textTransform: 'capitalize',
+                        },
+                      ]}
                     >
-                      {estado[0].toUpperCase() + estado.slice(1)}
+                      {estado}
                     </Text>
                   </View>
                 </View>
-                <View style={{ rowGap: 5 }}>
-                  <View style={{ alignItems: 'center' }}>
+                <View style={styles.actionContainer}>
+                  <View style={styles.amountContainer}>
                     <MaterialCommunityIcons
                       name="cash-multiple"
                       size={26}
-                      color={GRAY_COLOR_DARK}
+                      color={GREEN_COLOR_DARK}
                     />
-                    <Text style={{ fontFamily: BOLD_BODY_FONT }}>
-                      ${total} USD
-                    </Text>
+                    <Text style={styles.amountText}>${total} USD</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', columnGap: 5 }}>
+                  <View style={styles.actionButtons}>
                     <Pressable
-                      style={{
-                        backgroundColor: PRIMARY_COLOR,
-                        borderRadius: 5,
-                        padding: 2,
-                        borderBottomWidth: 2,
-                        borderRightWidth: 2,
-                        borderColor: PRIMARY_COLOR_DARK,
-                      }}
+                      style={[styles.actionButton, styles.infoButton]}
                       onPress={() => {}}
                     >
                       <MaterialCommunityIcons
@@ -230,20 +157,24 @@ function Invoices() {
                       />
                     </Pressable>
                     <Pressable
-                      style={{
-                        backgroundColor: isPending ? GREEN_COLOR : RED_COLOR,
-                        borderRadius: 5,
-                        padding: 2,
-                        borderBottomWidth: 2,
-                        borderRightWidth: 2,
-                        borderColor: isPending
-                          ? GREEN_COLOR_DARK
-                          : RED_COLOR_DARK,
+                      style={[
+                        styles.actionButton,
+                        {
+                          backgroundColor: isPending ? GREEN_COLOR : RED_COLOR,
+                          borderColor: isPending
+                            ? GREEN_COLOR_DARK
+                            : RED_COLOR_DARK,
+                        },
+                      ]}
+                      onPress={() => {
+                        updateInvoiceStatus(
+                          _id,
+                          isPending ? 'finalizado' : 'pendiente',
+                        );
                       }}
-                      onPress={() => {}}
                     >
                       <MaterialCommunityIcons
-                        name={isPending ? 'truck-check' : 'account-lock-open'}
+                        name={isPending ? 'truck-check' : 'truck-fast'}
                         size={20}
                         color="white"
                       />
@@ -255,79 +186,23 @@ function Invoices() {
           }}
           ListEmptyComponent={
             loading ? (
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ fontFamily: BODY_FONT }}>Cargando datos...</Text>
+              <View style={styles.loadingContainer}>
+                <Text style={styles.emptyText}>Cargando datos...</Text>
               </View>
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  rowGap: 5,
-                }}
-              >
+              <View style={styles.emptyContainer}>
                 <MaterialCommunityIcons
                   name="file-document-outline"
                   size={30}
                 />
-                <Text style={{ fontFamily: BODY_FONT }}>
+                <Text style={styles.emptyText}>
                   No hay facturas registradas
                 </Text>
               </View>
             )
           }
           ListFooterComponent={
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-              }}
-            >
-              {page !== 1 && (
-                <Pressable
-                  onPress={() => setPage(prev => prev - 1)}
-                  style={{
-                    backgroundColor: GRAY_COLOR_DARK,
-                    borderRadius: 5,
-                    padding: 2,
-                    borderBottomWidth: 2,
-                    borderRightWidth: 2,
-                    borderColor: 'black',
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="chevron-left"
-                    size={20}
-                    color="white"
-                  />
-                </Pressable>
-              )}
-              {page < totalPages && (
-                <Pressable
-                  onPress={() => setPage(prev => prev - 1)}
-                  style={{
-                    backgroundColor: GRAY_COLOR_DARK,
-                    borderRadius: 5,
-                    padding: 2,
-                    borderBottomWidth: 2,
-                    borderRightWidth: 2,
-                    borderColor: 'black',
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={20}
-                    color="white"
-                  />
-                </Pressable>
-              )}
-            </View>
+            <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />
       </View>
@@ -342,3 +217,99 @@ export default function AdminInvoices() {
     </InvoicesProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  container: {
+    paddingHorizontal: 25,
+    rowGap: 10,
+  },
+  listContent: {
+    rowGap: 10,
+  },
+  invoiceCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    rowGap: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderColor: GRAY_COLOR_LIGHT,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  invoiceInfo: {
+    rowGap: 2,
+  },
+  customerName: {
+    fontFamily: BOLD_BODY_FONT,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    columnGap: 3,
+    alignItems: 'center',
+  },
+  detailText: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    columnGap: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: GRAY_COLOR_LIGHT,
+    padding: 2,
+    borderRadius: 5,
+  },
+  actionContainer: {
+    rowGap: 5,
+    paddingLeft: 15,
+    borderLeftWidth: 1,
+    borderColor: GRAY_COLOR_LIGHT,
+    justifyContent: 'center',
+  },
+  amountContainer: {
+    alignItems: 'center',
+  },
+  amountText: {
+    fontFamily: BOLD_BODY_FONT,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    columnGap: 5,
+  },
+  actionButton: {
+    borderRadius: 5,
+    padding: 2,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  infoButton: {
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR_DARK,
+  },
+  toggleButtonPending: {
+    backgroundColor: GREEN_COLOR,
+    borderColor: GREEN_COLOR_DARK,
+  },
+  toggleButtonCompleted: {
+    backgroundColor: RED_COLOR,
+    borderColor: RED_COLOR_DARK,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    rowGap: 5,
+  },
+  emptyText: {
+    fontFamily: BODY_FONT,
+  },
+});

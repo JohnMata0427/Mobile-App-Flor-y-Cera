@@ -1,3 +1,4 @@
+import { AdminHeader } from '@/components/AdminHeader';
 import {
   GRAY_COLOR,
   GRAY_COLOR_DARK,
@@ -6,60 +7,21 @@ import {
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Image, ScrollView, Text, TextInput, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function AdminDashboard() {
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
-        <View
-          style={{ flexDirection: 'row', columnGap: 20, alignItems: 'center' }}
-        >
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={require('@/assets/images/icon.png')}
-          />
-          <Text style={{ fontFamily: HEADING_FONT, fontSize: 18 }}>
-            Flor & Cera
-          </Text>
-        </View>
-        <TextInput
-          style={{
-            borderRadius: 25,
-            backgroundColor: 'white',
-            paddingHorizontal: 20,
-            fontSize: 12,
-          }}
-          placeholder="Buscar..."
-        />
-        <View
-          style={{
-            backgroundColor: 'white',
-            borderRadius: 15,
-            paddingVertical: 20,
-            paddingHorizontal: 30,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            borderColor: GRAY_COLOR_LIGHT,
-            borderBottomWidth: 2,
-            borderRightWidth: 2,
-          }}
-        >
-          <View style={{ rowGap: 3 }}>
-            <Text style={{ fontFamily: BODY_FONT }}>Buenas tardes</Text>
-            <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 18 }}>
-              Estefanía Sanchez
-            </Text>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <View style={styles.container}>
+        <AdminHeader />
+        <View style={styles.greetingCard}>
+          <View style={styles.greetingTextContainer}>
+            <Text style={styles.greetingText}>Buenas tardes</Text>
+            <Text style={styles.greetingName}>Estefanía Sanchez</Text>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              columnGap: 10,
-              alignItems: 'center',
-            }}
-          >
+          <View style={styles.userInfoRow}>
             <MaterialCommunityIcons
               name="bell"
               size={24}
@@ -67,127 +29,137 @@ export default function AdminDashboard() {
             />
             <Image
               source={require('@/assets/profile.jpg')}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 50,
-                borderWidth: 2,
-                borderColor: GRAY_COLOR,
-              }}
+              style={styles.profileImage}
             />
           </View>
         </View>
-        <View style={{ columnGap: 5, flexDirection: 'row' }}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 15,
-              flex: 1,
-              padding: 10,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              rowGap: 10,
-              borderColor: GRAY_COLOR_LIGHT,
-              borderBottomWidth: 2,
-              borderRightWidth: 2,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: BOLD_BODY_FONT,
-                fontSize: 10,
-                textAlign: 'center',
-              }}
-            >
-              Usuarios registrados
-            </Text>
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statTitle}>Usuarios registrados</Text>
             <MaterialCommunityIcons
               name="account-multiple-plus"
               size={24}
               color={PRIMARY_COLOR}
-              style={{
-                padding: 5,
-                borderColor: PRIMARY_COLOR,
-                borderWidth: 2,
-                borderRadius: 50,
-              }}
+              style={[styles.statIcon, styles.usersIcon]}
             />
-            <Text style={{ fontFamily: BODY_FONT }}>4 usuarios</Text>
+            <Text style={styles.statValue}>4 usuarios</Text>
           </View>
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 15,
-              flex: 1,
-              padding: 10,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              rowGap: 10,
-              borderColor: GRAY_COLOR_LIGHT,
-              borderBottomWidth: 2,
-              borderRightWidth: 2,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: BOLD_BODY_FONT,
-                fontSize: 10,
-                textAlign: 'center',
-              }}
-            >
-              Productos vendidos
-            </Text>
+          <View style={styles.statCard}>
+            <Text style={styles.statTitle}>Productos vendidos</Text>
             <MaterialCommunityIcons
               name="briefcase-check"
               size={24}
               color={SECONDARY_COLOR}
-              style={{
-                padding: 5,
-                borderColor: SECONDARY_COLOR,
-                borderWidth: 2,
-                borderRadius: 50,
-              }}
+              style={[styles.statIcon, styles.productsSoldIcon]}
             />
-            <Text style={{ fontFamily: BODY_FONT }}>1 ventas</Text>
+            <Text style={styles.statValue}>1 ventas</Text>
           </View>
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 15,
-              flex: 1,
-              padding: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              rowGap: 10,
-              borderColor: GRAY_COLOR_LIGHT,
-              borderBottomWidth: 2,
-              borderRightWidth: 2,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: BOLD_BODY_FONT,
-                fontSize: 10,
-                textAlign: 'center',
-              }}
-            >
-              Productos activos
-            </Text>
+          <View style={styles.statCard}>
+            <Text style={styles.statTitle}>Productos activos</Text>
             <MaterialCommunityIcons
               name="candle"
               size={24}
               color={TERTIARY_COLOR}
-              style={{
-                padding: 5,
-                borderColor: TERTIARY_COLOR,
-                borderWidth: 2,
-                borderRadius: 50,
-              }}
+              style={[styles.statIcon, styles.activeProductsIcon]}
             />
-            <Text style={{ fontFamily: BODY_FONT }}>3 productos</Text>
+            <Text style={styles.statValue}>3 productos</Text>
           </View>
         </View>
       </View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  container: {
+    paddingHorizontal: 25,
+    rowGap: 10,
+  },
+  greetingCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderColor: GRAY_COLOR_LIGHT,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  greetingTextContainer: {
+    rowGap: 3,
+  },
+  greetingText: {
+    fontFamily: BODY_FONT,
+  },
+  greetingName: {
+    fontFamily: BOLD_BODY_FONT,
+    fontSize: 18,
+  },
+  userInfoRow: {
+    flexDirection: 'row',
+    columnGap: 10,
+    alignItems: 'center',
+  },
+  notificationIcon: {
+    marginRight: 5,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: GRAY_COLOR,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    columnGap: 5,
+  },
+  statCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    rowGap: 10,
+    borderColor: GRAY_COLOR_LIGHT,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  statTitle: {
+    fontFamily: BOLD_BODY_FONT,
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  statIcon: {
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 50,
+  },
+  usersIcon: {
+    borderColor: PRIMARY_COLOR,
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 50,
+  },
+  productsSoldIcon: {
+    borderColor: SECONDARY_COLOR,
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 50,
+  },
+  activeProductsIcon: {
+    borderColor: TERTIARY_COLOR,
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 50,
+  },
+  statValue: {
+    fontFamily: BODY_FONT,
+  },
+});

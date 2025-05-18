@@ -78,32 +78,32 @@ export const PromotionsProvider = ({
 
   const createPromotion = useCallback(async (product: FormData) => {
     try {
-      const { producto, msg } = await createPromotionRequest(product, token);
+      const { promocion, msg } = await createPromotionRequest(product, token);
 
-      if (producto?._id && page === totalPages) {
-        setPromotions(prev => [...prev, producto]);
+      if (promocion?._id && page === totalPages) {
+        setPromotions(prev => [...prev, promocion]);
       }
 
       return { msg };
     } catch (error) {
       console.error('Error creating product:', error);
-      return { msg: 'Ocurrio un error al crear el producto' };
+      return { msg: 'Ocurrio un error al crear el promocion' };
     }
   }, []);
 
   const updatePromotion = useCallback(async (id: string, product: FormData) => {
     try {
-      const { producto, msg } = await updatePromotionRequest(
+      const { promocion, msg } = await updatePromotionRequest(
         id,
         product,
         token,
       );
-      producto?._id &&
-        setPromotions(prev => prev.map(p => (p._id === id ? producto : p)));
+      promocion?._id &&
+        setPromotions(prev => prev.map(p => (p._id === id ? promocion : p)));
       return { msg };
     } catch (error) {
       console.error('Error updating product:', error);
-      return { msg: 'Ocurrio un error al actualizar el producto' };
+      return { msg: 'Ocurrio un error al actualizar el promocion' };
     }
   }, []);
 
@@ -114,7 +114,7 @@ export const PromotionsProvider = ({
       return { msg: 'Promotiono eliminado exitosamente' };
     } catch (error) {
       console.error('Error deleting product:', error);
-      return { msg: 'Ocurrio un error al eliminar el producto' };
+      return { msg: 'Ocurrio un error al eliminar el promocion' };
     }
   }, []);
 

@@ -25,7 +25,9 @@ export default function RootLayout() {
     <>
       <StatusBar style="dark" />
 
-      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <Stack
+        screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
+      >
         <Stack.Protected guard={!isAuthenticated}>
           <Stack.Screen name="(auth)" />
         </Stack.Protected>

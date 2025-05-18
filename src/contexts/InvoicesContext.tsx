@@ -1,5 +1,8 @@
 import type { Invoice } from '@/interfaces/Invoice';
-import { getInvoicesRequest } from '@/services/InvoiceService';
+import {
+  getInvoicesRequest,
+  updateInvoiceStatusRequest,
+} from '@/services/InvoiceService';
 import { useAuthStore } from '@/store/useAuthStore';
 import {
   createContext,
@@ -8,6 +11,10 @@ import {
   useMemo,
   useState,
 } from 'react';
+
+interface Response {
+  msg: string;
+}
 
 interface InvoicesContextProps {
   invoices: Invoice[];
@@ -18,6 +25,7 @@ interface InvoicesContextProps {
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   getInvoices: () => Promise<void>;
+  updateInvoiceStatus: (id: string, estado: string) => Promise<Response>;
 }
 
 export const InvoicesContext = createContext<InvoicesContextProps>({
@@ -29,6 +37,7 @@ export const InvoicesContext = createContext<InvoicesContextProps>({
   setRefreshing: () => {},
   setPage: () => {},
   getInvoices: async () => {},
+  updateInvoiceStatus: async (_: string, __: string) => ({ msg: '' }),
 });
 
 export const InvoicesProvider = ({
@@ -63,6 +72,23 @@ export const InvoicesProvider = ({
     }
   }, [page, limit]);
 
+  const updateInvoiceStatus = useCallback(
+    async (id: string, estado: string) => {
+      try {
+        const { msg } = await updateInvoiceStatusRequest(id, estado, token);
+        setInvoices(invoices =>
+          invoices.map(i => (i._id === id ? { ...i, estado } : i)),
+        );
+        return { msg };
+      } catch {
+        return {
+          msg: 'Ocurrio un error al actualizar el estado de la factura',
+        };
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     getInvoices();
   }, [page, limit]);
@@ -77,6 +103,7 @@ export const InvoicesProvider = ({
       setRefreshing,
       setPage,
       getInvoices,
+      updateInvoiceStatus,
     }),
     [
       invoices,
@@ -87,6 +114,7 @@ export const InvoicesProvider = ({
       setRefreshing,
       setPage,
       getInvoices,
+      updateInvoiceStatus,
     ],
   );
 

@@ -1,3 +1,5 @@
+import { AdminHeader } from '@/components/AdminHeader';
+import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR,
   GRAY_COLOR_DARK,
@@ -11,7 +13,7 @@ import {
   RED_COLOR_DARK,
   RED_COLOR_LIGHT,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { use } from 'react';
@@ -21,8 +23,8 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
@@ -42,7 +44,7 @@ function Clients() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerStyle={styles.scrollViewContent}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -54,31 +56,12 @@ function Clients() {
         />
       }
     >
-      <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
-        <View
-          style={{ flexDirection: 'row', columnGap: 20, alignItems: 'center' }}
-        >
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={require('@/assets/images/icon.png')}
-          />
-          <Text style={{ fontFamily: HEADING_FONT, fontSize: 18 }}>
-            Flor & Cera
-          </Text>
-        </View>
-        <TextInput
-          style={{
-            borderRadius: 25,
-            backgroundColor: 'white',
-            paddingHorizontal: 20,
-            fontSize: 12,
-          }}
-          placeholder="Buscar cliente por nombre..."
-        />
+      <View style={styles.container}>
+        <AdminHeader />
         <FlatList
           data={clients}
           scrollEnabled={false}
-          contentContainerStyle={{ rowGap: 10 }}
+          contentContainerStyle={styles.listContent}
           keyExtractor={({ _id }) => _id}
           renderItem={({
             item: {
@@ -95,62 +78,35 @@ function Clients() {
           }) => {
             const isActive = estado === 'activo';
             return (
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 10,
-                  padding: 12,
-                  rowGap: 5,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  borderColor: GRAY_COLOR_LIGHT,
-                  borderBottomWidth: 2,
-                  borderRightWidth: 2,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    columnGap: 10,
-                    alignItems: 'center',
-                  }}
-                >
-                  <View style={{ rowGap: 4, justifyContent: 'center' }}>
+              <View style={styles.clientCard}>
+                <View style={styles.clientInfoRow}>
+                  <View style={styles.clientInnerInfo}>
                     <Image
+                      style={styles.clientImage}
                       resizeMode="cover"
                       source={{
                         uri:
                           imagen ??
                           'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg',
                       }}
-                      style={{
-                        width: 45,
-                        height: 45,
-                        borderRadius: 50,
-                        borderWidth: 2,
-                        borderColor: GRAY_COLOR,
-                      }}
                     />
                     <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 10,
-                        textAlign: 'center',
-                        backgroundColor: isActive ? GREEN_COLOR_LIGHT : RED_COLOR_LIGHT,
-                        color: isActive ? GREEN_COLOR_DARK : RED_COLOR_DARK,
-                        borderColor: isActive ? GREEN_COLOR_DARK : RED_COLOR_DARK,
-                        borderWidth: 0.5,
-                        paddingHorizontal: 2,
-                        borderRadius: 20,
-                      }}
+                      style={[
+                        styles.stateBadge,
+                        isActive ? styles.badgeActive : styles.badgeInactive,
+                      ]}
                     >
                       {estado}
                     </Text>
                   </View>
-                  <View style={{ rowGap: 2 }}>
-                    <View style={{ flexDirection: 'row', columnGap: 3, alignItems: 'center' }}>
-                      <Text style={{ fontFamily: BOLD_BODY_FONT }}>
+                  <View style={styles.detailsContainer}>
+                    <View style={styles.detailRow}>
+                      <Text
+                        style={[
+                          styles.detailText,
+                          { fontFamily: BOLD_BODY_FONT },
+                        ]}
+                      >
                         {nombre} {apellido}
                       </Text>
                       <MaterialCommunityIcons
@@ -163,71 +119,42 @@ function Clients() {
                         color={genero === 'Masculino' ? '#007AFF' : '#FF1493'}
                       />
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        columnGap: 2,
-                        alignItems: 'center',
-                      }}
-                    >
+                    <View style={styles.detailRow}>
                       <MaterialCommunityIcons
                         name="email-check-outline"
                         size={14}
                         color={GRAY_COLOR_DARK}
                       />
-                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
-                        {email}
-                      </Text>
+                      <Text style={styles.detailText}>{email}</Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        columnGap: 2,
-                        alignItems: 'center',
-                      }}
-                    >
+                    <View style={styles.detailRow}>
                       <MaterialCommunityIcons
                         name="home-outline"
                         size={14}
                         color={GRAY_COLOR_DARK}
                       />
-                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
+                      <Text style={styles.detailText}>
                         {direccion ?? 'Dirección no registrada'}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        columnGap: 2,
-                        alignItems: 'center',
-                      }}
-                    >
+                    <View style={styles.detailRow}>
                       <MaterialCommunityIcons
                         name="calendar"
                         size={14}
                         color={GRAY_COLOR_DARK}
                       />
-                      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>
+                      <Text style={styles.detailText}>
                         Registrado el{' '}
-                        {new Date(createdAt).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                        })}
+                        {new Intl.DateTimeFormat('es-ES', {
+                          dateStyle: 'long',
+                        }).format(new Date(createdAt))}
                       </Text>
                     </View>
                   </View>
                 </View>
-                <View style={{ rowGap: 5 }}>
+                <View style={styles.actionButtons}>
                   <Pressable
-                    style={{
-                      backgroundColor: PRIMARY_COLOR,
-                      borderRadius: 5,
-                      padding: 2,
-                      borderBottomWidth: 2,
-                      borderRightWidth: 2,
-                      borderColor: PRIMARY_COLOR_DARK,
-                    }}
+                    style={[styles.actionButton, styles.infoButtonClients]}
                     onPress={() => {}}
                   >
                     <MaterialCommunityIcons
@@ -237,14 +164,12 @@ function Clients() {
                     />
                   </Pressable>
                   <Pressable
-                    style={{
-                      backgroundColor: isActive ? RED_COLOR : GREEN_COLOR,
-                      borderRadius: 5,
-                      padding: 2,
-                      borderBottomWidth: 2,
-                      borderRightWidth: 2,
-                      borderColor: isActive ? RED_COLOR_DARK : GREEN_COLOR_DARK,
-                    }}
+                    style={[
+                      styles.actionButton,
+                      isActive
+                        ? styles.toggleButtonActive
+                        : styles.toggleButtonInactive,
+                    ]}
                     onPress={() => {
                       isActive
                         ? deleteClientAccount(_id)
@@ -263,76 +188,20 @@ function Clients() {
           }}
           ListEmptyComponent={
             loading ? (
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ fontFamily: BODY_FONT }}>Cargando datos...</Text>
+              <View style={styles.loadingContainer}>
+                <Text style={styles.emptyText}>Cargando datos...</Text>
               </View>
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  rowGap: 5,
-                }}
-              >
+              <View style={styles.emptyContainer}>
                 <MaterialCommunityIcons name="account-off" size={30} />
-                <Text style={{ fontFamily: BODY_FONT }}>
+                <Text style={styles.emptyText}>
                   No se encontraron clientes, intente más tarde.
                 </Text>
               </View>
             )
           }
           ListFooterComponent={
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-              }}
-            >
-              {page !== 1 && (
-                <Pressable
-                  onPress={() => setPage(prev => prev - 1)}
-                  style={{
-                    backgroundColor: GRAY_COLOR_DARK,
-                    borderRadius: 5,
-                    padding: 2,
-                    borderBottomWidth: 2,
-                    borderRightWidth: 2,
-                    borderColor: 'black',
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="chevron-left"
-                    size={20}
-                    color="white"
-                  />
-                </Pressable>
-              )}
-              {page < totalPages && (
-                <Pressable
-                  onPress={() => setPage(prev => prev - 1)}
-                  style={{
-                    backgroundColor: GRAY_COLOR_DARK,
-                    borderRadius: 5,
-                    padding: 2,
-                    borderBottomWidth: 2,
-                    borderRightWidth: 2,
-                    borderColor: 'black',
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={20}
-                    color="white"
-                  />
-                </Pressable>
-              )}
-            </View>
+            <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />
       </View>
@@ -347,3 +216,108 @@ export default function AdminClients() {
     </ClientsProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  container: {
+    paddingHorizontal: 25,
+    rowGap: 10,
+  },
+  listContent: {
+    rowGap: 10,
+  },
+  clientCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    rowGap: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderColor: GRAY_COLOR_LIGHT,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  clientInfoRow: {
+    flexDirection: 'row',
+    columnGap: 10,
+    alignItems: 'center',
+  },
+  clientInnerInfo: {
+    rowGap: 4,
+    justifyContent: 'center',
+  },
+  clientImage: {
+    width: 45,
+    height: 45,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: GRAY_COLOR,
+  },
+  stateBadge: {
+    fontFamily: BODY_FONT,
+    fontSize: 10,
+    textAlign: 'center',
+    borderWidth: 0.5,
+    paddingHorizontal: 2,
+    borderRadius: 20,
+  },
+  badgeActive: {
+    backgroundColor: GREEN_COLOR_LIGHT,
+    color: GREEN_COLOR_DARK,
+    borderColor: GREEN_COLOR_DARK,
+  },
+  badgeInactive: {
+    backgroundColor: RED_COLOR_LIGHT,
+    color: RED_COLOR_DARK,
+    borderColor: RED_COLOR_DARK,
+  },
+  detailsContainer: {
+    rowGap: 2,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    columnGap: 2,
+    alignItems: 'center',
+  },
+  detailText: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+  },
+  actionButtons: {
+    rowGap: 5,
+  },
+  actionButton: {
+    borderRadius: 5,
+    padding: 2,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  infoButtonClients: {
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR_DARK,
+  },
+  toggleButtonActive: {
+    backgroundColor: RED_COLOR,
+    borderColor: RED_COLOR_DARK,
+  },
+  toggleButtonInactive: {
+    backgroundColor: GREEN_COLOR,
+    borderColor: GREEN_COLOR_DARK,
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    rowGap: 5,
+  },
+  emptyText: {
+    fontFamily: BODY_FONT,
+  },
+});

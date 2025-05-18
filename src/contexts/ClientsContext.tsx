@@ -53,7 +53,7 @@ export const ClientsProvider = ({
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(5);
   const [refreshing, setRefreshing] = useState(false);
 
   const getClients = useCallback(async () => {

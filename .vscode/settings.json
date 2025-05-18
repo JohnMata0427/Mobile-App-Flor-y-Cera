@@ -1,5 +1,5 @@
 {
-	"symbols.folders.associations": {
-		"store": "folder-target",
-	}
+  "symbols.folders.associations": {
+    "store": "folder-target"
+  }
 }

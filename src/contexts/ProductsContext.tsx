@@ -95,7 +95,6 @@ export const ProductsProvider = ({
         setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
       return { msg };
     } catch (error) {
-      console.error('Error updating product:', error);
       return { msg: 'Ocurrio un error al actualizar el producto' };
     }
   }, []);

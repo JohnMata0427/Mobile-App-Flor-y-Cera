@@ -7,7 +7,8 @@ import {
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { IngredientsContext } from '@/contexts/IngredientsContext';
 import { ProductsContext } from '@/contexts/ProductsContext';
-import type { Product } from '@/interfaces/Product';
+import type { IDCategoria, Product } from '@/interfaces/Product';
+import { toFormData } from '@/utils/toFormData';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
 import { launchImageLibraryAsync } from 'expo-image-picker';
@@ -19,6 +20,7 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -38,11 +40,9 @@ export function ProductModal({
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [typeValues, setTypeValues] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    data?.id_categoria?._id ?? '',
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { ingredients } = use(IngredientsContext);
   const { createProduct, updateProduct } = use(ProductsContext);
   const {
@@ -82,35 +82,15 @@ export function ProductModal({
     }
   };
 
-  const toFormData = (data: any) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach(item => formData.append(key + '[]', item));
-      } else if (key === 'imagen' && selectedImage) {
-        const fileType = selectedImage.split('.').pop();
-        formData.append('imagen', {
-          uri: selectedImage,
-          name: `photo.${fileType}`,
-          type: `image/${fileType}`,
-        } as any);
-      } else {
-        formData.append(key, value as any);
-      }
-    });
-
-    return formData;
-  };
-
   const onSubmit = async (form: any) => {
-    const formData = toFormData(form);
+    const formData = toFormData(form, selectedImage);
 
     setIsLoading(true);
 
     const { msg } =
       action === 'Agregar'
         ? await createProduct(formData)
-        : await updateProduct(data?._id ?? '', formData);
+        : await updateProduct(data!._id, formData);
 
     alert(msg);
     setIsLoading(false);
@@ -119,13 +99,16 @@ export function ProductModal({
 
   useEffect(() => {
     if (selectedCategory === '680fd248f613dc80267ba5d7') {
-      setTypeValues(['Seca', 'Húmeda', 'Mixta']);
+      setTypeValues(['Seca', 'Grasa', 'Mixta']);
     } else if (selectedCategory === '6823a6c096655bcbe4971062') {
-      setTypeValues(['Aroma', 'Decorativa']);
+      setTypeValues(['Decorativa', 'Relajante', 'Aromatica']);
+    } else {
+      setTypeValues([]);
     }
   }, [selectedCategory]);
 
   useEffect(() => {
+    clearErrors();
     if (data) {
       const {
         imagen,
@@ -141,20 +124,25 @@ export function ProductModal({
         tipo,
       } = data;
       setSelectedImage(imagen);
+      setSelectedCategory((id_categoria as IDCategoria)?._id ?? id_categoria);
+
       setValue('imagen', imagen);
       setValue('nombre', nombre);
       setValue('descripcion', descripcion);
       setValue('beneficios', beneficios);
-      setValue('id_categoria', id_categoria._id);
       setValue('precio', precio.toString());
       setValue('stock', stock.toString());
       setValue('descuento', descuento.toString());
-      setValue(
-        'ingredientes',
-        ingredientes.map(({ _id }: any) => _id),
-      );
       setValue('aroma', aroma);
       setValue('tipo', tipo);
+      setValue(
+        'ingredientes',
+        ingredientes.map((item: any) => item?._id ?? item),
+      );
+      setValue(
+        'id_categoria',
+        (id_categoria as IDCategoria)?._id ?? id_categoria,
+      );
     } else {
       setSelectedImage(null);
       reset();
@@ -170,39 +158,12 @@ export function ProductModal({
     >
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ flexGrow: 1 }}
-        style={{
-          margin: 'auto',
-          width: '85%',
-          maxHeight: '90%',
-          borderRadius: 10,
-          backgroundColor: 'white',
-        }}
+        contentContainerStyle={styles.scrollContent}
+        style={styles.modalContainer}
       >
-        <View
-          style={{
-            paddingVertical: 20,
-            paddingHorizontal: 30,
-            rowGap: 5,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: BOLD_BODY_FONT,
-              fontSize: 18,
-              textAlign: 'center',
-            }}
-          >
-            {action} producto
-          </Text>
-          <Text
-            style={{
-              fontFamily: BODY_FONT,
-              fontSize: 12,
-              textAlign: 'center',
-              color: '#AFAFAF',
-            }}
-          >
+        <View style={styles.formContainer}>
+          <Text style={styles.titleText}>{action} producto</Text>
+          <Text style={styles.subtitleText}>
             Todos los campos son obligatorios
           </Text>
           <Controller
@@ -214,71 +175,41 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text
-                    style={{
-                      fontFamily: BOLD_BODY_FONT,
-                      fontSize: 12,
-                    }}
-                  >
-                    Imagen <Text style={{ color: 'red' }}>*</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
+                    Imagen <Text style={styles.requiredMark}>*</Text>
                   </Text>
                   <Pressable
-                    style={{
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      borderColor: color,
-                      borderStyle: 'dashed',
-                      columnGap: 5,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      aspectRatio: 1,
-                      width: '85%',
-                      alignSelf: 'center',
-                      overflow: 'hidden',
-                    }}
+                    style={[
+                      styles.imagePickerContainer,
+                      { borderColor: color },
+                    ]}
                     onPress={pickImage}
                   >
                     {selectedImage ? (
                       <Image
                         source={{ uri: selectedImage }}
-                        style={{ height: '100%', width: '100%' }}
+                        style={styles.imageFull}
                         resizeMode="cover"
                       />
                     ) : (
                       <>
-                        <MaterialCommunityIcons name="camera-iris" size={20} />
-                        <Text
-                          style={{
-                            fontFamily: BOLD_BODY_FONT,
-                            textAlign: 'center',
-                            fontSize: 12,
-                          }}
-                        >
+                        <MaterialCommunityIcons
+                          name="camera-iris"
+                          size={20}
+                          color={color}
+                        />
+                        <Text style={[styles.imageTextBold, { color }]}>
                           Agrega una imagen
                         </Text>
-                        <Text
-                          style={{
-                            fontFamily: BODY_FONT,
-                            fontSize: 12,
-                            textAlign: 'center',
-                            color: '#AFAFAF',
-                          }}
-                        >
+                        <Text style={styles.subtitleText}>
                           Toca para seleccionar una imagen
                         </Text>
                       </>
                     )}
                   </Pressable>
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <Text style={[styles.errorText, styles.textCenter]}>
                       {message as string}
                     </Text>
                   )}
@@ -306,20 +237,16 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                    Nombre <Text style={{ color: 'red' }}>*</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
+                    Nombre <Text style={styles.requiredMark}>*</Text>
                   </Text>
                   <TextInput
-                    style={{
-                      borderRadius: 10,
-                      paddingHorizontal: 10,
-                      fontSize: 12,
-                      borderWidth: 1,
-                      fontFamily: BODY_FONT,
-                      borderColor: color,
-                      color,
-                    }}
+                    style={[
+                      styles.inputContainer,
+                      { borderColor: color, color },
+                    ]}
+                    autoCapitalize="words"
                     placeholder="Ej: Vela de canela"
                     placeholderTextColor={message ? 'red' : '#AFAFAF'}
                     onChangeText={onChange}
@@ -329,22 +256,14 @@ export function ProductModal({
                     selectionColor={PRIMARY_COLOR}
                   />
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
             }}
           />
 
-          <View style={{ flexDirection: 'row', columnGap: 10, width: '100%' }}>
+          <View style={styles.rowInputs}>
             <Controller
               control={control}
               name="aroma"
@@ -364,20 +283,15 @@ export function ProductModal({
                 const color = message ? 'red' : 'black';
 
                 return (
-                  <View style={{ flex: 1, rowGap: 3 }}>
-                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                      Aroma <Text style={{ color: 'red' }}>*</Text>
+                  <View style={[styles.fieldContainer, styles.rowField]}>
+                    <Text style={styles.labelText}>
+                      Aroma <Text style={styles.requiredMark}>*</Text>
                     </Text>
                     <TextInput
-                      style={{
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        fontSize: 12,
-                        borderWidth: 1,
-                        fontFamily: BODY_FONT,
-                        borderColor: color,
-                        color,
-                      }}
+                      style={[
+                        styles.inputContainer,
+                        { borderColor: color, color },
+                      ]}
                       placeholder="Ej: Canela"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -387,14 +301,7 @@ export function ProductModal({
                       selectionColor={PRIMARY_COLOR}
                     />
                     {message && (
-                      <Text
-                        style={{
-                          fontFamily: BODY_FONT,
-                          fontSize: 12,
-                          color: 'red',
-                          textAlign: 'center',
-                        }}
-                      >
+                      <Text style={[styles.errorText, styles.textCenter]}>
                         {message as string}
                       </Text>
                     )}
@@ -425,20 +332,15 @@ export function ProductModal({
                 const color = message ? 'red' : 'black';
 
                 return (
-                  <View style={{ flex: 1, rowGap: 3 }}>
-                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                      Precio <Text style={{ color: 'red' }}>*</Text>
+                  <View style={[styles.fieldContainer, styles.rowField]}>
+                    <Text style={styles.labelText}>
+                      Precio <Text style={styles.requiredMark}>*</Text>
                     </Text>
                     <TextInput
-                      style={{
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        fontSize: 12,
-                        borderWidth: 1,
-                        fontFamily: BODY_FONT,
-                        borderColor: color,
-                        color,
-                      }}
+                      style={[
+                        styles.inputContainer,
+                        { borderColor: color, color },
+                      ]}
                       placeholder="Ej: 9.99"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -449,14 +351,7 @@ export function ProductModal({
                       selectionColor={PRIMARY_COLOR}
                     />
                     {message && (
-                      <Text
-                        style={{
-                          fontFamily: BODY_FONT,
-                          fontSize: 12,
-                          color: 'red',
-                          textAlign: 'center',
-                        }}
-                      >
+                      <Text style={[styles.errorText, styles.textCenter]}>
                         {message as string}
                       </Text>
                     )}
@@ -487,20 +382,15 @@ export function ProductModal({
                 const color = message ? 'red' : 'black';
 
                 return (
-                  <View style={{ flex: 1, rowGap: 3 }}>
-                    <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                      Stock <Text style={{ color: 'red' }}>*</Text>
+                  <View style={[styles.fieldContainer, styles.rowField]}>
+                    <Text style={styles.labelText}>
+                      Stock <Text style={styles.requiredMark}>*</Text>
                     </Text>
                     <TextInput
-                      style={{
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        fontSize: 12,
-                        borderWidth: 1,
-                        fontFamily: BODY_FONT,
-                        borderColor: color,
-                        color,
-                      }}
+                      style={[
+                        styles.inputContainer,
+                        { borderColor: color, color },
+                      ]}
                       placeholder="Ej: 100"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -510,14 +400,7 @@ export function ProductModal({
                       selectionColor={PRIMARY_COLOR}
                     />
                     {message && (
-                      <Text
-                        style={{
-                          fontFamily: BODY_FONT,
-                          fontSize: 12,
-                          color: 'red',
-                          textAlign: 'center',
-                        }}
-                      >
+                      <Text style={[styles.errorText, styles.textCenter]}>
                         {message as string}
                       </Text>
                     )}
@@ -545,20 +428,15 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                    Descripción <Text style={{ color: 'red' }}>*</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
+                    Descripción <Text style={styles.requiredMark}>*</Text>
                   </Text>
                   <TextInput
-                    style={{
-                      borderRadius: 10,
-                      paddingHorizontal: 10,
-                      fontSize: 12,
-                      borderWidth: 1,
-                      fontFamily: BODY_FONT,
-                      borderColor: color,
-                      color,
-                    }}
+                    style={[
+                      styles.descriptionInput,
+                      { borderColor: color, color },
+                    ]}
                     multiline
                     numberOfLines={4}
                     textAlignVertical="top"
@@ -570,15 +448,7 @@ export function ProductModal({
                     selectionColor={PRIMARY_COLOR}
                   />
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
@@ -600,21 +470,16 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
                     Beneficios (separados por coma)
-                    <Text style={{ color: 'red' }}> *</Text>
+                    <Text style={styles.requiredMark}> *</Text>
                   </Text>
                   <TextInput
-                    style={{
-                      borderRadius: 10,
-                      paddingHorizontal: 10,
-                      fontSize: 12,
-                      borderWidth: 1,
-                      fontFamily: BODY_FONT,
-                      borderColor: color,
-                      color,
-                    }}
+                    style={[
+                      styles.inputContainer,
+                      { borderColor: color, color },
+                    ]}
                     placeholder="Ej: Aroma relajante, ayuda a dormir mejor"
                     placeholderTextColor={message ? 'red' : '#AFAFAF'}
                     onChangeText={text => onChange(text.split(','))}
@@ -623,15 +488,7 @@ export function ProductModal({
                     selectionColor={PRIMARY_COLOR}
                   />
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
@@ -646,16 +503,12 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                    Categoría <Text style={{ color: 'red' }}>*</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
+                    Categoría <Text style={styles.requiredMark}>*</Text>
                   </Text>
                   <View
-                    style={{
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      borderColor: color,
-                    }}
+                    style={[styles.pickerContainer, { borderColor: color }]}
                   >
                     <Picker
                       selectedValue={value}
@@ -664,50 +517,29 @@ export function ProductModal({
                         setSelectedCategory(value);
                       }}
                       onBlur={onBlur}
-                      style={{
-                        color: color,
-                        fontSize: 12,
-                        fontFamily: BODY_FONT,
-                      }}
+                      style={[styles.picker, { color }]}
+                      dropdownIconColor={color}
+                      dropdownIconRippleColor={color}
                     >
                       <Picker.Item
+                        style={styles.textInput}
                         label="Seleccionar categoría"
-                        value=""
                         enabled={false}
-                        style={{
-                          color: '#AFAFAF',
-                          fontSize: 12,
-                          fontFamily: BODY_FONT,
-                        }}
                       />
                       <Picker.Item
-                        style={{
-                          fontFamily: BODY_FONT,
-                          fontSize: 12,
-                        }}
+                        style={styles.textInput}
                         label="Jabones artesanales"
                         value="680fd248f613dc80267ba5d7"
                       />
                       <Picker.Item
-                        style={{
-                          fontFamily: BODY_FONT,
-                          fontSize: 12,
-                        }}
+                        style={styles.textInput}
                         label="Velas artesanales"
                         value="6823a6c096655bcbe4971062"
                       />
                     </Picker>
                   </View>
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
@@ -722,44 +554,31 @@ export function ProductModal({
               const color = message ? 'red' : 'black';
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
-                    Tipo <Text style={{ color: 'red' }}>*</Text>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
+                    Tipo <Text style={styles.requiredMark}>*</Text>
                   </Text>
                   <View
-                    style={{
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      borderColor: color,
-                    }}
+                    style={[styles.pickerContainer, { borderColor: color }]}
                   >
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
                       onBlur={onBlur}
-                      style={{
-                        color: color,
-                        fontSize: 12,
-                        fontFamily: BODY_FONT,
-                      }}
+                      style={[styles.picker, { color }]}
+                      dropdownIconColor={color}
+                      dropdownIconRippleColor={color}
                     >
                       <Picker.Item
                         label="Seleccionar tipo"
                         value=""
                         enabled={false}
-                        style={{
-                          color: '#AFAFAF',
-                          fontSize: 12,
-                          fontFamily: BODY_FONT,
-                        }}
+                        style={styles.textInput}
                       />
                       {typeValues.map(type => (
                         <Picker.Item
                           key={type}
-                          style={{
-                            fontFamily: BODY_FONT,
-                            fontSize: 12,
-                          }}
+                          style={styles.textInput}
                           label={type}
                           value={type.toLocaleLowerCase()}
                         />
@@ -767,15 +586,7 @@ export function ProductModal({
                     </Picker>
                   </View>
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
@@ -795,10 +606,10 @@ export function ProductModal({
               const { message = '' } = errors.ingredientes || {};
 
               return (
-                <View style={{ rowGap: 3 }}>
-                  <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 12 }}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.labelText}>
                     Selecciona dos ingredientes
-                    <Text style={{ color: 'red' }}> *</Text>
+                    <Text style={styles.requiredMark}> *</Text>
                   </Text>
                   <View>
                     {ingredients.map(({ _id, nombre }) => (
@@ -817,58 +628,24 @@ export function ProductModal({
                     ))}
                   </View>
                   {message && (
-                    <Text
-                      style={{
-                        fontFamily: BODY_FONT,
-                        fontSize: 12,
-                        color: 'red',
-                      }}
-                    >
-                      {message as string}
-                    </Text>
+                    <Text style={styles.errorText}>{message as string}</Text>
                   )}
                 </View>
               );
             }}
           />
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 10,
-              columnGap: 5,
-              justifyContent: 'center',
-            }}
-          >
+          <View style={styles.actionRow}>
             {action !== 'Visualizar' && (
               <Pressable
-                style={{
-                  backgroundColor: PRIMARY_COLOR,
-                  padding: 10,
-                  borderRadius: 10,
-                  flexDirection: 'row',
-                  columnGap: 5,
-                  width: '40%',
-                  justifyContent: 'center',
-                  borderColor: PRIMARY_COLOR_DARK,
-                  borderBottomWidth: 2,
-                  borderRightWidth: 2,
-                }}
+                style={styles.submitButton}
                 onPress={handleSubmit(onSubmit)}
               >
                 {isLoading ? (
                   <ActivityIndicator size={14} color="white" />
                 ) : (
                   <>
-                    <Text
-                      style={{
-                        fontFamily: BOLD_BODY_FONT,
-                        color: 'white',
-                        fontSize: 12,
-                      }}
-                    >
-                      {action}
-                    </Text>
+                    <Text style={styles.submitButtonText}>{action}</Text>
                     <MaterialCommunityIcons
                       name="content-save"
                       size={14}
@@ -879,30 +656,10 @@ export function ProductModal({
               </Pressable>
             )}
             <Pressable
-              style={{
-                padding: 10,
-                borderRadius: 10,
-                flexDirection: 'row',
-                columnGap: 5,
-                width: '40%',
-                backgroundColor: SECONDARY_COLOR,
-                borderColor: SECONDARY_COLOR_DARK,
-                borderBottomWidth: 2,
-                borderRightWidth: 2,
-                justifyContent: 'center',
-              }}
+              style={styles.cancelButton}
               onPress={() => setIsVisible(false)}
             >
-              <Text
-                style={{
-                  fontFamily: BOLD_BODY_FONT,
-                  color: 'white',
-                  textAlign: 'center',
-                  fontSize: 12,
-                }}
-              >
-                Cancelar
-              </Text>
+              <Text style={styles.cancelButtonText}>Cancelar</Text>
               <MaterialCommunityIcons
                 name="close-thick"
                 size={14}
@@ -926,20 +683,172 @@ function CheckBox({
   onPress: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
-    <Pressable
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        columnGap: 10,
-      }}
-      onPress={() => onPress(!value)}
-    >
+    <Pressable style={styles.checkbox} onPress={() => onPress(!value)}>
       <MaterialCommunityIcons
         name={value ? 'checkbox-marked' : 'checkbox-blank-outline'}
         size={20}
         color={value ? PRIMARY_COLOR : 'black'}
       />
-      <Text style={{ fontFamily: BODY_FONT, fontSize: 12 }}>{label}</Text>
+      <Text style={styles.textInput}>{label}</Text>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    marginHorizontal: 'auto',
+    width: '85%',
+    maxHeight: '90%',
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  formContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    rowGap: 5,
+  },
+  titleText: {
+    fontFamily: BOLD_BODY_FONT,
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  subtitleText: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#AFAFAF',
+  },
+  fieldContainer: {
+    rowGap: 3,
+  },
+  labelText: {
+    fontFamily: BOLD_BODY_FONT,
+    fontSize: 12,
+  },
+  requiredMark: {
+    color: 'red',
+  },
+  imagePickerContainer: {
+    borderWidth: 1,
+    borderRadius: 10,
+    borderStyle: 'dashed',
+    columnGap: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    aspectRatio: 1,
+    width: '85%',
+    alignSelf: 'center',
+    overflow: 'hidden',
+  },
+  imageFull: {
+    width: '100%',
+    height: '100%',
+  },
+  imageTextBold: {
+    fontFamily: BOLD_BODY_FONT,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  imageTextNormal: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#AFAFAF',
+  },
+  errorText: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+    color: 'red',
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  inputContainer: {
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    fontSize: 12,
+    borderWidth: 1,
+  },
+  textInput: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+  },
+  rowInputs: {
+    flexDirection: 'row',
+    columnGap: 10,
+    width: '100%',
+  },
+  rowField: {
+    flex: 1,
+  },
+  descriptionInput: {
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    fontSize: 12,
+    borderWidth: 1,
+    fontFamily: BODY_FONT,
+    textAlignVertical: 'top',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  picker: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+  },
+  checkboxContainer: {
+    rowGap: 3,
+  },
+  checkbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 10,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+    columnGap: 5,
+    justifyContent: 'center',
+  },
+  submitButton: {
+    backgroundColor: PRIMARY_COLOR,
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    columnGap: 5,
+    width: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: PRIMARY_COLOR_DARK,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  submitButtonText: {
+    fontFamily: BOLD_BODY_FONT,
+    color: 'white',
+    fontSize: 12,
+  },
+  cancelButton: {
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    columnGap: 5,
+    width: '40%',
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR_DARK,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontFamily: BOLD_BODY_FONT,
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 12,
+  },
+});
