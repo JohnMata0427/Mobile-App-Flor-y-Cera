@@ -4,15 +4,15 @@ export interface Client {
   apellido: string;
   cedula?: string;
   confirmEmail: boolean;
-  createdAt: Date;
+  createdAt: string;
   direccion?: string;
   email: string;
-  fecha_nacimiento?: Date;
+  fecha_nacimiento?: string;
   genero: string;
   imagen?: string;
   imagen_id?: string;
   nombre: string;
   telefono?: string;
-  updatedAt: Date;
+  updatedAt: string;
   estado: string;
 }

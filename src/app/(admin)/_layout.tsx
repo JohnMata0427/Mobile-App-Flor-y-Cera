@@ -14,7 +14,7 @@ export default function AdminLayout() {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.viewContent, { paddingTop: top + 10 }]}>
+    <View style={[styles.viewContent, { paddingTop: top + 5 }]}>
       <Tabs screenOptions={{ headerShown: false, animation: 'shift' }}>
         {ADMIN_TABS.map(({ name, title, icon, tabBarBadge }) => (
           <Tabs.Screen
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   tabBarStyle: {
     height: 70,
+    paddingHorizontal: 5,
   },
   tabBarItemStyle: {
     marginTop: 7,

@@ -56,8 +56,7 @@ export const IngredientsProvider = ({
       const { ingrediente } = await createIngredientRequest(ingredient, token);
       setIngredients(prev => [...prev, ingrediente]);
       return { msg: 'Ingrediento creado exitosamente' };
-    } catch (error) {
-      console.error('Error creating ingredient:', error);
+    } catch {
       return { msg: 'Ocurrio un error al crear el ingrediente' };
     }
   }, []);
@@ -72,8 +71,7 @@ export const IngredientsProvider = ({
         );
         setIngredients(prev => prev.map(p => (p._id === id ? ingrediente : p)));
         return { msg: 'Ingrediento actualizado exitosamente' };
-      } catch (error) {
-        console.error('Error updating ingredient:', error);
+      } catch {
         return { msg: 'Ocurrio un error al actualizar el ingrediente' };
       }
     },
@@ -85,8 +83,7 @@ export const IngredientsProvider = ({
       await deleteIngredientRequest(id, token);
       setIngredients(prev => prev.filter(({ _id }) => _id !== id));
       return { msg: 'Ingrediento eliminado exitosamente' };
-    } catch (error) {
-      console.error('Error deleting ingredient:', error);
+    } catch {
       return { msg: 'Ocurrio un error al eliminar el ingrediente' };
     }
   }, []);
@@ -97,8 +94,7 @@ export const IngredientsProvider = ({
         setLoading(true);
         const { ingredientes } = await getIngredientsRequest(page, limit);
         setIngredients(ingredientes);
-      } catch (error) {
-        console.error('Error fetching ingredients:', error);
+      } catch {
       } finally {
         setLoading(false);
       }

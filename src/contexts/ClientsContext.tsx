@@ -82,8 +82,7 @@ export const ClientsProvider = ({
         prev.map(p => (p._id === id ? { ...p, estado: 'activo' } : p)),
       );
       return { msg };
-    } catch (error) {
-      console.error('Error updating client:', error);
+    } catch {
       return { msg: 'Ocurrio un error al actualizar el cliente' };
     }
   }, []);
@@ -95,8 +94,7 @@ export const ClientsProvider = ({
         prev.map(p => (p._id === id ? { ...p, estado: 'inactivo' } : p)),
       );
       return { msg };
-    } catch (error) {
-      console.error('Error deleting client:', error);
+    } catch {
       return { msg: 'Ocurrio un error al eliminar el cliente' };
     }
   }, []);

@@ -27,7 +27,7 @@ export const useAuthStore = create<UserStore>(set => ({
       set({ token, isAuthenticated: success });
 
       return { msg, success };
-    } catch (error) {
+    } catch {
       return { msg: 'Ocurrio un error al iniciar sesión', success: false };
     }
   },

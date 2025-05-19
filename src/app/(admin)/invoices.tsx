@@ -1,4 +1,5 @@
 import { AdminHeader } from '@/components/AdminHeader';
+import { InvoiceDetailsModal } from '@/components/InvoiceDetailsModal';
 import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR_DARK,
@@ -10,11 +11,15 @@ import {
   PRIMARY_COLOR_DARK,
   RED_COLOR,
   RED_COLOR_DARK,
+  SECONDARY_COLOR,
+  TERTIARY_COLOR,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { InvoicesContext, InvoicesProvider } from '@/contexts/InvoicesContext';
+import type { Invoice } from '@/interfaces/Invoice';
+import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use } from 'react';
+import { use, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -26,6 +31,10 @@ import {
 } from 'react-native';
 
 function Invoices() {
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice>(
+    {} as Invoice,
+  );
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     invoices,
     loading,
@@ -48,27 +57,33 @@ function Invoices() {
             setRefreshing(true);
             await getInvoices();
           }}
-          colors={[PRIMARY_COLOR]}
+          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
       }
     >
       <View style={styles.container}>
         <AdminHeader />
+        {modalVisible && (
+          <InvoiceDetailsModal
+            invoice={selectedInvoice}
+            isVisible={modalVisible}
+            onClose={() => setModalVisible(false)}
+          />
+        )}
         <FlatList
           data={invoices}
           scrollEnabled={false}
           contentContainerStyle={styles.listContent}
           keyExtractor={({ _id }) => _id}
-          renderItem={({
-            item: {
+          renderItem={({ item }) => {
+            const {
               _id,
               cliente_id: { nombre, apellido, email },
               fecha_venta,
               productos: { length },
               total,
               estado,
-            },
-          }) => {
+            } = item;
             const isPending = estado === 'pendiente';
 
             return (
@@ -92,9 +107,7 @@ function Invoices() {
                       color={GRAY_COLOR_DARK}
                     />
                     <Text style={styles.detailText}>
-                      {new Intl.DateTimeFormat('es-ES', {
-                        dateStyle: 'long',
-                      }).format(new Date(fecha_venta))}
+                      {toLocaleDate(fecha_venta)}
                     </Text>
                   </View>
                   <View style={styles.detailRow}>
@@ -141,14 +154,17 @@ function Invoices() {
                     <MaterialCommunityIcons
                       name="cash-multiple"
                       size={26}
-                      color={GREEN_COLOR_DARK}
+                      color={GRAY_COLOR_DARK}
                     />
                     <Text style={styles.amountText}>${total} USD</Text>
                   </View>
                   <View style={styles.actionButtons}>
                     <Pressable
                       style={[styles.actionButton, styles.infoButton]}
-                      onPress={() => {}}
+                      onPress={() => {
+                        setSelectedInvoice(item);
+                        setModalVisible(true);
+                      }}
                     >
                       <MaterialCommunityIcons
                         name="information-variant"
@@ -236,9 +252,6 @@ const styles = StyleSheet.create({
     rowGap: 5,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderColor: GRAY_COLOR_LIGHT,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
   invoiceInfo: {
     rowGap: 2,
@@ -266,9 +279,6 @@ const styles = StyleSheet.create({
   },
   actionContainer: {
     rowGap: 5,
-    paddingLeft: 15,
-    borderLeftWidth: 1,
-    borderColor: GRAY_COLOR_LIGHT,
     justifyContent: 'center',
   },
   amountContainer: {

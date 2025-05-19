@@ -10,7 +10,7 @@ export default function AdminSettings() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
-        <AdminHeader />
+        <AdminHeader showSearchBar={false} />
         <Button
           title="Cerrar sesión"
           color="red"

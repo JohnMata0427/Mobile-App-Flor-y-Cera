@@ -25,6 +25,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { CheckBox } from './CheckBox';
 
 type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
 
@@ -39,6 +40,7 @@ export function ProductModal({
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const isEditable = action !== 'Visualizar';
   const [typeValues, setTypeValues] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -123,8 +125,10 @@ export function ProductModal({
         aroma,
         tipo,
       } = data;
+      const categoria = (id_categoria as IDCategoria)?._id ?? id_categoria;
+
       setSelectedImage(imagen);
-      setSelectedCategory((id_categoria as IDCategoria)?._id ?? id_categoria);
+      setSelectedCategory(categoria);
 
       setValue('imagen', imagen);
       setValue('nombre', nombre);
@@ -135,13 +139,10 @@ export function ProductModal({
       setValue('descuento', descuento.toString());
       setValue('aroma', aroma);
       setValue('tipo', tipo);
+      setValue('id_categoria', categoria);
       setValue(
         'ingredientes',
-        ingredientes.map((item: any) => item?._id ?? item),
-      );
-      setValue(
-        'id_categoria',
-        (id_categoria as IDCategoria)?._id ?? id_categoria,
+        ingredientes.map((i: any) => i?._id ?? i),
       );
     } else {
       setSelectedImage(null);
@@ -184,6 +185,7 @@ export function ProductModal({
                       styles.imagePickerContainer,
                       { borderColor: color },
                     ]}
+                    disabled={!isEditable}
                     onPress={pickImage}
                   >
                     {selectedImage ? (
@@ -246,6 +248,8 @@ export function ProductModal({
                       styles.inputContainer,
                       { borderColor: color, color },
                     ]}
+                    editable={isEditable}
+                    autoComplete="name"
                     autoCapitalize="words"
                     placeholder="Ej: Vela de canela"
                     placeholderTextColor={message ? 'red' : '#AFAFAF'}
@@ -292,6 +296,9 @@ export function ProductModal({
                         styles.inputContainer,
                         { borderColor: color, color },
                       ]}
+                      editable={isEditable}
+                      autoComplete="name"
+                      autoCapitalize="words"
                       placeholder="Ej: Canela"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -341,6 +348,7 @@ export function ProductModal({
                         styles.inputContainer,
                         { borderColor: color, color },
                       ]}
+                      editable={isEditable}
                       placeholder="Ej: 9.99"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -391,6 +399,7 @@ export function ProductModal({
                         styles.inputContainer,
                         { borderColor: color, color },
                       ]}
+                      editable={isEditable}
                       placeholder="Ej: 100"
                       placeholderTextColor={message ? 'red' : '#AFAFAF'}
                       onChangeText={onChange}
@@ -437,9 +446,11 @@ export function ProductModal({
                       styles.descriptionInput,
                       { borderColor: color, color },
                     ]}
+                    editable={isEditable}
                     multiline
                     numberOfLines={4}
                     textAlignVertical="top"
+                    autoCapitalize="sentences"
                     placeholder="Ej: Vela natural con aroma a canela, ideal para relajarse, meditar y dormir mejor."
                     placeholderTextColor={message ? 'red' : '#AFAFAF'}
                     onChangeText={onChange}
@@ -480,6 +491,11 @@ export function ProductModal({
                       styles.inputContainer,
                       { borderColor: color, color },
                     ]}
+                    editable={isEditable}
+                    autoCapitalize="sentences"
+                    multiline
+                    numberOfLines={2}
+                    textAlignVertical="top"
                     placeholder="Ej: Aroma relajante, ayuda a dormir mejor"
                     placeholderTextColor={message ? 'red' : '#AFAFAF'}
                     onChangeText={text => onChange(text.split(','))}
@@ -511,13 +527,16 @@ export function ProductModal({
                     style={[styles.pickerContainer, { borderColor: color }]}
                   >
                     <Picker
+                      style={[styles.picker, { color }]}
+                      enabled={isEditable}
                       selectedValue={value}
                       onValueChange={value => {
                         onChange(value);
                         setSelectedCategory(value);
                       }}
+                      mode="dropdown"
+                      prompt="Seleccionar categoría"
                       onBlur={onBlur}
-                      style={[styles.picker, { color }]}
                       dropdownIconColor={color}
                       dropdownIconRippleColor={color}
                     >
@@ -562,10 +581,13 @@ export function ProductModal({
                     style={[styles.pickerContainer, { borderColor: color }]}
                   >
                     <Picker
+                      style={[styles.picker, { color }]}
+                      enabled={isEditable}
                       selectedValue={value}
                       onValueChange={onChange}
+                      mode="dropdown"
+                      prompt="Seleccionar tipo"
                       onBlur={onBlur}
-                      style={[styles.picker, { color }]}
                       dropdownIconColor={color}
                       dropdownIconRippleColor={color}
                     >
@@ -617,6 +639,7 @@ export function ProductModal({
                         key={_id}
                         label={nombre}
                         value={value.includes(_id)}
+                        disabled={!isEditable}
                         onPress={pressed => {
                           if (pressed && value.length < 2) {
                             onChange([...value, _id]);
@@ -673,30 +696,9 @@ export function ProductModal({
   );
 }
 
-function CheckBox({
-  label,
-  value,
-  onPress,
-}: {
-  label: string;
-  value: boolean;
-  onPress: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  return (
-    <Pressable style={styles.checkbox} onPress={() => onPress(!value)}>
-      <MaterialCommunityIcons
-        name={value ? 'checkbox-marked' : 'checkbox-blank-outline'}
-        size={20}
-        color={value ? PRIMARY_COLOR : 'black'}
-      />
-      <Text style={styles.textInput}>{label}</Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   modalContainer: {
-    marginHorizontal: 'auto',
+    margin: 'auto',
     width: '85%',
     maxHeight: '90%',
     borderRadius: 10,
@@ -802,11 +804,6 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     rowGap: 3,
-  },
-  checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: 10,
   },
   actionRow: {
     flexDirection: 'row',

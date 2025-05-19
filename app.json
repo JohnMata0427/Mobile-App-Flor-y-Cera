@@ -2,8 +2,8 @@
   "expo": {
     "name": "Flor & Cera App",
     "description": "Flor & Cera es una aplicación que permite a los usuarios comprar productos artesanales como jabones y velas, así como también personalizar sus propios productos con la asistencia de inteligencia artificial.",
-    "slug": "flor-y-cera",
-    "owner": "John Mata",
+    "slug": "flor-and-cera-app",
+    "owner": "johnmata0427",
     "githubUrl": "https://github.com/JohnMata0427/Mobile-App-Flor-y-Cera",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,8 @@
       "silentLaunch": true
     },
     "androidStatusBar": {
-      "barStyle": "dark-content"
+      "barStyle": "dark-content",
+      "backgroundColor": "#ffffff"
     },
     "androidNavigationBar": {
       "backgroundColor": "#ffffff",
@@ -55,7 +56,8 @@
         "android.permission.ACCESS_MEDIA_LOCATION",
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.READ_MEDIA_VIDEO",
-        "android.permission.READ_MEDIA_AUDIO"
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.RECORD_AUDIO"
       ],
       "edgeToEdgeEnabled": true
     },
@@ -67,7 +69,8 @@
           "image": "./assets/images/icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "statusBarStyle": "dark"
         }
       ],
       "expo-secure-store",
@@ -77,10 +80,25 @@
           "photosPermission": "La aplicación necesita acceso a la galería para seleccionar fotos.",
           "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos."
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 25
+          }
+        }
+      ],
+      "@logrocket/react-native"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "da873e00-ecc2-497c-883d-ab85516b71e0"
+      }
     }
   }
 }

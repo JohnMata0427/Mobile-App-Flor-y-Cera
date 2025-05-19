@@ -17,23 +17,22 @@ import {
   Image,
   Modal,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 
-type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
+type Action = 'Actualizar' | 'Agregar';
 
 export function PromotionModal({
   data,
-  action = 'Agregar',
+  action,
   isVisible,
   setIsVisible,
 }: {
   data?: Promotion;
-  action?: Action;
+  action: Action;
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -103,11 +102,7 @@ export function PromotionModal({
       backdropColor={'rgba(0, 0, 0, 0.1)'}
       onRequestClose={() => setIsVisible(!isVisible)}
     >
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.scrollContent}
-        style={styles.modalContainer}
-      >
+      <View style={styles.modalContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.titleText}>{action} promoción</Text>
           <Text style={styles.subtitleText}>
@@ -210,25 +205,23 @@ export function PromotionModal({
             }}
           />
           <View style={styles.actionRow}>
-            {action !== 'Visualizar' && (
-              <Pressable
-                style={styles.submitButton}
-                onPress={handleSubmit(onSubmit)}
-              >
-                {isLoading ? (
-                  <ActivityIndicator size={14} color="white" />
-                ) : (
-                  <>
-                    <Text style={styles.submitButtonText}>{action}</Text>
-                    <MaterialCommunityIcons
-                      name="content-save"
-                      size={14}
-                      color="white"
-                    />
-                  </>
-                )}
-              </Pressable>
-            )}
+            <Pressable
+              style={styles.submitButton}
+              onPress={handleSubmit(onSubmit)}
+            >
+              {isLoading ? (
+                <ActivityIndicator size={14} color="white" />
+              ) : (
+                <>
+                  <Text style={styles.submitButtonText}>{action}</Text>
+                  <MaterialCommunityIcons
+                    name="content-save"
+                    size={14}
+                    color="white"
+                  />
+                </>
+              )}
+            </Pressable>
             <Pressable
               style={styles.cancelButton}
               onPress={() => setIsVisible(false)}
@@ -242,7 +235,7 @@ export function PromotionModal({
             </Pressable>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </Modal>
   );
 }

@@ -1,4 +1,5 @@
 import { AdminHeader } from '@/components/AdminHeader';
+import { ClientInformationModal } from '@/components/ClientInformationModal';
 import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR,
@@ -12,11 +13,15 @@ import {
   RED_COLOR,
   RED_COLOR_DARK,
   RED_COLOR_LIGHT,
+  SECONDARY_COLOR,
+  TERTIARY_COLOR,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
+import type { Client } from '@/interfaces/Client';
+import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use } from 'react';
+import { use, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -29,6 +34,8 @@ import {
 } from 'react-native';
 
 function Clients() {
+  const [selectedClient, setSelectedClient] = useState<Client>({} as Client);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     clients,
     loading,
@@ -52,43 +59,51 @@ function Clients() {
             setRefreshing(true);
             await getClients();
           }}
-          colors={[PRIMARY_COLOR]}
+          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
       }
     >
       <View style={styles.container}>
         <AdminHeader />
+        {modalVisible && (
+          <ClientInformationModal
+            isVisible={modalVisible}
+            onClose={() => setModalVisible(false)}
+            client={selectedClient}
+          />
+        )}
         <FlatList
           data={clients}
           scrollEnabled={false}
           contentContainerStyle={styles.listContent}
           keyExtractor={({ _id }) => _id}
-          renderItem={({
-            item: {
+          renderItem={({ item }) => {
+            const {
               _id,
               nombre,
               apellido,
               email,
-              genero,
-              imagen,
               direccion,
+              imagen,
               estado,
+              genero,
               createdAt,
-            },
-          }) => {
+            } = item;
+
             const isActive = estado === 'activo';
+            const isMale = genero === 'Masculino';
+            const defaultImageUrl =
+              genero === 'Masculino'
+                ? require('@/assets/male-user-default.jpg')
+                : require('@/assets/female-user-default.jpg');
             return (
               <View style={styles.clientCard}>
                 <View style={styles.clientInfoRow}>
                   <View style={styles.clientInnerInfo}>
                     <Image
                       style={styles.clientImage}
+                      source={imagen ? { uri: imagen } : defaultImageUrl}
                       resizeMode="cover"
-                      source={{
-                        uri:
-                          imagen ??
-                          'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg',
-                      }}
                     />
                     <Text
                       style={[
@@ -110,13 +125,9 @@ function Clients() {
                         {nombre} {apellido}
                       </Text>
                       <MaterialCommunityIcons
-                        name={
-                          genero === 'Masculino'
-                            ? 'gender-male'
-                            : 'gender-female'
-                        }
+                        name={isMale ? 'gender-male' : 'gender-female'}
                         size={14}
-                        color={genero === 'Masculino' ? '#007AFF' : '#FF1493'}
+                        color={isMale ? '#007AFF' : '#FF1493'}
                       />
                     </View>
                     <View style={styles.detailRow}>
@@ -144,10 +155,7 @@ function Clients() {
                         color={GRAY_COLOR_DARK}
                       />
                       <Text style={styles.detailText}>
-                        Registrado el{' '}
-                        {new Intl.DateTimeFormat('es-ES', {
-                          dateStyle: 'long',
-                        }).format(new Date(createdAt))}
+                        Registrado el {toLocaleDate(createdAt)}
                       </Text>
                     </View>
                   </View>
@@ -155,7 +163,10 @@ function Clients() {
                 <View style={styles.actionButtons}>
                   <Pressable
                     style={[styles.actionButton, styles.infoButtonClients]}
-                    onPress={() => {}}
+                    onPress={() => {
+                      setModalVisible(true);
+                      setSelectedClient(item);
+                    }}
                   >
                     <MaterialCommunityIcons
                       name="information-variant"
@@ -236,9 +247,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderColor: GRAY_COLOR_LIGHT,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
   clientInfoRow: {
     flexDirection: 'row',
@@ -254,13 +262,13 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: GRAY_COLOR,
+    borderColor: GRAY_COLOR_LIGHT,
   },
   stateBadge: {
     fontFamily: BODY_FONT,
     fontSize: 10,
     textAlign: 'center',
-    borderWidth: 0.5,
+    borderWidth: 0.25,
     paddingHorizontal: 2,
     borderRadius: 20,
   },

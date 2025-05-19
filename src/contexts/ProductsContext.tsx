@@ -82,8 +82,7 @@ export const ProductsProvider = ({
       }
 
       return { msg };
-    } catch (error) {
-      console.error('Error creating product:', error);
+    } catch {
       return { msg: 'Ocurrio un error al crear el producto' };
     }
   }, []);
@@ -94,7 +93,7 @@ export const ProductsProvider = ({
       producto?._id &&
         setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
       return { msg };
-    } catch (error) {
+    } catch {
       return { msg: 'Ocurrio un error al actualizar el producto' };
     }
   }, []);
@@ -104,8 +103,7 @@ export const ProductsProvider = ({
       await deleteProductRequest(id, token);
       setProducts(prev => prev.filter(({ _id }) => _id !== id));
       return { msg: 'Producto eliminado exitosamente' };
-    } catch (error) {
-      console.error('Error deleting product:', error);
+    } catch {
       return { msg: 'Ocurrio un error al eliminar el producto' };
     }
   }, []);

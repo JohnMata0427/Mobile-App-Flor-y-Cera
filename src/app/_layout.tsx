@@ -4,7 +4,6 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
 
 export default function RootLayout() {
   const { isAuthenticated, checkAuth } = useAuthStore();
@@ -12,6 +11,13 @@ export default function RootLayout() {
   useEffect(() => {
     checkAuth();
   }, []);
+
+  // useEffect(() => {
+  //   LogRocket.init('wdvgsr/flor-and-cera-app', {
+  //     updateId: isEmbeddedLaunch ? null : updateId,
+  //     expoChannel: channel,
+  //   });
+  // }, []);
 
   const [loaded] = useFonts({
     [HEADING_FONT]: require('@/assets/fonts/PlayfairDisplay-Black.ttf'),

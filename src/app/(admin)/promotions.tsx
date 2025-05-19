@@ -3,7 +3,6 @@ import { Pagination } from '@/components/Pagination';
 import { PromotionModal } from '@/components/PromotionModal';
 import {
   GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR,
@@ -17,6 +16,7 @@ import {
   PromotionsProvider,
 } from '@/contexts/PromotionsContext';
 import { Promotion } from '@/interfaces/Promotion';
+import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { use, useState } from 'react';
 import {
@@ -31,14 +31,12 @@ import {
   View,
 } from 'react-native';
 
+type Action = 'Agregar' | 'Actualizar';
+
 function Promotions() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [action, setAction] = useState<'Agregar' | 'Actualizar' | 'Visualizar'>(
-    'Agregar',
-  );
-  const [selectedPromotion, setSelectedPromotion] = useState<
-    Promotion | undefined
-  >(undefined);
+  const [action, setAction] = useState<Action>('Agregar');
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion>();
   const {
     promotions,
     loading,
@@ -61,7 +59,7 @@ function Promotions() {
             setRefreshing(true);
             await getPromotions();
           }}
-          colors={[PRIMARY_COLOR]}
+          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
       }
     >
@@ -110,10 +108,7 @@ function Promotions() {
                       color={GRAY_COLOR_DARK}
                     />
                     <Text style={styles.dateText}>
-                      Promoción creada el{' '}
-                      {new Intl.DateTimeFormat('es-ES', {
-                        dateStyle: 'long',
-                      }).format(new Date(createdAt))}
+                      Promoción creada el {toLocaleDate(createdAt)}
                     </Text>
                   </View>
 
@@ -228,9 +223,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     justifyContent: 'space-between',
-    borderColor: GRAY_COLOR_LIGHT,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
   promotionImage: {
     width: '100%',
@@ -240,8 +232,6 @@ const styles = StyleSheet.create({
   promotionInfo: {
     rowGap: 3,
     paddingTop: 5,
-    borderTopColor: GRAY_COLOR_LIGHT,
-    borderTopWidth: 1,
   },
   promotionName: {
     fontFamily: BOLD_BODY_FONT,

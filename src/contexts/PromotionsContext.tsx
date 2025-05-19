@@ -85,8 +85,7 @@ export const PromotionsProvider = ({
       }
 
       return { msg };
-    } catch (error) {
-      console.error('Error creating product:', error);
+    } catch {
       return { msg: 'Ocurrio un error al crear el promocion' };
     }
   }, []);
@@ -101,8 +100,7 @@ export const PromotionsProvider = ({
       promocion?._id &&
         setPromotions(prev => prev.map(p => (p._id === id ? promocion : p)));
       return { msg };
-    } catch (error) {
-      console.error('Error updating product:', error);
+    } catch {
       return { msg: 'Ocurrio un error al actualizar el promocion' };
     }
   }, []);
@@ -112,8 +110,7 @@ export const PromotionsProvider = ({
       await deletePromotionRequest(id, token);
       setPromotions(prev => prev.filter(({ _id }) => _id !== id));
       return { msg: 'Promotiono eliminado exitosamente' };
-    } catch (error) {
-      console.error('Error deleting product:', error);
+    } catch {
       return { msg: 'Ocurrio un error al eliminar el promocion' };
     }
   }, []);

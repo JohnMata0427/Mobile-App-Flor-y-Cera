@@ -10,7 +10,7 @@ import {
   TERTIARY_COLOR,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { IngredientsProvider } from '@/contexts/IngredientsContext';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import type { IDCategoria, Product } from '@/interfaces/Product';
@@ -28,7 +28,12 @@ import {
   View,
 } from 'react-native';
 
+type Action = 'Agregar' | 'Actualizar' | 'Visualizar';
+
 function Inventory() {
+  const [action, setAction] = useState<Action>('Agregar');
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     products,
     loading,
@@ -41,14 +46,6 @@ function Inventory() {
     deleteProduct,
   } = use(ProductsContext);
 
-  const [action, setAction] = useState<'Agregar' | 'Actualizar' | 'Visualizar'>(
-    'Agregar',
-  );
-  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
-    undefined,
-  );
-  const [modalVisible, setModalVisible] = useState(false);
-
   return (
     <ScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -59,7 +56,7 @@ function Inventory() {
             setRefreshing(true);
             await getProducts();
           }}
-          colors={[PRIMARY_COLOR]}
+          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
       }
     >
@@ -190,9 +187,6 @@ function Inventory() {
               </View>
             )
           }
-          ListHeaderComponent={
-            <Text style={styles.listHeaderText}>Productos</Text>
-          }
           ListFooterComponent={
             <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
@@ -254,9 +248,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 5,
     justifyContent: 'space-between',
-    borderColor: GRAY_COLOR_LIGHT,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
   productImage: {
     aspectRatio: 1 / 1,
@@ -323,7 +314,6 @@ const styles = StyleSheet.create({
     borderColor: TERTIARY_COLOR_DARK,
   },
   loadingContainer: {
-    minHeight: 257,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -335,9 +325,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontFamily: BODY_FONT,
-  },
-  listHeaderText: {
-    fontFamily: HEADING_FONT,
-    fontSize: 20,
   },
 });
