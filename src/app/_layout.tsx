@@ -2,13 +2,13 @@ import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 export default function RootLayout() {
-  const { isAuthenticated, checkAuth } = useAuthStore();
+  const { isAuthenticated, isAdmin, checkAuth, logout } = useAuthStore();
 
   useEffect(() => {
+    //logout();
     checkAuth();
   }, []);
 
@@ -28,23 +28,24 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <>
-      <StatusBar style="dark" />
-
-      <Stack
-        screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
-      >
-        <Stack.Protected guard={!isAuthenticated}>
-          <Stack.Screen name="(auth)" />
-        </Stack.Protected>
-
-        <Stack.Protected guard={isAuthenticated}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        statusBarStyle: 'dark',
+        navigationBarColor: '#fff',
+      }}
+    >
+      <Stack.Protected guard={isAuthenticated}>
+        <Stack.Protected guard={isAdmin}>
           <Stack.Screen name="(admin)" />
         </Stack.Protected>
 
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </>
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+    </Stack>
   );
 }

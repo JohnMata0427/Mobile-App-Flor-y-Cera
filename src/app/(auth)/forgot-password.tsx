@@ -8,14 +8,12 @@ import {
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Image,
   ImageBackground,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -62,10 +60,10 @@ export default function Login() {
               source={require('@/assets/images/icon.png')}
               style={styles.logoImage}
             />
-            <Text style={styles.headerTitle}>Bienvenido a Flor & Cera</Text>
+            <Text style={styles.headerTitle}>Recupera tu contraseña</Text>
             <Text style={styles.headerSubtitle}>
-              Descubre la magia de Flor & Cera, donde la naturaleza y la
-              creatividad se unen para ofrecerte una experiencia única
+              Ingresa tu correo electrónico para recibir el código de
+              verificación.
             </Text>
           </View>
           <View style={styles.bodyContainer}>
@@ -88,84 +86,29 @@ export default function Login() {
               textContentType="emailAddress"
               keyboardType="email-address"
             />
-
-            <InputField
-              control={control}
-              name="password"
-              rules={{
-                required: 'La contraseña es requerida',
-              }}
-              icon="key"
-              label="Contraseña"
-              placeholder="••••••••••"
-              error={errors.password?.message as string}
-              autoComplete="password"
-              autoCapitalize="none"
-              textContentType="password"
-              secureTextEntry={!showPassword}
-              showPasswordIcon={
-                <Pressable
-                  onPress={() => setShowPassword(prev => !prev)}
-                  style={styles.iconRight}
-                >
-                  <MaterialCommunityIcons
-                    name={showPassword ? 'eye-off' : 'eye'}
-                    size={20}
-                    color={GRAY_COLOR_DARK}
-                  />
-                </Pressable>
-              }
-            />
-
-            <Link href="/forgot-password">
-              <Text style={styles.forgotPasswordText}>
-                ¿Olvidaste tu contraseña?
-              </Text>
-            </Link>
             <View style={styles.footerContainer}>
               {message && (
                 <Text style={styles.errorMessageText}>{message}</Text>
               )}
 
               <Button
-                label="Iniciar sesión"
-                icon="login"
+                label="Enviar código"
+                icon="arrow-right"
                 disabled={isLoading}
                 onPress={handleSubmit(onSubmit)}
               />
-
-              <Text style={styles.anotherMethodText}>
-                O puedes iniciar sesión con
-              </Text>
-
-              <View style={styles.methodsContainer}>
-                <Pressable style={styles.methodButton}>
-                  <Image
-                    source={require('@/assets/google-logo.png')}
-                    style={styles.methodIcon}
-                    resizeMode="contain"
-                  />
-                </Pressable>
-                <Pressable style={styles.methodButton}>
-                  <Image
-                    source={require('@/assets/fb-logo.png')}
-                    style={styles.methodIcon}
-                    resizeMode="contain"
-                  />
-                </Pressable>
-                <Pressable style={styles.methodButton}>
-                  <Image
-                    source={require('@/assets/apple-logo.png')}
-                    style={styles.methodIcon}
-                    resizeMode="contain"
-                  />
-                </Pressable>
-              </View>
 
               <Link href="/(auth)/register">
                 <Text style={styles.registerText}>
                   ¿No tienes cuenta?
                   <Text style={styles.registerLinkText}> Crea una cuenta</Text>
+                </Text>
+              </Link>
+
+              <Link href="/(auth)/register">
+                <Text style={styles.registerText}>
+                  ¿Ya tienes cuenta?
+                  <Text style={styles.registerLinkText}> Inicia sesión</Text>
                 </Text>
               </Link>
             </View>
