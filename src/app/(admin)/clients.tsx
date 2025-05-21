@@ -1,8 +1,7 @@
 import { AdminHeader } from '@/components/AdminHeader';
-import { ClientInformationModal } from '@/components/ClientInformationModal';
+import { ClientInformationModal } from '@/components/modals/ClientInformationModal';
 import { Pagination } from '@/components/Pagination';
 import {
-  GRAY_COLOR,
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   GREEN_COLOR,
@@ -211,7 +210,7 @@ function Clients() {
               </View>
             )
           }
-          ListFooterComponent={
+          ListHeaderComponent={
             <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />
@@ -268,19 +267,16 @@ const styles = StyleSheet.create({
     fontFamily: BODY_FONT,
     fontSize: 10,
     textAlign: 'center',
-    borderWidth: 0.25,
-    paddingHorizontal: 2,
+    paddingVertical: 1,
     borderRadius: 20,
   },
   badgeActive: {
     backgroundColor: GREEN_COLOR_LIGHT,
     color: GREEN_COLOR_DARK,
-    borderColor: GREEN_COLOR_DARK,
   },
   badgeInactive: {
     backgroundColor: RED_COLOR_LIGHT,
     color: RED_COLOR_DARK,
-    borderColor: RED_COLOR_DARK,
   },
   detailsContainer: {
     rowGap: 2,

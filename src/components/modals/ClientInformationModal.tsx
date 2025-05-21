@@ -1,4 +1,8 @@
-import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
+import {
+  GRAY_COLOR_DARK,
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+} from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
@@ -49,67 +53,107 @@ export const ClientInformationModal = memo(
           <View style={styles.informationCard}>
             <Text style={styles.titleText}>Información del Cliente</Text>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="account" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="account"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Nombre:</Text> {nombre}{' '}
                 {apellido}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="email" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="email"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Email:</Text> {email}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="gender-male-female" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="gender-male-female"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Género:</Text> {genero}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="lock-open" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="lock-open"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Estado:</Text> {estado}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="identifier" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="identifier"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Cédula:</Text>{' '}
                 {cedula ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="map-marker" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="map-marker"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Dirección:</Text>{' '}
                 {direccion ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="phone" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="phone"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Teléfono:</Text>{' '}
                 {telefono ?? 'No registrado'}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="calendar" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="calendar"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Fecha de nacimiento:</Text>{' '}
                 {toLocaleDate(fecha_nacimiento)}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="calendar-check" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="calendar-check"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Fecha de creación:</Text>{' '}
                 {toLocaleDate(createdAt)}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="update" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="update"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Última actualización:</Text>{' '}
                 {toLocaleDate(updatedAt)}

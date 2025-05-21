@@ -1,6 +1,6 @@
 import { AdminHeader } from '@/components/AdminHeader';
 import { Pagination } from '@/components/Pagination';
-import { PromotionModal } from '@/components/PromotionModal';
+import { PromotionModal } from '@/components/modals/PromotionModal';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
@@ -172,7 +172,7 @@ function Promotions() {
               </View>
             )
           }
-          ListFooterComponent={
+          ListHeaderComponent={
             <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />
@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
     borderColor: TERTIARY_COLOR_DARK,
   },
   loadingContainer: {
-    minHeight: 257,
     justifyContent: 'center',
     alignItems: 'center',
   },

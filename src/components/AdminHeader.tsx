@@ -78,6 +78,8 @@ const styles = StyleSheet.create({
     right: 3,
     justifyContent: 'center',
     backgroundColor: GRAY_COLOR_DARK,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
     paddingHorizontal: 15,
     borderRadius: 20,
   },

@@ -1,5 +1,5 @@
 import { AdminHeader } from '@/components/AdminHeader';
-import { InvoiceDetailsModal } from '@/components/InvoiceDetailsModal';
+import { InvoiceDetailsModal } from '@/components/modals/InvoiceDetailsModal';
 import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR_DARK,
@@ -217,7 +217,7 @@ function Invoices() {
               </View>
             )
           }
-          ListFooterComponent={
+          ListHeaderComponent={
             <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />

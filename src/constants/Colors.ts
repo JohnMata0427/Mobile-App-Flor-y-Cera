@@ -18,6 +18,6 @@ export const RED_COLOR = '#ED8363';
 export const RED_COLOR_DARK = '#B85F52';
 export const RED_COLOR_LIGHT = '#FCDBDB';
 
-export const GRAY_COLOR = '#898887';
-export const GRAY_COLOR_DARK = '#3C3C3B';
-export const GRAY_COLOR_LIGHT = '#E0E0E0';
+export const GRAY_COLOR = '#898989';
+export const GRAY_COLOR_DARK = '#2C2C2C';
+export const GRAY_COLOR_LIGHT = '#F3F3F3';

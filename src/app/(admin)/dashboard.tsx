@@ -105,13 +105,14 @@ export default function AdminDashboard() {
         </View>
 
         <View style={styles.chartCard}>
-          <Text style={styles.chartTitle}>Ventas Anuales</Text>
+          <Text style={styles.chartTitle}>Ventas Semanales</Text>
           <LineChart
             data={{
-              labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
+              labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
               datasets: [
                 {
                   data: [
+                    Math.random() * 1000,
                     Math.random() * 1000,
                     Math.random() * 1000,
                     Math.random() * 1000,
@@ -123,6 +124,7 @@ export default function AdminDashboard() {
                 },
                 {
                   data: [
+                    Math.random() * 1000,
                     Math.random() * 1000,
                     Math.random() * 1000,
                     Math.random() * 1000,

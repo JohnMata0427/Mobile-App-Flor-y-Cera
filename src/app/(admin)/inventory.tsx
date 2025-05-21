@@ -1,7 +1,8 @@
 import { AdminHeader } from '@/components/AdminHeader';
 import { Pagination } from '@/components/Pagination';
-import { ProductModal } from '@/components/ProductModal';
+import { ProductModal } from '@/components/modals/ProductModal';
 import {
+  GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
@@ -187,7 +188,7 @@ function Inventory() {
               </View>
             )
           }
-          ListFooterComponent={
+          ListHeaderComponent={
             <Pagination page={page} setPage={setPage} totalPages={totalPages} />
           }
         />
@@ -276,8 +277,8 @@ const styles = StyleSheet.create({
     fontFamily: BOLD_BODY_FONT,
     fontSize: 10,
     color: 'white',
-    backgroundColor: 'black',
-    paddingVertical: 2,
+    backgroundColor: GRAY_COLOR_DARK,
+    paddingVertical: 1,
     paddingHorizontal: 5,
     borderRadius: 5,
   },
