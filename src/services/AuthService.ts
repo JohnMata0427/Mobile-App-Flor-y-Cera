@@ -14,3 +14,15 @@ export const loginRequest = async (credentials: {
 
   return await response.json();
 };
+
+export const registerRequest = async (credentials: any) => {
+  const response = await fetch(`${BACKEND_URL}/registro`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+
+  return await response.json();
+};
