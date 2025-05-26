@@ -27,9 +27,9 @@ export default function Login() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
   const { login } = useAuthStore();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   const {
     control,
@@ -38,15 +38,14 @@ export default function Login() {
   } = useForm();
 
   const onSubmit = async (form: any) => {
-    setIsLoading(true);
-
+    setLoading(true);
     const { msg, success, isAdmin } = await login(form);
-
     setMessage(msg);
-    setIsLoading(false);
+
+    setLoading(false);
 
     if (success) {
-      router.push(isAdmin ? '/(admin)/dashboard' : '/(tabs)');
+      router.push(isAdmin ? '/(admin)/dashboard' : '/(client)/home');
     }
   };
 
@@ -130,7 +129,7 @@ export default function Login() {
               <Button
                 label="Iniciar sesión"
                 icon="login"
-                disabled={isLoading}
+                disabled={loading}
                 onPress={handleSubmit(onSubmit)}
               />
 
@@ -194,7 +193,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   headerTitle: {
-    fontFamily: BOLD_BODY_FONT,
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -220,7 +218,6 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: SECONDARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
     fontWeight: 'bold',
     fontSize: 12,
     textAlign: 'right',
@@ -237,7 +234,6 @@ const styles = StyleSheet.create({
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
     fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',

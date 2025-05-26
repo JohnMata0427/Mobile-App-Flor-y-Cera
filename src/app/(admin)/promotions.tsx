@@ -1,8 +1,9 @@
 import { AdminHeader } from '@/components/AdminHeader';
+import { Loading } from '@/components/Loading';
 import { Pagination } from '@/components/Pagination';
+import { PromotionCard } from '@/components/cards/PromotionCard';
 import { PromotionModal } from '@/components/modals/PromotionModal';
 import {
-  GRAY_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR,
@@ -16,13 +17,11 @@ import {
   PromotionsProvider,
 } from '@/contexts/PromotionsContext';
 import { Promotion } from '@/interfaces/Promotion';
-import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use, useState } from 'react';
+import { use, useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -48,6 +47,27 @@ function Promotions() {
     getPromotions,
     deletePromotion,
   } = use(PromotionsContext);
+
+  const showDeleteAlert = useCallback(
+    (_id: string) => {
+      Alert.alert(
+        'Eliminar promoción',
+        '¿Estás seguro de que deseas eliminar esta promoción? Esta acción no se puede deshacer.',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+          {
+            text: 'Eliminar',
+            style: 'destructive',
+            onPress: () => deletePromotion(_id),
+          },
+        ],
+      );
+    },
+    [deletePromotion],
+  );
 
   return (
     <ScrollView
@@ -83,35 +103,20 @@ function Promotions() {
           isVisible={modalVisible}
           setIsVisible={setModalVisible}
         />
-        <FlatList
-          data={promotions}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          keyExtractor={({ _id }) => _id}
-          scrollEnabled={false}
-          renderItem={({ item }) => {
-            const { _id, imagen, nombre, createdAt } = item;
+        {loading ? (
+          <Loading />
+        ) : (
+          <FlatList
+            data={promotions}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            keyExtractor={({ _id }) => _id}
+            scrollEnabled={false}
+            renderItem={({ item }) => {
+              const { _id } = item;
 
-            return (
-              <View style={styles.promotionCard}>
-                <Image
-                  source={{ uri: imagen }}
-                  resizeMode="cover"
-                  style={styles.promotionImage}
-                />
-                <View style={styles.promotionInfo}>
-                  <Text style={styles.promotionName}>{nombre}</Text>
-                  <View style={styles.dateRow}>
-                    <MaterialCommunityIcons
-                      name="calendar-clock"
-                      size={14}
-                      color={GRAY_COLOR_DARK}
-                    />
-                    <Text style={styles.dateText}>
-                      Promoción creada el {toLocaleDate(createdAt)}
-                    </Text>
-                  </View>
-
+              return (
+                <PromotionCard data={item}>
                   <View style={styles.actionRow}>
                     <Pressable
                       onPress={() => {
@@ -129,23 +134,7 @@ function Promotions() {
                     </Pressable>
                     <Pressable
                       style={styles.deleteButton}
-                      onPress={() => {
-                        Alert.alert(
-                          'Eliminar promoción',
-                          '¿Estás seguro de que deseas eliminar esta promoción? Esta acción no se puede deshacer.',
-                          [
-                            {
-                              text: 'Cancelar',
-                              style: 'cancel',
-                            },
-                            {
-                              text: 'Eliminar',
-                              style: 'destructive',
-                              onPress: () => deletePromotion(_id),
-                            },
-                          ],
-                        );
-                      }}
+                      onPress={() => showDeleteAlert(_id)}
                     >
                       <MaterialCommunityIcons
                         name="trash-can"
@@ -154,28 +143,26 @@ function Promotions() {
                       />
                     </Pressable>
                   </View>
-                </View>
-              </View>
-            );
-          }}
-          ListEmptyComponent={
-            loading ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.emptyText}>Cargando datos...</Text>
-              </View>
-            ) : (
+                </PromotionCard>
+              );
+            }}
+            ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <MaterialCommunityIcons name="ticket" size={24} />
                 <Text style={styles.emptyText}>
                   No se encontraron promociones, agregue una nueva
                 </Text>
               </View>
-            )
-          }
-          ListHeaderComponent={
-            <Pagination page={page} setPage={setPage} totalPages={totalPages} />
-          }
-        />
+            }
+            ListHeaderComponent={
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+              />
+            }
+          />
+        )}
       </View>
     </ScrollView>
   );
@@ -194,7 +181,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   container: {
-    paddingHorizontal: 25,
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
     rowGap: 10,
   },
   addButton: {
@@ -215,40 +204,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     rowGap: 10,
-  },
-  promotionCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    justifyContent: 'space-between',
-  },
-  promotionImage: {
-    width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: 10,
-  },
-  promotionInfo: {
-    rowGap: 3,
-    paddingTop: 5,
-  },
-  promotionName: {
-    fontFamily: BOLD_BODY_FONT,
-    fontSize: 15,
-    textTransform: 'capitalize',
-    textAlign: 'center',
-  },
-  dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: 5,
-    justifyContent: 'center',
-  },
-  dateText: {
-    fontFamily: BODY_FONT,
-    fontSize: 12,
-    color: GRAY_COLOR_DARK,
   },
   actionRow: {
     flexDirection: 'row',

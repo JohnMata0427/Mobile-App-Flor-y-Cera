@@ -8,7 +8,6 @@ import {
   SECONDARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -27,7 +26,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Login() {
   const router = useRouter();
   const { top } = useSafeAreaInsets();
-  const { login, isAdmin } = useAuthStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
@@ -38,19 +36,7 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (form: any) => {
-    setIsLoading(true);
-
-    const { msg, success } = await login(form);
-
-    setMessage(msg);
-    setIsLoading(false);
-
-    if (success) {
-      console.log(isAdmin);
-      router.push(isAdmin ? '/(admin)/dashboard' : '/(tabs)');
-    }
-  };
+  const onSubmit = async (form: any) => {};
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -284,7 +270,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   headerTitle: {
-    fontFamily: BOLD_BODY_FONT,
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -314,7 +299,6 @@ const styles = StyleSheet.create({
   },
   registerLinkText: {
     color: SECONDARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
     fontWeight: 'bold',
   },
   footerContainer: {
@@ -329,14 +313,12 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: SECONDARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
     fontWeight: 'bold',
     fontSize: 12,
     textAlign: 'right',
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
     fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',

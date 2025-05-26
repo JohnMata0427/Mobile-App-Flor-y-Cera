@@ -1,17 +1,17 @@
-import { AdminHeader } from '@/components/AdminHeader';
 import { TERTIARY_COLOR, TERTIARY_COLOR_DARK } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function AdminSettings() {
+export default function ClientProfileScreen() {
   const router = useRouter();
   const { logout } = useAuthStore();
+  const { top } = useSafeAreaInsets();
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, paddingTop: top }}>
       <View style={{ paddingHorizontal: 25, rowGap: 10 }}>
         <Pressable
           onPress={() => {

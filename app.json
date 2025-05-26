@@ -16,10 +16,6 @@
     "developmentClient": {
       "silentLaunch": true
     },
-    "androidStatusBar": {
-      "barStyle": "dark-content",
-      "backgroundColor": "#ffffff"
-    },
     "androidNavigationBar": {
       "backgroundColor": "#ffffff",
       "barStyle": "dark-content"
@@ -80,16 +76,7 @@
           "photosPermission": "La aplicación necesita acceso a la galería para seleccionar fotos.",
           "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos."
         }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "minSdkVersion": 25
-          }
-        }
-      ],
-      "@logrocket/react-native"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

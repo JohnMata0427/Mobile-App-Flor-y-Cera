@@ -154,7 +154,7 @@ export default function AdminDashboard() {
               data: [Math.random(), Math.random()],
             }}
             width={Dimensions.get('window').width - 65}
-            height={150}
+            height={140}
             chartConfig={{
               backgroundGradientFrom: 'white',
               backgroundGradientTo: 'white',
@@ -172,7 +172,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   container: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
     rowGap: 10,
   },
   greetingCard: {
@@ -262,7 +263,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   statValue: {
-    fontFamily: BODY_FONT,
     fontWeight: 'bold',
   },
   chartCard: {
@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
     rowGap: 5,
   },
   chartTitle: {
-    fontFamily: BOLD_BODY_FONT,
     textTransform: 'uppercase',
     fontWeight: 'bold',
     textAlign: 'center',

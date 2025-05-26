@@ -20,13 +20,17 @@ export const InvoiceDetailsModal = memo(
   ({ invoice, isVisible, onClose }: InvoiceDetailsModalProps) => {
     const {
       _id,
-      cliente_id: { nombre, apellido, email },
+      cliente_id,
       fecha_venta,
       updatedAt,
       productos,
       estado,
       total,
     } = invoice;
+
+    const { nombre, apellido, email } = cliente_id ?? {};
+
+    const subtotalWithoutTax = total / 1.15;
 
     return (
       <Modal
@@ -73,8 +77,8 @@ export const InvoiceDetailsModal = memo(
               <Text style={styles.tableHeaderText}>Total</Text>
             </View>
             <View>
-              {productos.map(({ _id, cantidad, subtotal, producto_id }) => {
-                const subtotalWithoutTax = subtotal / 1.15;
+              {productos?.map(({ _id, cantidad, subtotal }) => {
+                const subtotalWithoutTaxProduct = subtotal / 1.15;
                 const unitPrice = subtotalWithoutTax / cantidad;
 
                 return (
@@ -85,14 +89,14 @@ export const InvoiceDetailsModal = memo(
                         styles.tableDescriptionColumn,
                       ]}
                     >
-                      {producto_id.slice(0, 15)}...
+                      {_id}
                     </Text>
                     <Text style={styles.tableBodyText}>{cantidad}</Text>
                     <Text style={styles.tableBodyText}>
-                      ${unitPrice.toFixed(2)}
+                      ${unitPrice?.toFixed(2)}
                     </Text>
-                    <Text style={styles.tableBodyText}>
-                      ${subtotalWithoutTax.toFixed(2)}
+                    <Text style={styles?.tableBodyText}>
+                      ${subtotalWithoutTaxProduct.toFixed(2)}
                     </Text>
                   </View>
                 );
@@ -102,40 +106,29 @@ export const InvoiceDetailsModal = memo(
           <View style={styles.tableFooter}>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Subtotal: </Text>$
-              {(total / 1.15).toFixed(2)}
+              {subtotalWithoutTax?.toFixed(2)}
             </Text>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>IVA (15%): </Text>$
-              {(total - total / 1.15).toFixed(2)}
+              {(total - subtotalWithoutTax)?.toFixed(2)}
             </Text>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Total: </Text>$
-              {total.toFixed(2)}
+              {total?.toFixed(2)}
             </Text>
           </View>
           <View style={styles.footer}>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Estado: </Text>
-              {estado.charAt(0).toUpperCase() + estado.slice(1)}
+              {estado?.charAt(0).toUpperCase() + estado?.slice(1)}
             </Text>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Actualizado: </Text>
               {toLocaleDate(updatedAt)}
             </Text>
           </View>
-          <Pressable
-            style={{
-              backgroundColor: PRIMARY_COLOR,
-              borderColor: PRIMARY_COLOR_DARK,
-              borderBottomWidth: 2,
-              borderRightWidth: 2,
-              padding: 10,
-              borderRadius: 5,
-              marginTop: 15,
-            }}
-            onPress={onClose}
-          >
-            <Text style={{ color: 'white', textAlign: 'center' }}>Cerrar</Text>
+          <Pressable style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Cerrar</Text>
           </Pressable>
         </View>
       </Modal>
@@ -157,7 +150,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    fontFamily: BOLD_BODY_FONT,
     fontSize: 16,
     fontWeight: 'bold',
     textTransform: 'uppercase',
@@ -200,7 +192,6 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   tableHeaderText: {
-    fontFamily: BOLD_BODY_FONT,
     textTransform: 'uppercase',
     fontWeight: 'bold',
     fontSize: 11,
@@ -224,4 +215,14 @@ const styles = StyleSheet.create({
     rowGap: 2,
   },
   footer: { marginTop: 20, rowGap: 2 },
+  closeButtonText: { color: 'white', textAlign: 'center', fontWeight: 'bold' },
+  closeButton: {
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR_DARK,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 15,
+  },
 });

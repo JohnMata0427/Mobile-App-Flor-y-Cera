@@ -17,12 +17,12 @@ import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
 
 export function ProductModal({
-  data,
+  product,
   action = 'Agregar',
   isVisible,
   setIsVisible,
 }: {
-  data?: Product;
+  product?: Product;
   action?: Action;
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,7 +50,6 @@ export function ProductModal({
       precio: '',
       stock: '',
       imagen: '',
-      descuento: '', // Se debe eliminar este campo en el backend
       ingredientes: [] as string[],
       aroma: '',
       tipo: '',
@@ -79,11 +78,12 @@ export function ProductModal({
     const { msg } =
       action === 'Agregar'
         ? await createProduct(formData)
-        : await updateProduct(data!._id, formData);
+        : await updateProduct(product!._id, formData);
 
     alert(msg);
     setIsLoading(false);
     setIsVisible(false);
+    reset();
   };
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export function ProductModal({
 
   useEffect(() => {
     clearErrors();
-    if (data) {
+    if (product) {
       const {
         imagen,
         nombre,
@@ -111,7 +111,7 @@ export function ProductModal({
         ingredientes,
         aroma,
         tipo,
-      } = data;
+      } = product;
       const categoria = (id_categoria as IDCategoria)?._id ?? id_categoria;
 
       setSelectedImage(imagen);
@@ -123,7 +123,6 @@ export function ProductModal({
       setValue('beneficios', beneficios);
       setValue('precio', precio.toString());
       setValue('stock', stock.toString());
-      setValue('descuento', descuento.toString());
       setValue('aroma', aroma);
       setValue('tipo', tipo);
       setValue('id_categoria', categoria);
@@ -135,7 +134,7 @@ export function ProductModal({
       setSelectedImage(null);
       reset();
     }
-  }, [data]);
+  }, [product]);
 
   return (
     <Modal
@@ -260,31 +259,6 @@ export function ProductModal({
               label="Stock"
               placeholder="Ej: 100"
               error={errors.stock?.message as string}
-              autoComplete="off"
-              keyboardType="numeric"
-            />
-            <InputField
-              control={control}
-              name="descuento"
-              rules={{
-                required: 'Este campo es obligatorio',
-                pattern: {
-                  value: /^\d+(\.\d{1,2})?$/,
-                  message: 'El descuento debe ser un número válido',
-                },
-                min: {
-                  value: 0,
-                  message: 'El descuento debe ser mayor a $ 0.00',
-                },
-                max: {
-                  value: 100,
-                  message: 'El descuento no puede ser mayor a $ 100.00',
-                },
-              }}
-              icon="sale"
-              label="Descuento"
-              placeholder="Ej: 5"
-              error={errors.descuento?.message as string}
               autoComplete="off"
               keyboardType="numeric"
             />
@@ -428,7 +402,6 @@ const styles = StyleSheet.create({
     rowGap: 5,
   },
   titleText: {
-    fontFamily: BOLD_BODY_FONT,
     fontSize: 18,
     textAlign: 'center',
     fontWeight: 'bold',

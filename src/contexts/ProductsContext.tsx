@@ -77,7 +77,7 @@ export const ProductsProvider = ({
     try {
       const { producto, msg } = await createProductRequest(product, token);
 
-      if (producto?._id && page === totalPages) {
+      if (producto?._id) {
         setProducts(prev => [...prev, producto]);
       }
 

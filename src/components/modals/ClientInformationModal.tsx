@@ -59,8 +59,8 @@ export const ClientInformationModal = memo(
                 size={16}
               />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Nombre:</Text> {nombre}{' '}
-                {apellido}
+                <Text style={styles.detailTextBold}>Nombre:</Text>
+                {nombre} {apellido}
               </Text>
             </View>
             <View style={styles.detailRow}>

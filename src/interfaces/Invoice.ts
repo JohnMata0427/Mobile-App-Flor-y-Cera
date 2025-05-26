@@ -16,5 +16,8 @@ export interface ProductInfo {
   _id: string;
   cantidad: number;
   producto_id: string;
+  nombre: string;
+  imagen: string;
+  precio: number;
   subtotal: number;
 }

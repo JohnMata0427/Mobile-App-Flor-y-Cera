@@ -43,9 +43,9 @@ export default function Login() {
     setMessage(msg);
     setIsLoading(false);
 
-    if (success) {
-      router.push(isAdmin ? '/(admin)/dashboard' : '/(tabs)');
-    }
+    // if (success) {
+    //   router.push('/');
+    // }
   };
 
   return (
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   headerTitle: {
-    fontFamily: BOLD_BODY_FONT,
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -163,7 +162,6 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: SECONDARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
     fontWeight: 'bold',
     fontSize: 12,
     textAlign: 'right',
@@ -180,7 +178,6 @@ const styles = StyleSheet.create({
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
     fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',

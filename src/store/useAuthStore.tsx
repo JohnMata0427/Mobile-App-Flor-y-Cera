@@ -20,10 +20,10 @@ interface UserStore {
   user: User;
   login: (userData: { email: string; password: string }) => Promise<Response>;
   logout: () => void;
-  checkAuth: () => void;
+  checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<UserStore>(set => ({
+export const useAuthStore = create<UserStore>((set, get) => ({
   token: '',
   isAuthenticated: false,
   isAdmin: false,
@@ -35,9 +35,8 @@ export const useAuthStore = create<UserStore>(set => ({
       let isAdmin = false;
 
       if (token) {
-        const { rol: role = '', id = '' } = JSON.parse(
-          atob(token.split('.')[1]),
-        );
+        const payload = atob(token.split('.')[1]);
+        const { rol: role = '', id = '' } = JSON.parse(payload);
         isAdmin = role === 'admin';
 
         await setItemAsync('token', token);
@@ -64,9 +63,8 @@ export const useAuthStore = create<UserStore>(set => ({
   },
   checkAuth: async () => {
     const token = (await getItemAsync('token')) ?? '';
-    const { rol: role = '', id = '' } = JSON.parse(
-      (await getItemAsync('user')) ?? '{}',
-    );
+    const userString = (await getItemAsync('user')) ?? '';
+    const { role = '', id = '' } = JSON.parse(userString);
     const isAdmin = role === 'admin';
 
     set({ token, isAuthenticated: !!token, isAdmin, user: { id, role } });

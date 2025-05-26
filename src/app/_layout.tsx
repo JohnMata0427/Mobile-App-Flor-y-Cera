@@ -28,19 +28,13 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        statusBarStyle: 'dark',
-        navigationBarColor: '#fff',
-      }}
-    >
+    <Stack screenOptions={{ headerShown: false, navigationBarColor: '#fff' }}>
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Protected guard={isAdmin}>
           <Stack.Screen name="(admin)" />
         </Stack.Protected>
 
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(client)" />
       </Stack.Protected>
 
       <Stack.Protected guard={!isAuthenticated}>

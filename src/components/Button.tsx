@@ -10,6 +10,8 @@ interface ButtonProps {
   disabled?: boolean;
   backgroundColor?: string;
   borderColor?: string;
+  paddingVertical?: number;
+  paddingHorizontal?: number;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
@@ -20,10 +22,12 @@ export const Button = memo(
     disabled = false,
     backgroundColor = PRIMARY_COLOR,
     borderColor = PRIMARY_COLOR_DARK,
+    paddingVertical = 10,
+    paddingHorizontal = 10,
     icon,
   }: ButtonProps) => (
     <Pressable
-      style={[styles.button, { backgroundColor, borderColor }]}
+      style={[styles.button, { backgroundColor, borderColor, paddingVertical, paddingHorizontal }]}
       onPress={onPress}
       disabled={disabled}
     >
@@ -42,8 +46,7 @@ export const Button = memo(
 const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 5,
     columnGap: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -52,7 +55,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonText: {
-    fontFamily: BODY_FONT,
     fontWeight: 'bold',
     color: 'white',
     fontSize: 12,

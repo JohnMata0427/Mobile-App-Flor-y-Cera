@@ -32,3 +32,32 @@ export const ADMIN_TABS = [
     icon: 'cog-outline',
   },
 ];
+
+export const CLIENT_TABS = [
+  {
+    name: 'home',
+    title: 'Inicio',
+    icon: 'home-heart',
+  },
+  {
+    name: 'catalog',
+    title: 'Catálogo',
+    icon: 'candle',
+  },
+  {
+    name: 'personalization',
+    title: 'Personalización',
+    icon: 'shimmer',
+  },
+  {
+    name: 'cart',
+    title: 'Carrito',
+    icon: 'cart-variant',
+    tabBarBadge: 9,
+  },
+  {
+    name: 'profile',
+    title: 'Perfil',
+    icon: 'badge-account',
+  },
+]
