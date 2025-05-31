@@ -1,12 +1,13 @@
+import type { Category } from "./Category";
+
 export interface Ingredient {
-  __v: number;
   _id: string;
-  createdAt: Date;
-  id_categoria: string;
-  imagen: string;
-  imagen_id: string;
   nombre: string;
-  precio: number;
+  imagen: string;
   stock: number;
-  updatedAt: Date;
+  id_categoria: Category;
+  precio: number;
+  tipo: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

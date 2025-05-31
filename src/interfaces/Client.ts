@@ -1,18 +1,16 @@
 export interface Client {
-  __v: number;
   _id: string;
-  apellido: string;
-  cedula?: string;
-  confirmEmail: boolean;
-  createdAt: string;
-  direccion?: string;
-  email: string;
-  fecha_nacimiento?: string;
-  genero: string;
-  imagen?: string;
-  imagen_id?: string;
   nombre: string;
+  apellido: string;
+  genero: 'Masculino' | 'Femenino';
+  email: string;
+  estado: 'activo' | 'inactivo';
+  imagen?: string;
   telefono?: string;
-  updatedAt: string;
-  estado: string;
+  fecha_nacimiento?: Date;
+  direccion?: string;
+  cedula?: string;
+  ciudad?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

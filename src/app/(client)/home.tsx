@@ -1,15 +1,13 @@
-import { Button } from '@/components/Button';
+import { ClientProductCard } from '@/components/cards/ClientProductCard';
 import { ClientHeader } from '@/components/ClientHeader';
 import {
   GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
-import type { IDCategoria } from '@/interfaces/Product';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link } from 'expo-router';
 import { use } from 'react';
@@ -56,7 +54,7 @@ function Home() {
         horizontal
         showsHorizontalScrollIndicator={false}
         legacyImplementation={false}
-        data={cards}
+        data={benefitCards}
         contentContainerStyle={{
           paddingHorizontal: 15,
           columnGap: 10,
@@ -113,38 +111,7 @@ function Home() {
         showsHorizontalScrollIndicator={false}
         legacyImplementation={false}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({
-          item: { imagen, nombre, precio, aroma, id_categoria },
-        }) => {
-          return (
-            <View style={styles.productCard}>
-              <Image
-                source={{ uri: imagen }}
-                resizeMode="cover"
-                style={styles.productImage}
-              />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>{nombre}</Text>
-                <View style={styles.badgesContainer}>
-                  <Text style={[styles.badge, styles.categoryBadge]}>
-                    {(id_categoria as IDCategoria)?.nombre?.split(' ')[0] ??
-                      'Ninguna'}
-                  </Text>
-                  <Text style={[styles.badge, styles.aromaBadge]}>{aroma}</Text>
-                </View>
-                <Text style={styles.priceText}>
-                  ${parseFloat(precio).toFixed(2)} USD
-                </Text>
-              </View>
-              <Button
-                label="¡Lo quiero!"
-                icon="cart-plus"
-                onPress={() => {}}
-                paddingVertical={5}
-              />
-            </View>
-          );
-        }}
+        renderItem={({ item }) => <ClientProductCard data={item} />}
       />
 
       <Image
@@ -197,57 +164,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
   },
-
-  productCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    width: 140,
-    padding: 8,
-    justifyContent: 'space-between',
-  },
-  productImage: {
-    aspectRatio: 1 / 1,
-    borderRadius: 10,
-    backgroundColor: GRAY_COLOR_LIGHT,
-  },
-  productInfo: {
-    rowGap: 2,
-    paddingVertical: 5,
-  },
-  productName: {
-    fontFamily: BOLD_BODY_FONT,
-  },
-  badgesContainer: {
-    flexDirection: 'row',
-    columnGap: 5,
-  },
-  badge: {
-    fontFamily: BOLD_BODY_FONT,
-    fontSize: 10,
-    paddingVertical: 1,
-    paddingHorizontal: 5,
-    borderRadius: 5,
-  },
-  categoryBadge: {
-    color: 'white',
-    backgroundColor: GRAY_COLOR_DARK,
-  },
-  aromaBadge: {
-    color: 'white',
-    backgroundColor: TERTIARY_COLOR_DARK,
-  },
-  priceText: {
-    color: PRIMARY_COLOR_DARK,
-    fontWeight: 'bold',
-  },
-  
   bannerIA: {
     width: '100%',
     height: 250,
   },
 });
 
-const cards = [
+const benefitCards = [
   {
     name: 'leaf',
     title: 'Ingredientes naturales',

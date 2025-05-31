@@ -34,7 +34,8 @@
     "react-native-screens": "~4.10.0",
     "react": "19.0.0",
     "react-hook-form": "^7.56.4",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.5",
+    "@react-native-async-storage/async-storage": "2.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

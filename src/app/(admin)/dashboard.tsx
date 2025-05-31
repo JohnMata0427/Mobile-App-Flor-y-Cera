@@ -7,8 +7,10 @@ import {
   TERTIARY_COLOR,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { getInvoicesDashboardRequest } from '@/services/InvoiceService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useState } from 'react';
+import { getItemAsync } from 'expo-secure-store';
+import { useEffect, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -22,6 +24,22 @@ import { LineChart, ProgressChart } from 'react-native-chart-kit';
 
 export default function AdminDashboard() {
   const [refreshing, setRefreshing] = useState(false);
+  const [weeklySales, setWeeklySales] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const token = (await getItemAsync('token')) ?? '';
+      const now = new Date();
+      const since = new Date(now.setDate(now.getDate() - 14));
+
+      const data = await getInvoicesDashboardRequest(token, {
+        fechaInicio: since.toISOString().split('T')[0],
+        fechaFin: now.toISOString().split('T')[0],
+      });
+
+      console.log('Dashboard data:', data);
+    })();
+  }, []);
 
   return (
     <ScrollView

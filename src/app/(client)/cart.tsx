@@ -1,11 +1,18 @@
 import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { useCartStore } from '@/store/useCartStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CartScreen() {
   const { top } = useSafeAreaInsets();
+  const { products, getClientCart } = useCartStore();
+
+  useEffect(() => {
+    getClientCart()
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -46,7 +53,7 @@ export default function CartScreen() {
         >
           <MaterialCommunityIcons name="cart-variant" size={18} />
           <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 16 }}>
-            Mi carrito (7)
+            Mi carrito ({products.length})
           </Text>
         </View>
         <Pressable
@@ -61,6 +68,24 @@ export default function CartScreen() {
           <MaterialCommunityIcons name="chevron-right" size={18} />
         </Pressable>
       </View>
+      {products.length > 0 && (
+        <FlatList
+          data={products}
+          scrollEnabled={false}
+          contentContainerStyle={{ padding: 10 }}
+          keyExtractor={({ _id }) => _id}
+          renderItem={({ item }) => (
+            <View>
+              <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 16 }}>
+                {item.cantidad} x {item.producto_id.nombre}
+              </Text>
+              <Text style={{ fontFamily: BODY_FONT, color: GRAY_COLOR_DARK }}>
+                {item.producto_id.descripcion}
+              </Text>
+            </View>
+          )}
+        />
+      )}
     </ScrollView>
   );
 }

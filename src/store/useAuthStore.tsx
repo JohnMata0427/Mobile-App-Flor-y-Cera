@@ -23,7 +23,7 @@ interface UserStore {
   checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<UserStore>((set, get) => ({
+export const useAuthStore = create<UserStore>(set => ({
   token: '',
   isAuthenticated: false,
   isAdmin: false,

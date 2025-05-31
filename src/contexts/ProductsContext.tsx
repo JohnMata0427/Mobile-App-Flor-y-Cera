@@ -26,6 +26,7 @@ interface ProductsContextProps {
   totalPages: number;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  setLimit: React.Dispatch<React.SetStateAction<number>>;
   getProducts: () => Promise<void>;
   createProduct: (product: FormData) => Promise<Response>;
   updateProduct: (productId: string, product: FormData) => Promise<Response>;
@@ -40,6 +41,7 @@ export const ProductsContext = createContext<ProductsContextProps>({
   totalPages: 0,
   setRefreshing: () => {},
   setPage: () => {},
+  setLimit: () => {},
   getProducts: async () => {},
   createProduct: async (_: FormData) => ({ msg: '' }),
   updateProduct: async (_: string, __: FormData) => ({ msg: '' }),
@@ -121,6 +123,7 @@ export const ProductsProvider = ({
       totalPages,
       setRefreshing,
       setPage,
+      setLimit,
       getProducts,
       createProduct,
       updateProduct,
@@ -134,6 +137,7 @@ export const ProductsProvider = ({
       totalPages,
       setRefreshing,
       setPage,
+      setLimit,
       getProducts,
       createProduct,
       updateProduct,
