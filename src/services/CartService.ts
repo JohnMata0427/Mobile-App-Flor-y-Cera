@@ -1,6 +1,16 @@
+import type { Cart } from '@/interfaces/Cart';
+
 const BACKEND_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/carritos`;
 
-export const getClientCartRequest = async (token: string) => {
+interface CartResponse {
+  ok: boolean;
+  msg: string;
+  carrito: Cart;
+}
+
+export const getClientCartRequest = async (
+  token: string,
+): Promise<CartResponse> => {
   const response = await fetch(BACKEND_URL, {
     method: 'GET',
     headers: {
@@ -21,7 +31,7 @@ export const addProductToCartRequest = async (
     producto_id: string;
     cantidad: number;
   },
-) => {
+): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/agregar`, {
     method: 'PUT',
     headers: {
@@ -43,7 +53,7 @@ export const modifyProductQuantityRequest = async (
     producto_id: string;
     cantidad: number;
   },
-) => {
+): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/modificar-cantidad`, {
     method: 'PUT',
     headers: {
@@ -62,7 +72,7 @@ export const modifyProductQuantityRequest = async (
 export const removeProductFromCartRequest = async (
   token: string,
   producto_id: string,
-) => {
+): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/eliminar`, {
     method: 'PUT',
     headers: {
@@ -78,7 +88,9 @@ export const removeProductFromCartRequest = async (
   return { ok, msg, carrito };
 };
 
-export const clearCartRequest = async (token: string) => {
+export const clearCartRequest = async (
+  token: string,
+): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/limpiar`, {
     method: 'DELETE',
     headers: {

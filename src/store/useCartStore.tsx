@@ -1,3 +1,4 @@
+import type { CartItem } from '@/interfaces/Cart';
 import type { Product } from '@/interfaces/Product';
 import {
   addProductToCartRequest,
@@ -11,19 +12,14 @@ import { getItem } from 'expo-secure-store';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-interface CartProduct {
-  producto_id: string;
-  cantidad: number;
-}
-
 interface CartState {
-  products: Product[];
+  products: CartItem[];
   totalProducts: number;
   totalPrice: number;
   getClientCart: () => Promise<void>;
-  addProductToCart: (_: CartProduct) => void;
-  modifyProductQuantity: (_: CartProduct) => void;
-  removeProductFromCart: (_: string) => void;
+  addProductToCart: (product: Product, quantity: number) => void;
+  modifyProductQuantity: (product: Product, quantity: number) => void;
+  removeProductFromCart: (product_id: string) => void;
   clearCart: () => void;
 }
 
@@ -37,35 +33,109 @@ export const useCartStore = create<CartState>()(
       totalPrice: 0,
       getClientCart: async () => {
         const { carrito } = await getClientCartRequest(token);
+        const { productos, total } = carrito;
 
         set({
-          products: carrito.productos,
-          totalProducts: carrito.totalProductos,
-          totalPrice: carrito.totalPrecio,
+          products: productos,
+          totalProducts: productos.length,
+          totalPrice: total,
         });
       },
-      addProductToCart: async product => {
-        const { carrito } = await addProductToCartRequest(token, product);
+      addProductToCart: async (product, quantity = 1) => {
+        const { ok, carrito } = await addProductToCartRequest(token, {
+          producto_id: product._id,
+          cantidad: quantity,
+        });
 
-        set({ products: carrito.productos });
+        if (ok) {
+          const { total } = carrito;
+          const precio_unitario = product.precio;
+
+          set(({ products, totalProducts }) => {
+            const existingProductIndex = products.findIndex(
+              p => p.producto_id._id === product._id,
+            );
+
+            if (existingProductIndex !== -1) {
+              const existingProduct = products[existingProductIndex];
+              existingProduct.cantidad += quantity;
+              existingProduct.subtotal += precio_unitario * quantity;
+
+              products[existingProductIndex] = existingProduct;
+            } else {
+              products.push({
+                _id: '',
+                producto_id: product,
+                cantidad: quantity,
+                precio_unitario,
+                subtotal: precio_unitario * quantity,
+              });
+
+              totalProducts += 1;
+            }
+
+            return { products, totalProducts, totalPrice: total };
+          });
+        }
       },
-      modifyProductQuantity: async product => {
-        const { carrito } = await modifyProductQuantityRequest(token, product);
+      modifyProductQuantity: async (product, quantity) => {
+        const { ok, carrito } = await modifyProductQuantityRequest(token, {
+          producto_id: product._id,
+          cantidad: quantity,
+        });
 
-        set({ products: carrito.productos });
+        if (ok) {
+          const { total } = carrito;
+
+          set(({ products }) => {
+            const existingProductIndex = products.findIndex(
+              p => p.producto_id._id === product._id,
+            );
+
+            if (existingProductIndex !== -1) {
+              const existingProduct = products[existingProductIndex];
+              existingProduct.cantidad += quantity;
+              existingProduct.subtotal +=
+                existingProduct.precio_unitario * quantity;
+
+              products[existingProductIndex] = existingProduct;
+            }
+
+            return {
+              products,
+              totalPrice: total,
+            };
+          });
+        }
       },
       removeProductFromCart: async productId => {
-        const { carrito } = await removeProductFromCartRequest(
+        const { ok, carrito } = await removeProductFromCartRequest(
           token,
           productId,
         );
 
-        set({ products: carrito.productos });
+        if (ok) {
+          const { total } = carrito;
+
+          set(({ products, totalProducts }) => {
+            const updatedProducts = products.filter(
+              p => p.producto_id._id !== productId,
+            );
+
+            totalProducts -= 1;
+
+            return {
+              products: updatedProducts,
+              totalProducts,
+              totalPrice: total,
+            };
+          });
+        }
       },
       clearCart: async () => {
         await clearCartRequest(token);
 
-        set({ products: [] });
+        set({ products: [], totalProducts: 0, totalPrice: 0 });
       },
     }),
     {

@@ -53,7 +53,6 @@ export const CLIENT_TABS = [
     name: 'cart',
     title: 'Carrito',
     icon: 'cart-variant',
-    tabBarBadge: 9,
   },
   {
     name: 'profile',

@@ -1,3 +1,4 @@
+import { CartItemCard } from '@/components/cards/CartItemCard';
 import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useCartStore } from '@/store/useCartStore';
@@ -11,7 +12,7 @@ export default function CartScreen() {
   const { products, getClientCart } = useCartStore();
 
   useEffect(() => {
-    getClientCart()
+    getClientCart();
   }, []);
 
   return (
@@ -68,24 +69,13 @@ export default function CartScreen() {
           <MaterialCommunityIcons name="chevron-right" size={18} />
         </Pressable>
       </View>
-      {products.length > 0 && (
-        <FlatList
-          data={products}
-          scrollEnabled={false}
-          contentContainerStyle={{ padding: 10 }}
-          keyExtractor={({ _id }) => _id}
-          renderItem={({ item }) => (
-            <View>
-              <Text style={{ fontFamily: BOLD_BODY_FONT, fontSize: 16 }}>
-                {item.cantidad} x {item.producto_id.nombre}
-              </Text>
-              <Text style={{ fontFamily: BODY_FONT, color: GRAY_COLOR_DARK }}>
-                {item.producto_id.descripcion}
-              </Text>
-            </View>
-          )}
-        />
-      )}
+      <FlatList
+        data={products}
+        scrollEnabled={false}
+        contentContainerStyle={{ padding: 10, rowGap: 10 }}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={({ item }) => <CartItemCard data={item} />}
+      />
     </ScrollView>
   );
 }

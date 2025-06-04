@@ -6,9 +6,7 @@ import {
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR_DARK,
-  TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { use } from 'react';
@@ -140,7 +138,9 @@ function Catalog() {
         contentContainerStyle={{ paddingHorizontal: 10, rowGap: 10 }}
         legacyImplementation={false}
         numColumns={2}
-        renderItem={({ item }) => <ClientProductCard data={item} />}
+        renderItem={({ item }) => (
+          <ClientProductCard data={item} width="48%" />
+        )}
       />
     </ScrollView>
   );
