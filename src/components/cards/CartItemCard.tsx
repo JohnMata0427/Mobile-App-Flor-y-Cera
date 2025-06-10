@@ -1,4 +1,5 @@
 import {
+  GRAY_COLOR,
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR_DARK,
@@ -20,17 +21,18 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
   const { removeProductFromCart, modifyProductQuantity } = useCartStore();
 
   const { producto_id, cantidad, subtotal } = data;
-  const { _id, imagen, nombre, aroma, tipo, id_categoria } = producto_id;
+  const { _id, imagen, nombre, aroma, tipo, beneficios } = producto_id;
 
-  const [int, decimal] = (subtotal - 0.01 * cantidad).toFixed(2).split('.');
+  const [int, decimal] = subtotal.toFixed(2).split('.');
+  const priceWithoutDiscount = subtotal * 1.123;
 
-	const [quantity, setQuantity] = useState(cantidad);
+  const [quantity, setQuantity] = useState(cantidad);
 
   return (
     <View style={styles.cartItemCard}>
       <Image source={{ uri: imagen }} style={styles.cardImage} />
       <View style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
+        <View style={styles.cardEnds}>
           <Text style={styles.cardTitle}>{nombre}</Text>
           <Pressable onPress={() => removeProductFromCart(_id)} hitSlop={10}>
             <MaterialCommunityIcons
@@ -42,7 +44,7 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
         </View>
         <View style={styles.badgesContainer}>
           <Text style={[styles.badge, styles.categoryBadge]}>
-            {id_categoria?.nombre ?? 'Productos artesanales'}
+            Productos artesanales
           </Text>
           <Text style={[styles.badge, styles.aromaBadge]}>
             {capitalizeFirstLetter(aroma)}
@@ -51,30 +53,39 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
             {capitalizeFirstLetter(tipo)}
           </Text>
         </View>
-        <Text style={styles.cardIntPrice}>
-          ${int}
-          <Text style={styles.cardDecimalPrice}>.{decimal}</Text>
-        </Text>
-        <View style={styles.quantityContainer}>
-          <Pressable
-            onPress={() => {
-							setQuantity((prev) => prev + 1);
-              modifyProductQuantity(producto_id, 1);
-            }}
-          >
-            <MaterialCommunityIcons name="plus" size={16} color="gray" />
-          </Pressable>
-          <Text style={styles.quantityText}>{quantity}</Text>
-          <Pressable
-            onPress={() => {
-              if (quantity > 1) {
-                modifyProductQuantity(producto_id, -1);
-                setQuantity((prev) => prev - 1);
-              }
-            }}
-          >
-            <MaterialCommunityIcons name="minus" size={16} color="gray" />
-          </Pressable>
+        <Text style={styles.benefitsText}>{beneficios.join(', ')}</Text>
+
+        <View style={styles.cardEnds}>
+          <Text style={styles.cardIntPrice}>
+            ${int}
+            <Text style={styles.cardDecimalPrice}>
+              .{decimal}
+              <Text style={styles.cardPriceWithoutDiscount}>
+                {'  $' + priceWithoutDiscount.toFixed(2)}
+              </Text>
+            </Text>
+          </Text>
+          <View style={styles.quantityContainer}>
+            <Pressable
+              onPress={() => {
+                setQuantity(prev => prev + 1);
+                modifyProductQuantity(producto_id, 1);
+              }}
+            >
+              <MaterialCommunityIcons name="plus" size={16} color="gray" />
+            </Pressable>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <Pressable
+              onPress={() => {
+                if (quantity > 1) {
+                  modifyProductQuantity(producto_id, -1);
+                  setQuantity(prev => prev - 1);
+                }
+              }}
+            >
+              <MaterialCommunityIcons name="minus" size={16} color="gray" />
+            </Pressable>
+          </View>
         </View>
       </View>
     </View>
@@ -85,13 +96,15 @@ const styles = StyleSheet.create({
   cartItemCard: {
     backgroundColor: 'white',
     flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 10,
     padding: 10,
     columnGap: 10,
   },
   cardImage: {
-    backgroundColor: GRAY_COLOR_LIGHT,
+    borderColor: GRAY_COLOR_LIGHT,
     borderRadius: 10,
+    borderWidth: 2,
     aspectRatio: 1,
     width: 100,
     height: 100,
@@ -101,7 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     rowGap: 3,
   },
-  cardHeader: {
+  cardEnds: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -119,6 +132,12 @@ const styles = StyleSheet.create({
   },
   cardDecimalPrice: {
     fontSize: 10,
+  },
+
+  cardPriceWithoutDiscount: {
+    color: GRAY_COLOR,
+    fontWeight: 'normal',
+    textDecorationLine: 'line-through',
   },
 
   badgesContainer: { flexDirection: 'row', columnGap: 2 },
@@ -142,13 +161,15 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_COLOR_DARK,
   },
 
+  benefitsText: { color: GRAY_COLOR, fontFamily: BOLD_BODY_FONT, fontSize: 12 },
+
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    borderColor: GRAY_COLOR_LIGHT,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-		padding: 2,
-    borderRadius: 5,
+    padding: 2,
   },
   quantityText: {
     color: GRAY_COLOR_DARK,

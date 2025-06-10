@@ -1,4 +1,5 @@
 import {
+  GRAY_COLOR,
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR_DARK,
@@ -9,8 +10,14 @@ import type { Product } from '@/interfaces/Product';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeFirstLetter } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo, useState } from 'react';
-import { Image, StyleSheet, Text, View, type DimensionValue } from 'react-native';
+import { memo } from 'react';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  type DimensionValue,
+} from 'react-native';
 import { Button } from '../Button';
 
 interface ClientProductCardProps {
@@ -20,11 +27,12 @@ interface ClientProductCardProps {
 
 export const ClientProductCard = memo(
   ({ data, width = 150 }: ClientProductCardProps) => {
-    const { _id, imagen, nombre, precio, aroma, tipo, id_categoria } = data;
-    const [int, decimal] = (precio - 0.01).toString().split('.');
-
     const { addProductToCart } = useCartStore();
-    const [quantity, setQuantity] = useState(1);
+
+    const { imagen, nombre, precio, aroma, tipo, id_categoria, descripcion } =
+      data;
+    const [int, decimal] = precio.toFixed(2).split('.');
+    const priceWithoutDiscount = precio * 1.1;
 
     return (
       <View style={[styles.productCard, { width }]}>
@@ -54,15 +62,37 @@ export const ClientProductCard = memo(
               </Text>
             </View>
           </View>
+
+          <Text
+            style={{ fontSize: 12, color: GRAY_COLOR }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {descripcion}
+          </Text>
+
           <Text style={styles.priceText}>
-            $ {int}.<Text style={{ fontSize: 9 }}>{decimal}</Text>
+            $ {int}.
+            <Text style={{ fontSize: 10 }}>
+              {decimal}{' '}
+              <Text
+                style={{
+                  color: GRAY_COLOR,
+                  fontWeight: 'normal',
+                  textDecorationLine: 'line-through',
+                }}
+              >
+                $ {priceWithoutDiscount.toFixed(2)}
+              </Text>
+            </Text>
           </Text>
           <View style={styles.actionRow}>
             <Button
               label="¡Lo quiero!"
               icon="cart-plus"
-              onPress={() => addProductToCart(data, quantity)}
+              onPress={() => addProductToCart(data, 1)}
               paddingVertical={5}
+              moreStyles={{ flex: 1 }}
             />
             <MaterialCommunityIcons
               name="heart-outline"
@@ -87,7 +117,8 @@ const styles = StyleSheet.create({
   productImage: {
     aspectRatio: 1 / 1,
     borderRadius: 10,
-    backgroundColor: GRAY_COLOR_LIGHT,
+    borderWidth: 2,
+    borderColor: GRAY_COLOR_LIGHT,
   },
   productInfo: {
     rowGap: 2,
@@ -123,6 +154,7 @@ const styles = StyleSheet.create({
   priceText: {
     color: PRIMARY_COLOR_DARK,
     fontWeight: 'bold',
+    fontSize: 16,
   },
   actionRow: { flexDirection: 'row', columnGap: 5, alignItems: 'center' },
 });

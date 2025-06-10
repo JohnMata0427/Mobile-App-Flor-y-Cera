@@ -4,10 +4,10 @@ import { InputField } from '@/components/fields/InputField';
 import { MultipleCheckBoxField } from '@/components/fields/MultipleCheckBoxField';
 import { PickerField } from '@/components/fields/PickerField';
 import { SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { BODY_FONT } from '@/constants/Fonts';
 import { IngredientsContext } from '@/contexts/IngredientsContext';
 import { ProductsContext } from '@/contexts/ProductsContext';
-import type { IDCategoria, Product } from '@/interfaces/Product';
+import type { Product } from '@/interfaces/Product';
 import { toFormData } from '@/utils/toFormData';
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import { use, useEffect, useState } from 'react';
@@ -112,7 +112,7 @@ export function ProductModal({
         aroma,
         tipo,
       } = product;
-      const categoria = (id_categoria as IDCategoria)?._id ?? id_categoria;
+      const categoria = id_categoria?._id ?? id_categoria;
 
       setSelectedImage(imagen);
       setSelectedCategory(categoria);

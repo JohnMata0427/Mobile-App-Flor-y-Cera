@@ -17,13 +17,11 @@ export const ClientHeader = memo(() => {
 
   return (
     <ImageBackground
-      source={{
-        uri: 'https://thebubblesbathco.com/cdn/shop/files/LavenderSoap.jpg',
-      }}
+      source={require('@/assets/banner-example.png')}
       style={{ paddingBottom: '40%' }}
     >
       <BlurView
-        intensity={10}
+        intensity={5}
         tint="dark"
         experimentalBlurMethod="dimezisBlurView"
         style={[styles.searchContainer, { paddingTop: top + 5 }]}

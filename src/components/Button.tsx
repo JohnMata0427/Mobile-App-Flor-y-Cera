@@ -1,8 +1,14 @@
 import { PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 interface ButtonProps {
   label?: string;
@@ -12,6 +18,7 @@ interface ButtonProps {
   borderColor?: string;
   paddingVertical?: number;
   paddingHorizontal?: number;
+  moreStyles?: StyleProp<ViewStyle>;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
@@ -24,10 +31,20 @@ export const Button = memo(
     borderColor = PRIMARY_COLOR_DARK,
     paddingVertical = 10,
     paddingHorizontal = 10,
+    moreStyles,
     icon,
   }: ButtonProps) => (
     <Pressable
-      style={[styles.button, { backgroundColor, borderColor, paddingVertical, paddingHorizontal }]}
+      style={[
+        styles.button,
+        {
+          backgroundColor,
+          borderColor,
+          paddingVertical,
+          paddingHorizontal,
+        },
+        moreStyles,
+      ]}
       onPress={onPress}
       disabled={disabled}
     >
@@ -52,7 +69,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 2,
     borderRightWidth: 2,
-    flex: 1,
   },
   buttonText: {
     fontWeight: 'bold',
