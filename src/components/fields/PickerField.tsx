@@ -1,8 +1,4 @@
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-} from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
 import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';

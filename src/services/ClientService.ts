@@ -1,10 +1,6 @@
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/admin/clientes';
 
-export const getClientsRequest = async (
-  page: number,
-  limit: number,
-  token: string,
-) => {
+export const getClientsRequest = async (page: number, limit: number, token: string) => {
   const response = await fetch(`${BACKEND_URL}?page=${page}&limit=${limit}`, {
     method: 'GET',
     headers: {
@@ -16,10 +12,7 @@ export const getClientsRequest = async (
   return await response.json();
 };
 
-export const activateClientAccountRequest = async (
-  id: string,
-  token: string,
-) => {
+export const activateClientAccountRequest = async (id: string, token: string) => {
   const response = await fetch(`${BACKEND_URL}/activar/${id}`, {
     method: 'PATCH',
     headers: {

@@ -15,57 +15,48 @@ interface PaginationProps {
   totalPages: number;
 }
 
-export const Pagination = memo(
-  ({ page, setPage, totalPages }: PaginationProps) => {
-    return (
-      <View style={styles.footerRow}>
+export const Pagination = memo(({ page, setPage, totalPages }: PaginationProps) => {
+  return (
+    <View style={styles.footerRow}>
+      <Pressable
+        onPress={() => setPage(prev => prev - 1)}
+        disabled={page === 1}
+        style={[
+          styles.paginationButton,
+          page === 1 ? styles.iconDisabledButtons : styles.iconButtons,
+        ]}
+      >
+        <MaterialCommunityIcons name="chevron-left" size={20} color="white" />
+      </Pressable>
+      {Array.from({ length: totalPages }, (_, index) => (
         <Pressable
-          onPress={() => setPage(prev => prev - 1)}
-          disabled={page === 1}
+          key={index}
+          onPress={() => setPage(index + 1)}
+          disabled={page === index + 1}
           style={[
             styles.paginationButton,
-            page === 1 ? styles.iconDisabledButtons : styles.iconButtons,
+            {
+              backgroundColor: page === index + 1 ? PRIMARY_COLOR : GRAY_COLOR_DARK,
+              borderColor: page === index + 1 ? PRIMARY_COLOR_DARK : 'black',
+            },
           ]}
         >
-          <MaterialCommunityIcons name="chevron-left" size={20} color="white" />
+          <Text style={styles.paginationText}>{index + 1}</Text>
         </Pressable>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <Pressable
-            key={index}
-            onPress={() => setPage(index + 1)}
-            disabled={page === index + 1}
-            style={[
-              styles.paginationButton,
-              {
-                backgroundColor:
-                  page === index + 1 ? PRIMARY_COLOR : GRAY_COLOR_DARK,
-                borderColor: page === index + 1 ? PRIMARY_COLOR_DARK : 'black',
-              },
-            ]}
-          >
-            <Text style={styles.paginationText}>{index + 1}</Text>
-          </Pressable>
-        ))}
-        <Pressable
-          onPress={() => setPage(prev => prev + 1)}
-          disabled={page === totalPages}
-          style={[
-            styles.paginationButton,
-            page === totalPages
-              ? styles.iconDisabledButtons
-              : styles.iconButtons,
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={20}
-            color="white"
-          />
-        </Pressable>
-      </View>
-    );
-  },
-);
+      ))}
+      <Pressable
+        onPress={() => setPage(prev => prev + 1)}
+        disabled={page === totalPages}
+        style={[
+          styles.paginationButton,
+          page === totalPages ? styles.iconDisabledButtons : styles.iconButtons,
+        ]}
+      >
+        <MaterialCommunityIcons name="chevron-right" size={20} color="white" />
+      </Pressable>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   footerRow: {

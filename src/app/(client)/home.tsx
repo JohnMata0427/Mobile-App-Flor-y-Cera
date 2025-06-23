@@ -10,7 +10,7 @@ import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link } from 'expo-router';
-import { use } from 'react';
+import { memo, use } from 'react';
 import {
   FlatList,
   Image,
@@ -21,7 +21,7 @@ import {
   View,
 } from 'react-native';
 
-function Home() {
+const Home = memo(() => {
   const { products } = use(ProductsContext);
 
   return (
@@ -32,22 +32,14 @@ function Home() {
         <RefreshControl
           refreshing={false}
           onRefresh={() => {}}
-          colors={[
-            PRIMARY_COLOR_DARK,
-            SECONDARY_COLOR_DARK,
-            TERTIARY_COLOR_DARK,
-          ]}
+          colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
         />
       }
     >
       <ClientHeader />
 
       <View style={styles.headerList}>
-        <MaterialCommunityIcons
-          name="gift-open"
-          size={18}
-          color={GRAY_COLOR_DARK}
-        />
+        <MaterialCommunityIcons name="gift-open" size={18} color={GRAY_COLOR_DARK} />
         <Text style={styles.headerListText}>Beneficios</Text>
       </View>
       <FlatList
@@ -81,11 +73,7 @@ function Home() {
         }}
       >
         <View style={styles.headerList}>
-          <MaterialCommunityIcons
-            name="star-plus"
-            size={18}
-            color={GRAY_COLOR_DARK}
-          />
+          <MaterialCommunityIcons name="star-plus" size={18} color={GRAY_COLOR_DARK} />
           <Text style={styles.headerListText}>Nuevos productos</Text>
         </View>
         <Link style={styles.headerList} href="/(client)/catalog">
@@ -114,13 +102,10 @@ function Home() {
         renderItem={({ item }) => <ClientProductCard data={item} />}
       />
 
-      <Image
-        source={require('@/assets/ia-banner.png')}
-        style={styles.bannerIA}
-      />
+      <Image source={require('@/assets/ia-banner.png')} style={styles.bannerIA} />
     </ScrollView>
   );
-}
+})
 
 export default function HomeScreen() {
   return (
@@ -174,25 +159,21 @@ const benefitCards = [
   {
     name: 'leaf',
     title: 'Ingredientes naturales',
-    description:
-      'Utilizamos ingredientes de origen natural y de la más alta calidad.',
+    description: 'Utilizamos ingredientes de origen natural y de la más alta calidad.',
   },
   {
     name: 'diamond-stone',
     title: 'Producción artesanal',
-    description:
-      'Cuidamos cada detalle en la producción de nuestros productos.',
+    description: 'Cuidamos cada detalle en la producción de nuestros productos.',
   },
   {
     name: 'flower',
     title: 'Personalización',
-    description:
-      'Crea tu propio producto con ingredientes y aromas a tu gusto.',
+    description: 'Crea tu propio producto con ingredientes y aromas a tu gusto.',
   },
   {
     name: 'earth',
     title: 'Beneficios ecológicos',
-    description:
-      'Contribuimos al cuidado del planeta reduciendo el uso de plástico.',
+    description: 'Contribuimos al cuidado del planeta reduciendo el uso de plástico.',
   },
 ];

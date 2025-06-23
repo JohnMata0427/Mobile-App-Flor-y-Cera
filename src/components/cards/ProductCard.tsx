@@ -22,16 +22,11 @@ interface ProductCardProps {
 export const ProductCard = memo(({ data, children }: ProductCardProps) => {
   const { imagen, nombre, precio, stock, id_categoria } = data;
 
-  const categoria =
-    (id_categoria as IDCategoria)?.nombre?.split(' ')[0] ?? 'Ninguna';
+  const categoria = (id_categoria as IDCategoria)?.nombre?.split(' ')[0] ?? 'Ninguna';
 
   return (
     <View style={styles.productCard}>
-      <Image
-        source={{ uri: imagen }}
-        resizeMode="cover"
-        style={styles.productImage}
-      />
+      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.productImage} />
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{nombre}</Text>
         <View style={styles.priceStockRow}>

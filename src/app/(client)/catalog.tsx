@@ -9,9 +9,11 @@ import {
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
+import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContext';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
+import type { Product } from '@/interfaces/Product';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use } from 'react';
+import { memo, use, useEffect, useMemo, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -24,27 +26,43 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function Catalog() {
+const Catalog = memo(() => {
   const { top } = useSafeAreaInsets();
-  const {
-    products,
-    loading,
-    refreshing,
-    setRefreshing,
-    getProducts,
-    setLimit,
-  } = use(ProductsContext);
+  const { categories } = use(CategoriesContext);
+  const { products, loading, refreshing, setRefreshing, setLimit, getProducts } =
+    use(ProductsContext);
 
-  setLimit(20);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
+  const filterProductsByCategory = useMemo(
+    () => (categoryId: string) => {
+      setSelectedCategory(categoryId);
+      console.log('Selected category:', categoryId);
+
+      if (categoryId === '') {
+        setFilteredProducts(products);
+      } else {
+        const filtered = products.filter(product => product.id_categoria._id === categoryId);
+        setFilteredProducts(filtered);
+      }
+    },
+    [products],
+  );
+
+  useEffect(() => {
+    setLimit(10);
+  }, []);
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
 
   return (
     <>
       <View style={[styles.searchContainer, { paddingTop: top + 5 }]}>
         <View style={{ flex: 1 }}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Jabón de canela..."
-          />
+          <TextInput style={styles.searchInput} placeholder="Jabón de canela..." />
           <Pressable style={styles.searchIcon}>
             <MaterialCommunityIcons name="magnify" size={20} color="white" />
           </Pressable>
@@ -70,33 +88,21 @@ function Catalog() {
         >
           <View style={styles.headerContainer}>
             <View style={styles.titleContainer}>
-              <MaterialCommunityIcons
-                name="star-shooting"
-                size={18}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="star-shooting" size={18} color={GRAY_COLOR_DARK} />
               <Text style={styles.titleText}>Explora nuestros productos</Text>
             </View>
             <Pressable onPress={() => {}} style={styles.filterButton}>
-              <MaterialCommunityIcons
-                name="filter"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
-              <MaterialCommunityIcons
-                name="sort"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="filter" size={20} color={GRAY_COLOR_DARK} />
+              <MaterialCommunityIcons name="sort" size={20} color={GRAY_COLOR_DARK} />
             </Pressable>
           </View>
 
           <View>
             <View style={styles.categoryContainer}>
-              <Pressable onPress={() => {}}>
+              <Pressable onPress={() => filterProductsByCategory('')}>
                 <Text
                   style={[
-                    styles.selectedCategoryText,
+                    selectedCategory === '' ? styles.selectedCategoryText : {},
                     { paddingHorizontal: 10 },
                   ]}
                 >
@@ -104,23 +110,33 @@ function Catalog() {
                 </Text>
               </Pressable>
 
-              <Pressable onPress={() => {}}>
-                <Text style={{ paddingHorizontal: 10 }}>Jabones</Text>
-              </Pressable>
-
-              <Pressable onPress={() => {}}>
-                <Text style={{ paddingHorizontal: 10 }}>Velas</Text>
-              </Pressable>
+              <FlatList
+                data={categories}
+                keyExtractor={({ _id }) => _id.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <Pressable onPress={() => filterProductsByCategory(item._id)}>
+                    <Text
+                      style={[
+                        selectedCategory === item._id ? styles.selectedCategoryText : {},
+                        { paddingHorizontal: 10 },
+                      ]}
+                    >
+                      {item.nombre}
+                    </Text>
+                  </Pressable>
+                )}
+              />
             </View>
             <Text style={styles.informationText}>
-              Explora nuestra amplia gama de productos artesanales, desde
-              jabones naturales hasta velas aromáticas, todos hechos con amor y
-              cuidado.
+              Explora nuestra amplia gama de productos artesanales, desde jabones naturales hasta
+              velas aromáticas, todos hechos con amor y cuidado.
             </Text>
           </View>
 
           <FlatList
-            data={products}
+            data={filteredProducts}
             keyExtractor={({ _id }) => _id.toString()}
             showsVerticalScrollIndicator={false}
             scrollEnabled={false}
@@ -128,21 +144,21 @@ function Catalog() {
             contentContainerStyle={{ paddingHorizontal: 10, rowGap: 10 }}
             legacyImplementation={false}
             numColumns={2}
-            renderItem={({ item }) => (
-              <ClientProductCard data={item} width="48%" />
-            )}
+            renderItem={({ item }) => <ClientProductCard data={item} width="48%" />}
           />
         </ScrollView>
       )}
     </>
   );
-}
+});
 
 export default function CatalogScreen() {
   return (
-    <ProductsProvider>
-      <Catalog />
-    </ProductsProvider>
+    <CategoriesProvider>
+      <ProductsProvider>
+        <Catalog />
+      </ProductsProvider>
+    </CategoriesProvider>
   );
 }
 

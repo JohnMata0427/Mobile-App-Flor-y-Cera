@@ -6,13 +6,7 @@ import {
   updateIngredientRequest,
 } from '@/services/IngredientService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface Response {
   msg: string;
@@ -23,10 +17,7 @@ interface IngredientsContextProps {
   loading: boolean;
   setRefreshing: React.Dispatch<React.SetStateAction<number>>;
   createIngredient: (ingredient: FormData) => Promise<Response>;
-  updateIngredient: (
-    ingredientId: string,
-    ingredient: FormData,
-  ) => Promise<Response>;
+  updateIngredient: (ingredientId: string, ingredient: FormData) => Promise<Response>;
   deleteIngredient: (ingredientId: string) => Promise<Response>;
 }
 
@@ -39,16 +30,12 @@ export const IngredientsContext = createContext<IngredientsContextProps>({
   deleteIngredient: async (_: string) => ({ msg: '' }),
 });
 
-export const IngredientsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const IngredientsProvider = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuthStore();
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(100);
   const [refreshing, setRefreshing] = useState(0);
 
   const createIngredient = useCallback(async (ingredient: FormData) => {
@@ -61,22 +48,15 @@ export const IngredientsProvider = ({
     }
   }, []);
 
-  const updateIngredient = useCallback(
-    async (id: string, ingredient: FormData) => {
-      try {
-        const { ingrediente } = await updateIngredientRequest(
-          id,
-          ingredient,
-          token,
-        );
-        setIngredients(prev => prev.map(p => (p._id === id ? ingrediente : p)));
-        return { msg: 'Ingrediento actualizado exitosamente' };
-      } catch {
-        return { msg: 'Ocurrio un error al actualizar el ingrediente' };
-      }
-    },
-    [],
-  );
+  const updateIngredient = useCallback(async (id: string, ingredient: FormData) => {
+    try {
+      const { ingrediente } = await updateIngredientRequest(id, ingredient, token);
+      setIngredients(prev => prev.map(p => (p._id === id ? ingrediente : p)));
+      return { msg: 'Ingrediento actualizado exitosamente' };
+    } catch {
+      return { msg: 'Ocurrio un error al actualizar el ingrediente' };
+    }
+  }, []);
 
   const deleteIngredient = useCallback(async (id: string) => {
     try {

@@ -12,9 +12,12 @@ import {
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useCartStore } from '@/store/useCartStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { CardField, CardForm, CardFormView, initPaymentSheet, PlatformPay, PlatformPayButton, presentPaymentSheet, StripeContainer, StripeProvider, useStripe } from '@stripe/stripe-react-native';
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   FlatList,
+  KeyboardAvoidingView,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -23,11 +26,31 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+const EXPO_PUBLIC_STRIPE_API_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY ?? '';
+
 export default function CartScreen() {
+  const { createPaymentMethod } = useStripe();
   const { top } = useSafeAreaInsets();
-  const { products, totalProducts, getClientCart, totalPrice } = useCartStore();
+  const { products, totalProducts, getClientCart, checkout, totalPrice } = useCartStore();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cardDetails, setCardDetails] = useState(null);
+
+  const handlePayment = async () => {
+    if (cardDetails) {
+      const { error, paymentMethod } = await createPaymentMethod({
+        paymentMethodType: 'Card',
+        paymentMethodData: cardDetails,
+      });
+
+      if (error) {
+        console.error('Payment method creation failed:', error);
+      }
+
+      const message = await checkout(paymentMethod?.id ?? '');
+      Alert.alert('Mensaje del sistema', message);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -36,61 +59,83 @@ export default function CartScreen() {
   }, [refreshing]);
 
   return (
-    <>
-      <View style={[styles.header, { paddingTop: top + 10 }]}>
-        <Pressable style={styles.todoButton}>
-          <MaterialCommunityIcons
-            name="circle-outline"
-            size={20}
-            color={GRAY_COLOR_DARK}
-          />
-          <Text style={styles.todoText}>Todo</Text>
-        </Pressable>
-        <View style={styles.cartInfo}>
-          <MaterialCommunityIcons name="cart-variant" size={18} />
-          <View>
-            <Text style={styles.cartText}>Mi carrito ({totalProducts})</Text>
-            <Text style={styles.cartInfoText}>Envíos a todo Ecuador</Text>
+    <StripeProvider publishableKey={EXPO_PUBLIC_STRIPE_API_KEY}>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <View style={[styles.header, { paddingTop: top + 10 }]}>
+          <Pressable style={styles.todoButton}>
+            <MaterialCommunityIcons
+              name="circle-outline"
+              size={20}
+              color={GRAY_COLOR_DARK}
+            />
+            <Text style={styles.todoText}>Todo</Text>
+          </Pressable>
+          <View style={styles.cartInfo}>
+            <MaterialCommunityIcons name="cart-variant" size={18} />
+            <View>
+              <Text style={styles.cartText}>Mi carrito ({totalProducts})</Text>
+              <Text style={styles.cartInfoText}>Envíos a todo Ecuador</Text>
+            </View>
           </View>
+          <Pressable style={styles.buyButton}>
+            <Text style={styles.buyText}>Comprar</Text>
+            <MaterialCommunityIcons name="chevron-right" size={18} />
+          </Pressable>
         </View>
-        <Pressable style={styles.buyButton}>
-          <Text style={styles.buyText}>Comprar</Text>
-          <MaterialCommunityIcons name="chevron-right" size={18} />
-        </Pressable>
-      </View>
 
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={async () => setRefreshing(!refreshing)}
-            colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
-          />
-        }
-        data={products}
-        contentContainerStyle={styles.flatListContent}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => <CartItemCard data={item} />}
-      />
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={async () => setRefreshing(!refreshing)}
+              colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+            />
+          }
+          data={products}
+          contentContainerStyle={styles.flatListContent}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item }) => <CartItemCard data={item} />}
+        />
 
-      {totalProducts > 0 && (
-        <View style={styles.footerContainer}>
-          <View>
-            <Text style={styles.priceText}>${totalPrice.toFixed(2)}</Text>
-            <Text style={{ fontSize: 12, color: GRAY_COLOR }}>
-              Total de productos: {totalProducts} producto(s)
-            </Text>
+        {/* <PlatformPayButton
+          style={{ height: 50 }}
+          onPress={() => {}}
+        /> */}
+
+
+
+        <Text style={{ alignSelf: 'center', paddingBottom: 10, color: GRAY_COLOR }}>
+          Ingresa los datos de tu tarjeta para continuar con el pago
+        </Text>
+
+        <CardField
+          postalCodeEnabled={false}
+          style={{ height: 50 }}
+          onCardChange={(details: any) => setCardDetails(details)}
+          cardStyle={{
+            fontFamily: BOLD_BODY_FONT,
+          }}
+        />
+
+        {totalProducts > 0 && (
+          <View style={styles.footerContainer}>
+            <View>
+              <Text style={styles.priceText}>${totalPrice.toFixed(2)}</Text>
+              <Text style={{ fontSize: 12, color: GRAY_COLOR }}>
+                Total de productos: {totalProducts} producto(s)
+              </Text>
+            </View>
+            <Button
+              label="Hacer pedido"
+              icon="tag"
+              onPress={handlePayment}
+              paddingHorizontal={10}
+              paddingVertical={5}
+            />
           </View>
-          <Button
-            label="Hacer pedido"
-            icon="tag"
-            onPress={() => console.log('Hacer pedido')}
-            paddingHorizontal={10}
-            paddingVertical={5}
-          />
-        </View>
-      )}
-    </>
+        )}
+      </KeyboardAvoidingView>
+    </StripeProvider>
   );
 }
 

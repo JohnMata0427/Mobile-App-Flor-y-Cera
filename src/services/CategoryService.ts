@@ -1,8 +1,7 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/productos';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/categorias';
 
-export const getProductsRequest = async (page: number, limit: number) => {
-  const response = await fetch(`${BACKEND_URL}?page=${page}&limit=${limit}`, {
-    method: 'GET',
+export const getCategoriesRequest = async () => {
+  const response = await fetch(BACKEND_URL, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -11,7 +10,7 @@ export const getProductsRequest = async (page: number, limit: number) => {
   return await response.json();
 };
 
-export const createProductRequest = async (body: FormData, token: string) => {
+export const createCategoryRequest = async (body: FormData, token: string) => {
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
     headers: {
@@ -24,7 +23,11 @@ export const createProductRequest = async (body: FormData, token: string) => {
   return await response.json();
 };
 
-export const updateProductRequest = async (id: string, body: FormData, token: string) => {
+export const updateCategoryRequest = async (
+  id: string,
+  body: FormData,
+  token: string,
+) => {
   const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'PUT',
     headers: {
@@ -37,7 +40,7 @@ export const updateProductRequest = async (id: string, body: FormData, token: st
   return await response.json();
 };
 
-export const deleteProductRequest = async (id: string, token: string) => {
+export const deleteCategoryRequest = async (id: string, token: string) => {
   const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'DELETE',
     headers: {

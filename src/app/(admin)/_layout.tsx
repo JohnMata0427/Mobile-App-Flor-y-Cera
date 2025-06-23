@@ -15,10 +15,7 @@ export default function AdminLayout() {
 
   return (
     <View
-      style={[
-        tabsGlobalStyles.viewContent,
-        { paddingTop: top + 5, paddingBottom: 5 },
-      ]}
+      style={[tabsGlobalStyles.viewContent, { paddingTop: top + 5, paddingBottom: 5 }]}
     >
       <Tabs
         screenOptions={{

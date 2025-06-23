@@ -17,81 +17,73 @@ interface InvoiceCardProps {
   children?: React.ReactNode;
 }
 
-export const InvoiceCard = memo(
-  ({ data, isPending, children }: InvoiceCardProps) => {
-    const {
-      cliente_id: { nombre, apellido, email },
-      fecha_venta,
-      productos: { length },
-      estado,
-    } = data;
+export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps) => {
+  const {
+    cliente_id: { nombre, apellido, email },
+    fecha_venta,
+    productos: { length },
+    estado,
+  } = data;
 
-    return (
-      <View style={styles.invoiceCard}>
-        <View style={styles.invoiceInfo}>
-          <Text style={styles.customerName}>
-            {nombre} {apellido}
+  return (
+    <View style={styles.invoiceCard}>
+      <View style={styles.invoiceInfo}>
+        <Text style={styles.customerName}>
+          {nombre} {apellido}
+        </Text>
+        <View style={styles.detailRow}>
+          <MaterialCommunityIcons
+            name="email-check-outline"
+            size={14}
+            color={GRAY_COLOR_DARK}
+          />
+          <Text style={styles.detailText}>{email}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <MaterialCommunityIcons name="calendar" size={14} color={GRAY_COLOR_DARK} />
+          <Text style={styles.detailText}>{toLocaleDate(fecha_venta)}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <MaterialCommunityIcons
+            name="format-list-bulleted"
+            size={14}
+            color={GRAY_COLOR_DARK}
+          />
+          <Text style={styles.detailText}>
+            {length + (length > 1 ? ' productos' : ' producto')}
           </Text>
-          <View style={styles.detailRow}>
-            <MaterialCommunityIcons
-              name="email-check-outline"
-              size={14}
-              color={GRAY_COLOR_DARK}
-            />
-            <Text style={styles.detailText}>{email}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <MaterialCommunityIcons
-              name="calendar"
-              size={14}
-              color={GRAY_COLOR_DARK}
-            />
-            <Text style={styles.detailText}>{toLocaleDate(fecha_venta)}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <MaterialCommunityIcons
-              name="format-list-bulleted"
-              size={14}
-              color={GRAY_COLOR_DARK}
-            />
-            <Text style={styles.detailText}>
-              {length + (length > 1 ? ' productos' : ' producto')}
-            </Text>
-          </View>
-          <View
+        </View>
+        <View
+          style={[
+            styles.detailRow,
+            styles.statusBadge,
+            {
+              backgroundColor: isPending ? GRAY_COLOR_LIGHT : GREEN_COLOR_LIGHT,
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name="file-document-outline"
+            size={14}
+            color={isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK}
+          />
+          <Text
             style={[
-              styles.detailRow,
-              styles.statusBadge,
+              styles.detailText,
               {
-                backgroundColor: isPending
-                  ? GRAY_COLOR_LIGHT
-                  : GREEN_COLOR_LIGHT,
+                color: isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK,
+                textTransform: 'capitalize',
               },
             ]}
           >
-            <MaterialCommunityIcons
-              name="file-document-outline"
-              size={14}
-              color={isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK}
-            />
-            <Text
-              style={[
-                styles.detailText,
-                {
-                  color: isPending ? GRAY_COLOR_DARK : GREEN_COLOR_DARK,
-                  textTransform: 'capitalize',
-                },
-              ]}
-            >
-              {estado}
-            </Text>
-          </View>
+            {estado}
+          </Text>
         </View>
-        {children}
       </View>
-    );
-  },
-);
+      {children}
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   invoiceCard: {

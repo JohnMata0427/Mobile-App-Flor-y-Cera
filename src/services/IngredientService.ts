@@ -11,10 +11,7 @@ export const getIngredientsRequest = async (page: number, limit: number) => {
   return await response.json();
 };
 
-export const createIngredientRequest = async (
-  body: FormData,
-  token: string,
-) => {
+export const createIngredientRequest = async (body: FormData, token: string) => {
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
     headers: {

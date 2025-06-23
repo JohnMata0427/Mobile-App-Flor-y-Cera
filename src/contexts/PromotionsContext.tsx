@@ -6,13 +6,7 @@ import {
   updatePromotionRequest,
 } from '@/services/PromotionService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface Response {
   msg: string;
@@ -46,11 +40,7 @@ export const PromotionsContext = createContext<PromotionsContextProps>({
   deletePromotion: async (_: string) => ({ msg: '' }),
 });
 
-export const PromotionsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const PromotionsProvider = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuthStore();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,10 +53,7 @@ export const PromotionsProvider = ({
     try {
       setLoading(true);
       setPromotions([]);
-      const { promociones, totalPaginas } = await getPromotionsRequest(
-        page,
-        limit,
-      );
+      const { promociones, totalPaginas } = await getPromotionsRequest(page, limit);
       setTotalPages(totalPaginas);
       setPromotions(promociones);
     } catch {
@@ -92,11 +79,7 @@ export const PromotionsProvider = ({
 
   const updatePromotion = useCallback(async (id: string, product: FormData) => {
     try {
-      const { promocion, msg } = await updatePromotionRequest(
-        id,
-        product,
-        token,
-      );
+      const { promocion, msg } = await updatePromotionRequest(id, product, token);
       promocion?._id &&
         setPromotions(prev => prev.map(p => (p._id === id ? promocion : p)));
       return { msg };

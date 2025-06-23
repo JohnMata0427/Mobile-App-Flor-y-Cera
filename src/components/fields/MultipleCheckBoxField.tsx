@@ -72,27 +72,25 @@ export const MultipleCheckBoxField = memo(
   },
 );
 
-const CheckBox = memo(
-  ({ label, value, disabled = false, onPress }: CheckBoxProps) => (
-    <Pressable
-      style={[
-        styles.checkbox,
-        {
-          backgroundColor: value ? GRAY_COLOR_LIGHT : 'white',
-        },
-      ]}
-      disabled={disabled}
-      onPress={() => onPress(!value)}
-    >
-      <MaterialCommunityIcons
-        name={value ? 'check-circle' : 'circle-outline'}
-        size={20}
-        color={value ? PRIMARY_COLOR_DARK : GRAY_COLOR_DARK}
-      />
-      <Text style={styles.textInput}>{label}</Text>
-    </Pressable>
-  ),
-);
+const CheckBox = memo(({ label, value, disabled = false, onPress }: CheckBoxProps) => (
+  <Pressable
+    style={[
+      styles.checkbox,
+      {
+        backgroundColor: value ? GRAY_COLOR_LIGHT : 'white',
+      },
+    ]}
+    disabled={disabled}
+    onPress={() => onPress(!value)}
+  >
+    <MaterialCommunityIcons
+      name={value ? 'check-circle' : 'circle-outline'}
+      size={20}
+      color={value ? PRIMARY_COLOR_DARK : GRAY_COLOR_DARK}
+    />
+    <Text style={styles.textInput}>{label}</Text>
+  </Pressable>
+));
 
 const styles = StyleSheet.create({
   container: {

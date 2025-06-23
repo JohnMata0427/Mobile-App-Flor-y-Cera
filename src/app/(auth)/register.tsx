@@ -52,8 +52,8 @@ export default function Login() {
             />
             <Text style={styles.headerTitle}>Registro a Flor & Cera</Text>
             <Text style={styles.headerSubtitle}>
-              Descubre la magia de Flor & Cera, donde la naturaleza y la
-              creatividad se unen para ofrecerte una experiencia única
+              Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se
+              unen para ofrecerte una experiencia única
             </Text>
           </View>
           <View style={styles.bodyContainer}>
@@ -199,9 +199,7 @@ export default function Login() {
             </View>
 
             <View style={styles.footerContainer}>
-              {message && (
-                <Text style={styles.errorMessageText}>{message}</Text>
-              )}
+              {message && <Text style={styles.errorMessageText}>{message}</Text>}
 
               <Button
                 label="Crear una cuenta"
@@ -211,9 +209,7 @@ export default function Login() {
               />
             </View>
 
-            <Text style={styles.anotherMethodText}>
-              O puedes registrarte con
-            </Text>
+            <Text style={styles.anotherMethodText}>O puedes registrarte con</Text>
 
             <View style={styles.methodsContainer}>
               <Pressable style={styles.methodButton}>

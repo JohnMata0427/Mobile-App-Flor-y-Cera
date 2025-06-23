@@ -31,9 +31,7 @@ import {
 } from 'react-native';
 
 function Invoices() {
-  const [selectedInvoice, setSelectedInvoice] = useState<Invoice>(
-    {} as Invoice,
-  );
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice>({} as Invoice);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     invoices,
@@ -62,10 +60,7 @@ function Invoices() {
           {
             text: 'Aceptar',
             onPress: async () => {
-              await updateInvoiceStatus(
-                _id,
-                isPending ? 'finalizado' : 'pendiente',
-              );
+              await updateInvoiceStatus(_id, isPending ? 'finalizado' : 'pendiente');
             },
           },
         ],
@@ -141,20 +136,12 @@ function Invoices() {
                         style={[
                           styles.actionButton,
                           {
-                            backgroundColor: isPending
-                              ? GREEN_COLOR
-                              : RED_COLOR,
-                            borderColor: isPending
-                              ? GREEN_COLOR_DARK
-                              : RED_COLOR_DARK,
+                            backgroundColor: isPending ? GREEN_COLOR : RED_COLOR,
+                            borderColor: isPending ? GREEN_COLOR_DARK : RED_COLOR_DARK,
                           },
                         ]}
                         onPress={() =>
-                          showChangeStateAlert(
-                            isPending,
-                            _id,
-                            `${nombre} ${apellido}`,
-                          )
+                          showChangeStateAlert(isPending, _id, `${nombre} ${apellido}`)
                         }
                       >
                         <MaterialCommunityIcons
@@ -170,21 +157,12 @@ function Invoices() {
             }}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <MaterialCommunityIcons
-                  name="file-document-outline"
-                  size={30}
-                />
-                <Text style={styles.emptyText}>
-                  No hay facturas registradas
-                </Text>
+                <MaterialCommunityIcons name="file-document-outline" size={30} />
+                <Text style={styles.emptyText}>No hay facturas registradas</Text>
               </View>
             }
             ListHeaderComponent={
-              <Pagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              />
+              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
             }
           />
         )}

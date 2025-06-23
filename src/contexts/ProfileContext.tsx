@@ -1,16 +1,7 @@
 import type { Client } from '@/interfaces/Client';
-import {
-  getProfileRequest,
-  updateProfileRequest,
-} from '@/services/ProfileService';
+import { getProfileRequest, updateProfileRequest } from '@/services/ProfileService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ProfileContextProps {
   client: Client;
@@ -53,8 +44,8 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-		getProfile();
-	}, []);
+    getProfile();
+  }, []);
 
   const contextValue = useMemo(
     () => ({ client, loading, getProfile, updateProfile }),
@@ -62,8 +53,6 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ProfileContext.Provider value={contextValue}>
-      {children}
-    </ProfileContext.Provider>
+    <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>
   );
 }

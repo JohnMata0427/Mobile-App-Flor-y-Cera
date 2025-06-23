@@ -19,88 +19,71 @@ interface ClientCardProps {
   children?: React.ReactNode;
 }
 
-export const ClientCard = memo(
-  ({ data, isActive, children }: ClientCardProps) => {
-    const {
-      nombre,
-      apellido,
-      email,
-      direccion,
-      imagen,
-      genero,
-      estado,
-      createdAt,
-    } = data;
+export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) => {
+  const { nombre, apellido, email, direccion, imagen, genero, estado, createdAt } = data;
 
-    const isMale = genero === 'Masculino';
-    const defaultImageUrl =
-      genero === 'Masculino'
-        ? require('@/assets/male-user-default.jpg')
-        : require('@/assets/female-user-default.jpg');
-    return (
-      <View style={styles.clientCard}>
-        <View style={styles.clientInfoRow}>
-          <View style={styles.clientInnerInfo}>
-            <Image
-              style={styles.clientImage}
-              source={imagen ? { uri: imagen } : defaultImageUrl}
-              resizeMode="cover"
+  const isMale = genero === 'Masculino';
+  const defaultImageUrl =
+    genero === 'Masculino'
+      ? require('@/assets/male-user-default.jpg')
+      : require('@/assets/female-user-default.jpg');
+  return (
+    <View style={styles.clientCard}>
+      <View style={styles.clientInfoRow}>
+        <View style={styles.clientInnerInfo}>
+          <Image
+            style={styles.clientImage}
+            source={imagen ? { uri: imagen } : defaultImageUrl}
+            resizeMode="cover"
+          />
+          <Text
+            style={[
+              styles.stateBadge,
+              isActive ? styles.badgeActive : styles.badgeInactive,
+            ]}
+          >
+            {estado}
+          </Text>
+        </View>
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailRow}>
+            <Text style={[styles.detailText, { fontFamily: BOLD_BODY_FONT }]}>
+              {nombre} {apellido}
+            </Text>
+            <MaterialCommunityIcons
+              name={isMale ? 'gender-male' : 'gender-female'}
+              size={14}
+              color={isMale ? '#007AFF' : '#FF1493'}
             />
-            <Text
-              style={[
-                styles.stateBadge,
-                isActive ? styles.badgeActive : styles.badgeInactive,
-              ]}
-            >
-              {estado}
+          </View>
+          <View style={styles.detailRow}>
+            <MaterialCommunityIcons
+              name="email-check-outline"
+              size={14}
+              color={GRAY_COLOR_DARK}
+            />
+            <Text style={styles.detailText}>{email}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <MaterialCommunityIcons
+              name="home-outline"
+              size={14}
+              color={GRAY_COLOR_DARK}
+            />
+            <Text style={styles.detailText}>
+              {direccion ?? 'Dirección no registrada'}
             </Text>
           </View>
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailRow}>
-              <Text style={[styles.detailText, { fontFamily: BOLD_BODY_FONT }]}>
-                {nombre} {apellido}
-              </Text>
-              <MaterialCommunityIcons
-                name={isMale ? 'gender-male' : 'gender-female'}
-                size={14}
-                color={isMale ? '#007AFF' : '#FF1493'}
-              />
-            </View>
-            <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                name="email-check-outline"
-                size={14}
-                color={GRAY_COLOR_DARK}
-              />
-              <Text style={styles.detailText}>{email}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                name="home-outline"
-                size={14}
-                color={GRAY_COLOR_DARK}
-              />
-              <Text style={styles.detailText}>
-                {direccion ?? 'Dirección no registrada'}
-              </Text>
-            </View>
-            <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                name="calendar"
-                size={14}
-                color={GRAY_COLOR_DARK}
-              />
-              <Text style={styles.detailText}>
-                Registrado el {toLocaleDate(createdAt)}
-              </Text>
-            </View>
+          <View style={styles.detailRow}>
+            <MaterialCommunityIcons name="calendar" size={14} color={GRAY_COLOR_DARK} />
+            <Text style={styles.detailText}>Registrado el {toLocaleDate(createdAt)}</Text>
           </View>
         </View>
-        {children}
       </View>
-    );
-  },
-);
+      {children}
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   clientCard: {

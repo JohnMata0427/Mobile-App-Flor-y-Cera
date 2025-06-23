@@ -109,9 +109,7 @@ export function PromotionModal({
         style={styles.modalContainer}
       >
         <Text style={styles.titleText}>{action} promoción</Text>
-        <Text style={styles.subtitleText}>
-          Todos los campos son obligatorios
-        </Text>
+        <Text style={styles.subtitleText}>Todos los campos son obligatorios</Text>
         <ImageField
           control={control}
           name="imagen"
@@ -147,33 +145,19 @@ export function PromotionModal({
         />
 
         <View style={styles.actionRow}>
-          <Pressable
-            style={styles.submitButton}
-            onPress={handleSubmit(onSubmit)}
-          >
+          <Pressable style={styles.submitButton} onPress={handleSubmit(onSubmit)}>
             {isLoading ? (
               <ActivityIndicator size={14} color="white" />
             ) : (
               <>
                 <Text style={styles.submitButtonText}>{action}</Text>
-                <MaterialCommunityIcons
-                  name="content-save"
-                  size={14}
-                  color="white"
-                />
+                <MaterialCommunityIcons name="content-save" size={14} color="white" />
               </>
             )}
           </Pressable>
-          <Pressable
-            style={styles.cancelButton}
-            onPress={() => setIsVisible(false)}
-          >
+          <Pressable style={styles.cancelButton} onPress={() => setIsVisible(false)}>
             <Text style={styles.cancelButtonText}>Cancelar</Text>
-            <MaterialCommunityIcons
-              name="close-thick"
-              size={14}
-              color="white"
-            />
+            <MaterialCommunityIcons name="close-thick" size={14} color="white" />
           </Pressable>
         </View>
       </ScrollView>

@@ -46,7 +46,7 @@ export const CLIENT_TABS = [
   },
   {
     name: 'personalization',
-    title: 'Personalización',
+    title: 'Personalizar',
     icon: 'shimmer',
   },
   {
@@ -59,4 +59,4 @@ export const CLIENT_TABS = [
     title: 'Perfil',
     icon: 'badge-account',
   },
-]
+];

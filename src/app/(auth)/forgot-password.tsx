@@ -11,14 +11,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Image,
-  ImageBackground,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Login() {
@@ -62,8 +55,7 @@ export default function Login() {
             />
             <Text style={styles.headerTitle}>Recupera tu contraseña</Text>
             <Text style={styles.headerSubtitle}>
-              Ingresa tu correo electrónico para recibir el código de
-              verificación.
+              Ingresa tu correo electrónico para recibir el código de verificación.
             </Text>
           </View>
           <View style={styles.bodyContainer}>
@@ -87,9 +79,7 @@ export default function Login() {
               keyboardType="email-address"
             />
             <View style={styles.footerContainer}>
-              {message && (
-                <Text style={styles.errorMessageText}>{message}</Text>
-              )}
+              {message && <Text style={styles.errorMessageText}>{message}</Text>}
 
               <Button
                 label="Enviar código"

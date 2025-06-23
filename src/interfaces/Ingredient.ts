@@ -1,4 +1,4 @@
-import type { Category } from "./Category";
+import type { Category } from './Category';
 
 export interface Ingredient {
   _id: string;

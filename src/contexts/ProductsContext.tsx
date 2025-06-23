@@ -6,13 +6,7 @@ import {
   updateProductRequest,
 } from '@/services/ProductService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface Response {
   msg: string;
@@ -48,11 +42,7 @@ export const ProductsContext = createContext<ProductsContextProps>({
   deleteProduct: async (_: string) => ({ msg: '' }),
 });
 
-export const ProductsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ProductsProvider = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuthStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,8 +82,7 @@ export const ProductsProvider = ({
   const updateProduct = useCallback(async (id: string, product: FormData) => {
     try {
       const { producto, msg } = await updateProductRequest(id, product, token);
-      producto?._id &&
-        setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
+      producto?._id && setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
       return { msg };
     } catch {
       return { msg: 'Ocurrio un error al actualizar el producto' };
@@ -146,8 +135,6 @@ export const ProductsProvider = ({
   );
 
   return (
-    <ProductsContext.Provider value={contextValue}>
-      {children}
-    </ProductsContext.Provider>
+    <ProductsContext.Provider value={contextValue}>{children}</ProductsContext.Provider>
   );
 };

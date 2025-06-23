@@ -47,10 +47,12 @@ function Inventory() {
   } = use(ProductsContext);
 
   const showDeleteAlert = useCallback(
-    (productId: string, nombre: string) => {  
+    (productId: string, nombre: string) => {
       Alert.alert(
         'Eliminar producto',
-        '¿Está seguro de que desea eliminar ' + nombre + '? Esta acción no se puede deshacer.',
+        '¿Está seguro de que desea eliminar ' +
+          nombre +
+          '? Esta acción no se puede deshacer.',
         [
           {
             text: 'Cancelar',
@@ -138,21 +140,13 @@ function Inventory() {
                     }}
                     style={[styles.actionButton, styles.editButton]}
                   >
-                    <MaterialCommunityIcons
-                      name="pencil"
-                      size={20}
-                      color="white"
-                    />
+                    <MaterialCommunityIcons name="pencil" size={20} color="white" />
                   </Pressable>
                   <Pressable
                     onPress={() => showDeleteAlert(item._id, item.nombre)}
                     style={[styles.actionButton, styles.deleteButton]}
                   >
-                    <MaterialCommunityIcons
-                      name="trash-can"
-                      size={20}
-                      color="white"
-                    />
+                    <MaterialCommunityIcons name="trash-can" size={20} color="white" />
                   </Pressable>
                 </View>
               </ProductCard>
@@ -166,11 +160,7 @@ function Inventory() {
               </View>
             }
             ListHeaderComponent={
-              <Pagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              />
+              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
             }
           />
         )}

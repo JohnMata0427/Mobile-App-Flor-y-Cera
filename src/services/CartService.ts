@@ -8,9 +8,7 @@ interface CartResponse {
   carrito: Cart;
 }
 
-export const getClientCartRequest = async (
-  token: string,
-): Promise<CartResponse> => {
+export const getClientCartRequest = async (token: string): Promise<CartResponse> => {
   const response = await fetch(BACKEND_URL, {
     method: 'GET',
     headers: {
@@ -88,9 +86,25 @@ export const removeProductFromCartRequest = async (
   return { ok, msg, carrito };
 };
 
-export const clearCartRequest = async (
+export const checkoutCartRequest = async (
   token: string,
-): Promise<CartResponse> => {
+  paymentMethodId: string,
+): Promise<any> => {
+  const response = await fetch(`${BACKEND_URL}/pagar`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ paymentMethodId }),
+  });
+  const { ok } = response;
+  const { msg, venta } = await response.json();
+
+  return { ok, msg, venta };
+};
+
+export const clearCartRequest = async (token: string): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/limpiar`, {
     method: 'DELETE',
     headers: {

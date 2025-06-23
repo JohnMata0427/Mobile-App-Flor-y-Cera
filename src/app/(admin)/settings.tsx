@@ -1,6 +1,4 @@
-import { AdminHeader } from '@/components/AdminHeader';
 import { TERTIARY_COLOR, TERTIARY_COLOR_DARK } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';

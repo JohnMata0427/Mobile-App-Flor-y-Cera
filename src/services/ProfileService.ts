@@ -7,9 +7,7 @@ interface ProfileResponse {
   cliente: Client;
 }
 
-export const getProfileRequest = async (
-  token: string,
-): Promise<ProfileResponse> => {
+export const getProfileRequest = async (token: string): Promise<ProfileResponse> => {
   const response = await fetch(BACKEND_URL, {
     headers: {
       Authorization: `Bearer ${token}`,

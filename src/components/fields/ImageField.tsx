@@ -1,8 +1,4 @@
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-} from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -57,14 +53,8 @@ export const ImageField = memo(
                 />
               ) : (
                 <>
-                  <MaterialCommunityIcons
-                    name="camera-iris"
-                    size={20}
-                    color={color}
-                  />
-                  <Text style={[styles.imageTextBold, { color }]}>
-                    Agrega una imagen
-                  </Text>
+                  <MaterialCommunityIcons name="camera-iris" size={20} color={color} />
+                  <Text style={[styles.imageTextBold, { color }]}>Agrega una imagen</Text>
                   <Text style={styles.placeholerText}>
                     Toca para seleccionar una imagen
                   </Text>
@@ -74,9 +64,7 @@ export const ImageField = memo(
           )}
         />
         {error && (
-          <Text style={[globalStyles.errorText, { textAlign: 'center' }]}>
-            {error}
-          </Text>
+          <Text style={[globalStyles.errorText, { textAlign: 'center' }]}>{error}</Text>
         )}
       </View>
     );

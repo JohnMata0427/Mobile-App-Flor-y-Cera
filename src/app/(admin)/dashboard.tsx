@@ -61,15 +61,8 @@ export default function AdminDashboard() {
       <View style={styles.container}>
         <AdminHeader showSearchBar={false}>
           <View style={styles.userInfoRow}>
-            <MaterialCommunityIcons
-              name="bell"
-              size={24}
-              color={GRAY_COLOR_DARK}
-            />
-            <Image
-              source={require('@/assets/profile.jpg')}
-              style={styles.profileImage}
-            />
+            <MaterialCommunityIcons name="bell" size={24} color={GRAY_COLOR_DARK} />
+            <Image source={require('@/assets/profile.jpg')} style={styles.profileImage} />
           </View>
         </AdminHeader>
         <View style={styles.greetingCard}>
@@ -78,11 +71,7 @@ export default function AdminDashboard() {
             <Text style={styles.greetingName}>Estefanía Sanchez</Text>
           </View>
           <View style={styles.adminCard}>
-            <MaterialCommunityIcons
-              name="shield-account"
-              size={16}
-              color="white"
-            />
+            <MaterialCommunityIcons name="shield-account" size={16} color="white" />
             <Text style={styles.adminText}>Administrador</Text>
           </View>
         </View>
@@ -94,9 +83,7 @@ export default function AdminDashboard() {
               size={24}
               color={PRIMARY_COLOR}
             />
-            <Text style={styles.statValue}>
-              {Math.floor(Math.random() * 1000)}
-            </Text>
+            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statTitle}>Ventas</Text>
@@ -105,20 +92,12 @@ export default function AdminDashboard() {
               size={24}
               color={SECONDARY_COLOR}
             />
-            <Text style={styles.statValue}>
-              {Math.floor(Math.random() * 1000)}
-            </Text>
+            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statTitle}>Productos</Text>
-            <MaterialCommunityIcons
-              name="candle"
-              size={24}
-              color={TERTIARY_COLOR}
-            />
-            <Text style={styles.statValue}>
-              {Math.floor(Math.random() * 1000)}
-            </Text>
+            <MaterialCommunityIcons name="candle" size={24} color={TERTIARY_COLOR} />
+            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
           </View>
         </View>
 

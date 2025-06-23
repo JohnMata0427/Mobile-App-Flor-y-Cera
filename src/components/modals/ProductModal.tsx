@@ -150,9 +150,7 @@ export function ProductModal({
       >
         <View style={styles.formContainer}>
           <Text style={styles.titleText}>{action} producto</Text>
-          <Text style={styles.subtitleText}>
-            Todos los campos son obligatorios
-          </Text>
+          <Text style={styles.subtitleText}>Todos los campos son obligatorios</Text>
 
           <ImageField
             control={control}

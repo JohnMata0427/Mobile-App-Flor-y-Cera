@@ -3,13 +3,7 @@ import { HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BlurView } from 'expo-blur';
 import { memo } from 'react';
-import {
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { ImageBackground, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ClientHeader = memo(() => {
@@ -27,10 +21,7 @@ export const ClientHeader = memo(() => {
         style={[styles.searchContainer, { paddingTop: top + 5 }]}
       >
         <View style={{ flex: 1 }}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Vela de lavanda..."
-          />
+          <TextInput style={styles.searchInput} placeholder="Vela de lavanda..." />
           <Pressable style={styles.searchIcon}>
             <MaterialCommunityIcons name="magnify" size={20} color="white" />
           </Pressable>

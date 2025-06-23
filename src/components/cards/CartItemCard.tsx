@@ -20,11 +20,11 @@ interface CartItemCardProps {
 export const CartItemCard = memo(({ data }: CartItemCardProps) => {
   const { removeProductFromCart, modifyProductQuantity } = useCartStore();
 
-  const { producto_id, cantidad, subtotal } = data;
-  const { _id, imagen, nombre, aroma, tipo, beneficios } = producto_id;
+  const { producto_id, cantidad } = data;
+  const { _id, imagen, nombre, aroma, tipo, beneficios, precio } = producto_id;
 
-  const [int, decimal] = subtotal.toFixed(2).split('.');
-  const priceWithoutDiscount = subtotal * 1.123;
+  const [int, decimal] = precio.toFixed(2).split('.');
+  const priceWithoutDiscount = precio * 1.123;
 
   const [quantity, setQuantity] = useState(cantidad);
 
@@ -35,17 +35,11 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
         <View style={styles.cardEnds}>
           <Text style={styles.cardTitle}>{nombre}</Text>
           <Pressable onPress={() => removeProductFromCart(_id)} hitSlop={10}>
-            <MaterialCommunityIcons
-              name="trash-can-outline"
-              size={20}
-              color="gray"
-            />
+            <MaterialCommunityIcons name="trash-can-outline" size={20} color="gray" />
           </Pressable>
         </View>
         <View style={styles.badgesContainer}>
-          <Text style={[styles.badge, styles.categoryBadge]}>
-            Productos artesanales
-          </Text>
+          <Text style={[styles.badge, styles.categoryBadge]}>Productos artesanales</Text>
           <Text style={[styles.badge, styles.aromaBadge]}>
             {capitalizeFirstLetter(aroma)}
           </Text>

@@ -15,6 +15,7 @@ interface User {
 
 interface UserStore {
   token: string;
+  loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
   user: User;
@@ -26,14 +27,15 @@ interface UserStore {
 export const useAuthStore = create<UserStore>(set => ({
   token: '',
   isAuthenticated: false,
+  loading: true,
   isAdmin: false,
   user: { id: '', role: '' },
   login: async credentials => {
     try {
       const { token = '', msg } = await loginRequest(credentials);
       const success = !!token;
-      let isAdmin = false;
 
+      let isAdmin = false;
       if (token) {
         const payload = atob(token.split('.')[1]);
         const { rol: role = '', id = '' } = JSON.parse(payload);
@@ -54,19 +56,14 @@ export const useAuthStore = create<UserStore>(set => ({
     await deleteItemAsync('token');
     await deleteItemAsync('user');
 
-    set({
-      token: '',
-      isAuthenticated: false,
-      isAdmin: false,
-      user: { id: '', role: '' },
-    });
+    set({ token: '', isAuthenticated: false, isAdmin: false, user: { id: '', role: '' } });
   },
   checkAuth: async () => {
     const token = (await getItemAsync('token')) ?? '';
-    const userString = (await getItemAsync('user')) ?? '';
+    const userString = (await getItemAsync('user')) ?? '{}';
     const { role = '', id = '' } = JSON.parse(userString);
     const isAdmin = role === 'admin';
 
-    set({ token, isAuthenticated: !!token, isAdmin, user: { id, role } });
+    set({ token, isAuthenticated: !!token, isAdmin, user: { id, role }, loading: false });
   },
 }));

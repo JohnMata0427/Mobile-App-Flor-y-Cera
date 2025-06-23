@@ -18,15 +18,7 @@ interface InvoiceDetailsModalProps {
 
 export const InvoiceDetailsModal = memo(
   ({ invoice, isVisible, onClose }: InvoiceDetailsModalProps) => {
-    const {
-      _id,
-      cliente_id,
-      fecha_venta,
-      updatedAt,
-      productos,
-      estado,
-      total,
-    } = invoice;
+    const { _id, cliente_id, fecha_venta, updatedAt, productos, estado, total } = invoice;
 
     const { nombre, apellido, email } = cliente_id ?? {};
 
@@ -60,16 +52,11 @@ export const InvoiceDetailsModal = memo(
                 {toLocaleDate(fecha_venta)}
               </Text>
             </View>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.image}
-            />
+            <Image source={require('@/assets/images/icon.png')} style={styles.image} />
           </View>
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text
-                style={[styles.tableHeaderText, styles.tableDescriptionColumn]}
-              >
+              <Text style={[styles.tableHeaderText, styles.tableDescriptionColumn]}>
                 Descripción
               </Text>
               <Text style={styles.tableHeaderText}>Cantidad</Text>
@@ -83,18 +70,11 @@ export const InvoiceDetailsModal = memo(
 
                 return (
                   <View key={_id} style={styles.tableBody}>
-                    <Text
-                      style={[
-                        styles.tableBodyText,
-                        styles.tableDescriptionColumn,
-                      ]}
-                    >
+                    <Text style={[styles.tableBodyText, styles.tableDescriptionColumn]}>
                       {_id}
                     </Text>
                     <Text style={styles.tableBodyText}>{cantidad}</Text>
-                    <Text style={styles.tableBodyText}>
-                      ${unitPrice?.toFixed(2)}
-                    </Text>
+                    <Text style={styles.tableBodyText}>${unitPrice?.toFixed(2)}</Text>
                     <Text style={styles?.tableBodyText}>
                       ${subtotalWithoutTaxProduct.toFixed(2)}
                     </Text>
@@ -113,8 +93,7 @@ export const InvoiceDetailsModal = memo(
               {(total - subtotalWithoutTax)?.toFixed(2)}
             </Text>
             <Text style={styles.detailText}>
-              <Text style={styles.tableHeaderText}>Total: </Text>$
-              {total?.toFixed(2)}
+              <Text style={styles.tableHeaderText}>Total: </Text>${total?.toFixed(2)}
             </Text>
           </View>
           <View style={styles.footer}>

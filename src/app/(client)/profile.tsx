@@ -12,17 +12,16 @@ import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import { use } from 'react';
+import { memo, use } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function ClientProfile() {
+const ClientProfile = memo(() => {
   const router = useRouter();
   const { logout } = useAuthStore();
   const { top } = useSafeAreaInsets();
-  const {
-    client: { nombre, apellido, email, imagen, genero },
-  } = use(ProfileContext);
+  const { client } = use(ProfileContext);
+  const { nombre, apellido, email, imagen, genero } = client ?? {};
 
   const defaultImage =
     genero === 'Masculino'
@@ -57,9 +56,7 @@ function ClientProfile() {
         </View>
 
         <View style={{ rowGap: 5 }}>
-          <Text
-            style={{ fontWeight: 'bold', color: GRAY_COLOR, marginBottom: 5 }}
-          >
+          <Text style={{ fontWeight: 'bold', color: GRAY_COLOR, marginBottom: 5 }}>
             Configuración de la cuenta
           </Text>
           <Pressable
@@ -80,11 +77,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="bell"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="bell" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -114,11 +107,7 @@ function ClientProfile() {
               >
                 4
               </Text>
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
             </View>
           </Pressable>
 
@@ -140,11 +129,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="account-circle"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="account-circle" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -154,11 +139,7 @@ function ClientProfile() {
                 Editar perfil
               </Text>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
           </Pressable>
 
           <Pressable
@@ -179,11 +160,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="lock"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="lock" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -193,16 +170,10 @@ function ClientProfile() {
                 Actualizar contraseña
               </Text>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
           </Pressable>
 
-          <Text
-            style={{ fontWeight: 'bold', color: GRAY_COLOR, marginBottom: 5 }}
-          >
+          <Text style={{ fontWeight: 'bold', color: GRAY_COLOR, marginBottom: 5 }}>
             Facturación
           </Text>
 
@@ -224,11 +195,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="truck-delivery"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="truck-delivery" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -238,11 +205,7 @@ function ClientProfile() {
                 Mis pedidos
               </Text>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
           </Pressable>
 
           <Pressable
@@ -263,11 +226,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="script-text"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="script-text" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -277,11 +236,7 @@ function ClientProfile() {
                 Mis facturas
               </Text>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
           </Pressable>
 
           <Pressable
@@ -302,11 +257,7 @@ function ClientProfile() {
                 columnGap: 5,
               }}
             >
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={20}
-                color={GRAY_COLOR_DARK}
-              />
+              <MaterialCommunityIcons name="map-marker" size={20} color={GRAY_COLOR_DARK} />
               <Text
                 style={{
                   color: GRAY_COLOR_DARK,
@@ -316,11 +267,7 @@ function ClientProfile() {
                 Actualizar dirección de envío
               </Text>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
           </Pressable>
         </View>
       </ScrollView>
@@ -338,7 +285,7 @@ function ClientProfile() {
       </View>
     </>
   );
-}
+});
 
 export default function ClientProfileScreen() {
   return (

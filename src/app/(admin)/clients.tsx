@@ -62,9 +62,7 @@ function Clients() {
           {
             text: 'Aceptar',
             onPress: async () => {
-              await (isActive
-                ? deleteClientAccount(_id)
-                : activateClientAccount(_id));
+              await (isActive ? deleteClientAccount(_id) : activateClientAccount(_id));
             },
           },
         ],
@@ -151,11 +149,7 @@ function Clients() {
               </View>
             }
             ListHeaderComponent={
-              <Pagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              />
+              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
             }
           />
         )}

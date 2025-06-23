@@ -4,13 +4,7 @@ import {
   updateInvoiceStatusRequest,
 } from '@/services/InvoiceService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface Response {
   msg: string;
@@ -40,11 +34,7 @@ export const InvoicesContext = createContext<InvoicesContextProps>({
   updateInvoiceStatus: async (_: string, __: string) => ({ msg: '' }),
 });
 
-export const InvoicesProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const InvoicesProvider = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuthStore();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,11 +47,7 @@ export const InvoicesProvider = ({
     try {
       setLoading(true);
       setInvoices([]);
-      const { ventas, totalPaginas } = await getInvoicesRequest(
-        page,
-        limit,
-        token,
-      );
+      const { ventas, totalPaginas } = await getInvoicesRequest(page, limit, token);
 
       setTotalPages(totalPaginas);
       setInvoices(ventas);
@@ -72,22 +58,17 @@ export const InvoicesProvider = ({
     }
   }, [page, limit]);
 
-  const updateInvoiceStatus = useCallback(
-    async (id: string, estado: string) => {
-      try {
-        const { msg } = await updateInvoiceStatusRequest(id, estado, token);
-        setInvoices(invoices =>
-          invoices.map(i => (i._id === id ? { ...i, estado } : i)),
-        );
-        return { msg };
-      } catch {
-        return {
-          msg: 'Ocurrio un error al actualizar el estado de la factura',
-        };
-      }
-    },
-    [],
-  );
+  const updateInvoiceStatus = useCallback(async (id: string, estado: string) => {
+    try {
+      const { msg } = await updateInvoiceStatusRequest(id, estado, token);
+      setInvoices(invoices => invoices.map(i => (i._id === id ? { ...i, estado } : i)));
+      return { msg };
+    } catch {
+      return {
+        msg: 'Ocurrio un error al actualizar el estado de la factura',
+      };
+    }
+  }, []);
 
   useEffect(() => {
     getInvoices();
@@ -119,8 +100,6 @@ export const InvoicesProvider = ({
   );
 
   return (
-    <InvoicesContext.Provider value={contextValue}>
-      {children}
-    </InvoicesContext.Provider>
+    <InvoicesContext.Provider value={contextValue}>{children}</InvoicesContext.Provider>
   );
 };

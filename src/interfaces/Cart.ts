@@ -1,4 +1,4 @@
-import type { Product } from "./Product";
+import type { Product } from './Product';
 
 export interface Cart {
   _id: string;
@@ -7,8 +7,8 @@ export interface Cart {
   total: number;
   fecha_creacion: string;
   estado: 'pendiente' | 'finalizado';
-	createdAt?: string;
-	updatedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CartItem {

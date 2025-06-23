@@ -12,10 +12,7 @@ import {
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import {
-  PromotionsContext,
-  PromotionsProvider,
-} from '@/contexts/PromotionsContext';
+import { PromotionsContext, PromotionsProvider } from '@/contexts/PromotionsContext';
 import { Promotion } from '@/interfaces/Promotion';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { use, useCallback, useState } from 'react';
@@ -126,21 +123,13 @@ function Promotions() {
                       }}
                       style={styles.actionButton}
                     >
-                      <MaterialCommunityIcons
-                        name="pencil"
-                        size={20}
-                        color="white"
-                      />
+                      <MaterialCommunityIcons name="pencil" size={20} color="white" />
                     </Pressable>
                     <Pressable
                       style={styles.deleteButton}
                       onPress={() => showDeleteAlert(_id)}
                     >
-                      <MaterialCommunityIcons
-                        name="trash-can"
-                        size={20}
-                        color="white"
-                      />
+                      <MaterialCommunityIcons name="trash-can" size={20} color="white" />
                     </Pressable>
                   </View>
                 </PromotionCard>
@@ -155,11 +144,7 @@ function Promotions() {
               </View>
             }
             ListHeaderComponent={
-              <Pagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              />
+              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
             }
           />
         )}

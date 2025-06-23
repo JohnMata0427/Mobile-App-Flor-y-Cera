@@ -2,14 +2,7 @@ import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface AdminHeaderProps {
   children?: React.ReactNode;
@@ -32,10 +25,7 @@ export const AdminHeader = memo(
         </View>
         {showSearchBar && (
           <View>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Buscar por nombre..."
-            />
+            <TextInput style={styles.searchInput} placeholder="Buscar por nombre..." />
             <Pressable style={styles.searchIcon}>
               <MaterialCommunityIcons name="magnify" size={20} color="white" />
             </Pressable>

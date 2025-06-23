@@ -5,13 +5,7 @@ import {
   getClientsRequest,
 } from '@/services/ClientService';
 import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface Response {
   msg: string;
@@ -43,11 +37,7 @@ export const ClientsContext = createContext<ClientsContextProps>({
   deleteClientAccount: async (_: string) => ({ msg: '' }),
 });
 
-export const ClientsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ClientsProvider = ({ children }: { children: React.ReactNode }) => {
   const { token } = useAuthStore();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,11 +50,7 @@ export const ClientsProvider = ({
     try {
       setLoading(true);
       setClients([]);
-      const { clientes, totalPaginas } = await getClientsRequest(
-        page,
-        limit,
-        token,
-      );
+      const { clientes, totalPaginas } = await getClientsRequest(page, limit, token);
 
       setTotalPages(totalPaginas);
       setClients(clientes);
@@ -78,9 +64,7 @@ export const ClientsProvider = ({
   const activateClientAccount = useCallback(async (id: string) => {
     try {
       const { msg } = await activateClientAccountRequest(id, token);
-      setClients(prev =>
-        prev.map(p => (p._id === id ? { ...p, estado: 'activo' } : p)),
-      );
+      setClients(prev => prev.map(p => (p._id === id ? { ...p, estado: 'activo' } : p)));
       return { msg };
     } catch {
       return { msg: 'Ocurrio un error al actualizar el cliente' };
@@ -131,8 +115,6 @@ export const ClientsProvider = ({
   );
 
   return (
-    <ClientsContext.Provider value={contextValue}>
-      {children}
-    </ClientsContext.Provider>
+    <ClientsContext.Provider value={contextValue}>{children}</ClientsContext.Provider>
   );
 };

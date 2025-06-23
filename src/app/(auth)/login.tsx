@@ -57,14 +57,11 @@ export default function Login() {
       >
         <View style={styles.loginContainer}>
           <View style={[styles.headerContainer, { marginBottom: top * 1.5 }]}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logoImage}
-            />
+            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
             <Text style={styles.headerTitle}>Bienvenido a Flor & Cera</Text>
             <Text style={styles.headerSubtitle}>
-              Descubre la magia de Flor & Cera, donde la naturaleza y la
-              creatividad se unen para ofrecerte una experiencia única
+              Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se unen para
+              ofrecerte una experiencia única
             </Text>
           </View>
           <View style={styles.bodyContainer}>
@@ -103,10 +100,7 @@ export default function Login() {
               textContentType="password"
               secureTextEntry={!showPassword}
               showPasswordIcon={
-                <Pressable
-                  onPress={() => setShowPassword(prev => !prev)}
-                  style={styles.iconRight}
-                >
+                <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
                   <MaterialCommunityIcons
                     name={showPassword ? 'eye-off' : 'eye'}
                     size={20}
@@ -117,14 +111,10 @@ export default function Login() {
             />
 
             <Link href="/forgot-password">
-              <Text style={styles.forgotPasswordText}>
-                ¿Olvidaste tu contraseña?
-              </Text>
+              <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
             </Link>
             <View style={styles.footerContainer}>
-              {message && (
-                <Text style={styles.errorMessageText}>{message}</Text>
-              )}
+              {message && <Text style={styles.errorMessageText}>{message}</Text>}
 
               <Button
                 label="Iniciar sesión"
@@ -133,9 +123,7 @@ export default function Login() {
                 onPress={handleSubmit(onSubmit)}
               />
 
-              <Text style={styles.anotherMethodText}>
-                O puedes iniciar sesión con
-              </Text>
+              <Text style={styles.anotherMethodText}>O puedes iniciar sesión con</Text>
 
               <View style={styles.methodsContainer}>
                 <Pressable style={styles.methodButton}>

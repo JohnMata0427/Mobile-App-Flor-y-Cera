@@ -16,11 +16,7 @@ export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
 
   return (
     <View style={styles.promotionCard}>
-      <Image
-        source={{ uri: imagen }}
-        resizeMode="cover"
-        style={styles.promotionImage}
-      />
+      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.promotionImage} />
       <View style={styles.promotionInfo}>
         <Text style={styles.promotionName}>{nombre}</Text>
         <View style={styles.dateRow}>

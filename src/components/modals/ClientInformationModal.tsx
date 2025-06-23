@@ -1,8 +1,4 @@
-import {
-  GRAY_COLOR_DARK,
-  PRIMARY_COLOR,
-  PRIMARY_COLOR_DARK,
-} from '@/constants/Colors';
+import { GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
@@ -53,22 +49,14 @@ export const ClientInformationModal = memo(
           <View style={styles.informationCard}>
             <Text style={styles.titleText}>Información del Cliente</Text>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="account"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="account" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Nombre:</Text>
                 {nombre} {apellido}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="email"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="email" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Email:</Text> {email}
               </Text>
@@ -116,22 +104,14 @@ export const ClientInformationModal = memo(
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="phone"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="phone" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Teléfono:</Text>{' '}
                 {telefono ?? 'No registrado'}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="calendar"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="calendar" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Fecha de nacimiento:</Text>{' '}
                 {toLocaleDate(fecha_nacimiento)}
@@ -149,11 +129,7 @@ export const ClientInformationModal = memo(
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="update"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="update" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Última actualización:</Text>{' '}
                 {toLocaleDate(updatedAt)}
