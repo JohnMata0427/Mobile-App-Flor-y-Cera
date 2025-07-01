@@ -15,7 +15,6 @@ export const createIngredientRequest = async (body: FormData, token: string) => 
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
     body,
@@ -24,15 +23,10 @@ export const createIngredientRequest = async (body: FormData, token: string) => 
   return await response.json();
 };
 
-export const updateIngredientRequest = async (
-  id: string,
-  body: FormData,
-  token: string,
-) => {
-  const response = await fetch(`${BACKEND_URL}/ingredientes/${id}`, {
+export const updateIngredientRequest = async (id: string, body: FormData, token: string) => {
+  const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'PUT',
     headers: {
-      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
     body,
@@ -42,7 +36,7 @@ export const updateIngredientRequest = async (
 };
 
 export const deleteIngredientRequest = async (id: string, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/ingredientes/${id}`, {
+  const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

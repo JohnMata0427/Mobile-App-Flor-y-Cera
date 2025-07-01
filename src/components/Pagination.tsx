@@ -1,9 +1,4 @@
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  PRIMARY_COLOR,
-  PRIMARY_COLOR_DARK,
-} from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';

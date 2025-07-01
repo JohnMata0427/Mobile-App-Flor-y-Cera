@@ -53,17 +53,21 @@ export const useAuthStore = create<UserStore>(set => ({
     }
   },
   logout: async () => {
-    await deleteItemAsync('token');
-    await deleteItemAsync('user');
+    try {
+      await deleteItemAsync('token');
+      await deleteItemAsync('user');
 
-    set({ token: '', isAuthenticated: false, isAdmin: false, user: { id: '', role: '' } });
+      set({ token: '', isAuthenticated: false, isAdmin: false, user: { id: '', role: '' } });
+    } catch {}
   },
   checkAuth: async () => {
-    const token = (await getItemAsync('token')) ?? '';
-    const userString = (await getItemAsync('user')) ?? '{}';
-    const { role = '', id = '' } = JSON.parse(userString);
-    const isAdmin = role === 'admin';
+    try {
+      const token = (await getItemAsync('token')) ?? '';
+      const userString = (await getItemAsync('user')) ?? '{}';
+      const { role = '', id = '' } = JSON.parse(userString);
+      const isAdmin = role === 'admin';
 
-    set({ token, isAuthenticated: !!token, isAdmin, user: { id, role }, loading: false });
+      set({ token, isAuthenticated: !!token, isAdmin, user: { id, role }, loading: false });
+    } catch {}
   },
 }));

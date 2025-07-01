@@ -34,7 +34,7 @@ export const useCartStore = create<CartState>(set => ({
     const { productos, total } = carrito;
 
     set({
-      products: productos,
+      products: productos.filter(p => p.tipo_producto === 'normal'),
       totalProducts: productos.length,
       totalPrice: total,
     });
@@ -50,7 +50,7 @@ export const useCartStore = create<CartState>(set => ({
       const precio_unitario = product.precio;
 
       set(({ products, totalProducts }) => {
-        const existingProductIndex = products.findIndex(p => p.producto_id._id === product._id);
+        const existingProductIndex = products.findIndex(p => p.producto_id === product._id);
 
         if (existingProductIndex !== -1) {
           const existingProduct = products[existingProductIndex];
@@ -61,10 +61,12 @@ export const useCartStore = create<CartState>(set => ({
         } else {
           products.push({
             _id: '',
-            producto_id: product,
+            producto: product,
+            producto_id: product._id,
             cantidad: quantity,
             precio_unitario,
             subtotal: precio_unitario * quantity,
+            tipo_producto: 'normal',
           });
 
           totalProducts += 1;
@@ -84,7 +86,7 @@ export const useCartStore = create<CartState>(set => ({
       const { total } = carrito;
 
       set(({ products }) => {
-        const existingProductIndex = products.findIndex(p => p.producto_id._id === product._id);
+        const existingProductIndex = products.findIndex(p => p.producto_id === product._id);
 
         if (existingProductIndex !== -1) {
           const existingProduct = products[existingProductIndex];
@@ -108,7 +110,7 @@ export const useCartStore = create<CartState>(set => ({
       const { total } = carrito;
 
       set(({ products, totalProducts }) => {
-        const updatedProducts = products.filter(p => p.producto_id._id !== productId);
+        const updatedProducts = products.filter(p => p.producto_id !== productId);
 
         totalProducts -= 1;
 

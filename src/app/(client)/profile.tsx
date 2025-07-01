@@ -279,8 +279,10 @@ const ClientProfile = memo(() => {
             logout();
             router.push('/(auth)/login');
           }}
-          backgroundColor={TERTIARY_COLOR}
-          borderColor={TERTIARY_COLOR_DARK}
+          buttonStyle={{
+            backgroundColor: TERTIARY_COLOR,
+            borderColor: TERTIARY_COLOR_DARK,
+          }}
         />
       </View>
     </>

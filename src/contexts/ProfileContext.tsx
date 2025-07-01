@@ -14,7 +14,7 @@ export const ProfileContext = createContext<ProfileContextProps>({
   client: {} as Client,
   loading: false,
   getProfile: async () => {},
-  updateProfile: async (client: Client) => {},
+  updateProfile: async (_: Client) => {},
 });
 
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
@@ -52,7 +52,5 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     [client, loading, getProfile, updateProfile],
   );
 
-  return (
-    <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>
-  );
+  return <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>;
 }

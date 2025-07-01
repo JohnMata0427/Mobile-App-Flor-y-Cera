@@ -8,11 +8,13 @@ import {
   SECONDARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { registerClientRequest } from '@/services/AuthService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
+  Alert,
   Image,
   ImageBackground,
   Pressable,
@@ -36,7 +38,29 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (form: any) => {};
+  const onSubmit = async (form: any) => {
+    try {
+      const response = await registerClientRequest(form);
+
+      Alert.alert(
+        'Mensaje del sistema',
+        response.msg,
+        [
+          {
+            text: 'Aceptar',
+            onPress: () => {
+              if (response.ok) {
+                router.push('/(auth)/login');
+              }
+            },
+          },
+        ],  
+      )
+
+    } catch (error) {
+      
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -46,14 +70,11 @@ export default function Login() {
       >
         <View style={styles.loginContainer}>
           <View style={[styles.headerContainer, { marginBottom: top }]}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logoImage}
-            />
+            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
             <Text style={styles.headerTitle}>Registro a Flor & Cera</Text>
             <Text style={styles.headerSubtitle}>
-              Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se
-              unen para ofrecerte una experiencia única
+              Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se unen para
+              ofrecerte una experiencia única
             </Text>
           </View>
           <View style={styles.bodyContainer}>
@@ -142,61 +163,53 @@ export default function Login() {
               keyboardType="email-address"
             />
 
-            <View style={styles.rowInputs}>
-              <InputField
-                control={control}
-                name="password"
-                rules={{
-                  required: 'La contraseña es requerida',
-                }}
-                icon="key"
-                label="Contraseña"
-                placeholder="••••••••••"
-                error={errors.password?.message as string}
-                autoComplete="new-password"
-                textContentType="newPassword"
-                secureTextEntry={!showPassword}
-                showPasswordIcon={
-                  <Pressable
-                    onPress={() => setShowPassword(prev => !prev)}
-                    style={styles.iconRight}
-                  >
-                    <MaterialCommunityIcons
-                      name={showPassword ? 'eye-off' : 'eye'}
-                      size={20}
-                      color={GRAY_COLOR_DARK}
-                    />
-                  </Pressable>
-                }
-              />
+            <InputField
+              control={control}
+              name="password"
+              rules={{
+                required: 'La contraseña es requerida',
+              }}
+              icon="key"
+              label="Contraseña"
+              placeholder="••••••••••"
+              error={errors.password?.message as string}
+              autoComplete="new-password"
+              textContentType="newPassword"
+              secureTextEntry={!showPassword}
+              showPasswordIcon={
+                <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
+                  <MaterialCommunityIcons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color={GRAY_COLOR_DARK}
+                  />
+                </Pressable>
+              }
+            />
 
-              <InputField
-                control={control}
-                name="confirmPassword"
-                rules={{
-                  required: 'La contraseña es requerida',
-                }}
-                icon="key"
-                label="Confirmar contraseña"
-                placeholder="••••••••••"
-                error={errors.confirmPassword?.message as string}
-                autoComplete="new-password"
-                textContentType="newPassword"
-                secureTextEntry={!showPassword}
-                showPasswordIcon={
-                  <Pressable
-                    onPress={() => setShowPassword(prev => !prev)}
-                    style={styles.iconRight}
-                  >
-                    <MaterialCommunityIcons
-                      name={showPassword ? 'eye-off' : 'eye'}
-                      size={20}
-                      color={GRAY_COLOR_DARK}
-                    />
-                  </Pressable>
-                }
-              />
-            </View>
+            <InputField
+              control={control}
+              name="confirmPassword"
+              rules={{
+                required: 'La contraseña es requerida',
+              }}
+              icon="key"
+              label="Confirmar contraseña"
+              placeholder="••••••••••"
+              error={errors.confirmPassword?.message as string}
+              autoComplete="new-password"
+              textContentType="newPassword"
+              secureTextEntry={!showPassword}
+              showPasswordIcon={
+                <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
+                  <MaterialCommunityIcons
+                    name={showPassword ? 'eye-off' : 'eye'}
+                    size={20}
+                    color={GRAY_COLOR_DARK}
+                  />
+                </Pressable>
+              }
+            />
 
             <View style={styles.footerContainer}>
               {message && <Text style={styles.errorMessageText}>{message}</Text>}
@@ -255,7 +268,9 @@ const styles = StyleSheet.create({
   loginContainer: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 35,
+    paddingHorizontal: 30,
+    paddingTop: 40,
+    paddingBottom: 60,
   },
   headerContainer: {
     rowGap: 3,
@@ -266,7 +281,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: GRAY_COLOR_DARK,
@@ -290,7 +305,7 @@ const styles = StyleSheet.create({
   registerText: {
     fontFamily: BODY_FONT,
     color: GRAY_COLOR,
-    fontSize: 12,
+    // fontSize: 12,
     textAlign: 'center',
   },
   registerLinkText: {
@@ -307,15 +322,9 @@ const styles = StyleSheet.create({
     right: 8,
     justifyContent: 'center',
   },
-  forgotPasswordText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
-    fontSize: 12,
-    textAlign: 'right',
-  },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    fontSize: 12,
+    // fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',
   },

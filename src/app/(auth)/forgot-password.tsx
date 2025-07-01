@@ -49,10 +49,7 @@ export default function Login() {
       >
         <View style={styles.loginContainer}>
           <View style={[styles.headerContainer, { marginBottom: top * 1.5 }]}>
-            <Image
-              source={require('@/assets/images/icon.png')}
-              style={styles.logoImage}
-            />
+            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
             <Text style={styles.headerTitle}>Recupera tu contraseña</Text>
             <Text style={styles.headerSubtitle}>
               Ingresa tu correo electrónico para recibir el código de verificación.

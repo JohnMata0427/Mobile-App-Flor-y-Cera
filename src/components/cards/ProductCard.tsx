@@ -9,7 +9,7 @@ import {
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import type { IDCategoria, Product } from '@/interfaces/Product';
+import type { Product } from '@/interfaces/Product';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -22,8 +22,6 @@ interface ProductCardProps {
 export const ProductCard = memo(({ data, children }: ProductCardProps) => {
   const { imagen, nombre, precio, stock, id_categoria } = data;
 
-  const categoria = (id_categoria as IDCategoria)?.nombre?.split(' ')[0] ?? 'Ninguna';
-
   return (
     <View style={styles.productCard}>
       <Image source={{ uri: imagen }} resizeMode="cover" style={styles.productImage} />
@@ -31,7 +29,7 @@ export const ProductCard = memo(({ data, children }: ProductCardProps) => {
         <Text style={styles.productName}>{nombre}</Text>
         <View style={styles.priceStockRow}>
           <Text style={styles.priceText}>${precio} USD</Text>
-          <Text style={styles.categoryBadge}>{categoria}</Text>
+          <Text style={styles.categoryBadge}>{id_categoria.nombre}</Text>
         </View>
         <View style={styles.stockRow}>
           <MaterialCommunityIcons name="cart-outline" size={14} color="green" />

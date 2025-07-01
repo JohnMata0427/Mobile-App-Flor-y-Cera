@@ -1,29 +1,32 @@
 import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import type { Promotion } from '@/interfaces/Promotion';
+import type { Category } from '@/interfaces/Category';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-interface PromotionCardProps {
-  data: Promotion;
-  children?: React.ReactNode;
+interface CategoryCardProps {
+  data: Category;
+  children?: ReactNode;
 }
 
-export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
-  const { imagen, nombre, createdAt } = data;
+export const CategoryCard = memo(({ data, children }: CategoryCardProps) => {
+  const { imagen, nombre, descripcion, updatedAt } = data;
 
   return (
-    <View style={styles.promotionCard}>
-      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.promotionImage} />
-      <View style={styles.promotionInfo}>
-        <Text style={styles.promotionName}>{nombre}</Text>
+    <View style={styles.categoryCard}>
+      <Image source={{ uri: imagen }} resizeMode="contain" style={styles.categoryImage} />
+      <View style={styles.categoryInfo}>
+        <Text style={styles.categoryName}>{nombre}</Text>
         <View style={styles.dateRow}>
           <MaterialCommunityIcons name="calendar-clock" size={14} color={GRAY_COLOR_DARK} />
-          <Text style={styles.dateText}>Promoción creada el {toLocaleDate(createdAt)}</Text>
+          <Text style={styles.dateText}>Categoría actualizada el {toLocaleDate(updatedAt)}</Text>
         </View>
-
+        <Text style={styles.categoryDescription}>
+          <MaterialCommunityIcons name="information" size={14} color={GRAY_COLOR_DARK} />
+          {`  ${descripcion}`}
+        </Text>
         {children}
       </View>
     </View>
@@ -31,7 +34,7 @@ export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
 });
 
 const styles = StyleSheet.create({
-  promotionCard: {
+  categoryCard: {
     backgroundColor: 'white',
     borderRadius: 10,
     overflow: 'hidden',
@@ -39,19 +42,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: 'space-between',
   },
-  promotionImage: {
+  categoryImage: {
     width: '100%',
-    aspectRatio: 16 / 9,
+    aspectRatio: 2,
     borderRadius: 10,
   },
-  promotionInfo: {
+  categoryInfo: {
     rowGap: 3,
     paddingTop: 5,
   },
-  promotionName: {
+  categoryName: {
     fontFamily: BOLD_BODY_FONT,
     fontSize: 15,
     textTransform: 'capitalize',
+    textAlign: 'center',
+  },
+  categoryDescription: {
+    fontFamily: BODY_FONT,
+    fontSize: 12,
+    color: GRAY_COLOR_DARK,
     textAlign: 'center',
   },
   dateRow: {

@@ -41,31 +41,24 @@ export const ImageField = memo(
           name={name}
           rules={rules}
           render={() => (
-            <Pressable
-              style={[styles.imagePickerContainer, { aspectRatio }]}
-              onPress={onChange}
-            >
+            <Pressable style={[styles.imagePickerContainer, { aspectRatio }]} onPress={onChange}>
               {selectedImage ? (
                 <Image
                   source={{ uri: selectedImage }}
                   style={styles.imageFull}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
               ) : (
                 <>
                   <MaterialCommunityIcons name="camera-iris" size={20} color={color} />
                   <Text style={[styles.imageTextBold, { color }]}>Agrega una imagen</Text>
-                  <Text style={styles.placeholerText}>
-                    Toca para seleccionar una imagen
-                  </Text>
+                  <Text style={styles.placeholerText}>Toca para seleccionar una imagen</Text>
                 </>
               )}
             </Pressable>
           )}
         />
-        {error && (
-          <Text style={[globalStyles.errorText, { textAlign: 'center' }]}>{error}</Text>
-        )}
+        {error && <Text style={[globalStyles.errorText, { textAlign: 'center' }]}>{error}</Text>}
       </View>
     );
   },

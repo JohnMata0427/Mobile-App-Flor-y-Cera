@@ -28,6 +28,7 @@ export const addProductToCartRequest = async (
   product: {
     producto_id: string;
     cantidad: number;
+    tipo_producto?: string;
   },
 ): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/agregar`, {
@@ -36,7 +37,7 @@ export const addProductToCartRequest = async (
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(product),
+    body: JSON.stringify({ ...product, tipo_producto: 'normal' }),
   });
 
   const { ok } = response;
@@ -50,6 +51,7 @@ export const modifyProductQuantityRequest = async (
   product: {
     producto_id: string;
     cantidad: number;
+    tipo_producto?: string;
   },
 ): Promise<CartResponse> => {
   const response = await fetch(`${BACKEND_URL}/modificar-cantidad`, {
@@ -58,7 +60,7 @@ export const modifyProductQuantityRequest = async (
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(product),
+    body: JSON.stringify({ ...product, tipo_producto: 'normal' }),
   });
 
   const { ok } = response;
@@ -77,7 +79,7 @@ export const removeProductFromCartRequest = async (
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ producto_id }),
+    body: JSON.stringify({ producto_id, tipo_producto: 'normal' }),
   });
 
   const { ok } = response;
@@ -86,10 +88,7 @@ export const removeProductFromCartRequest = async (
   return { ok, msg, carrito };
 };
 
-export const checkoutCartRequest = async (
-  token: string,
-  paymentMethodId: string,
-): Promise<any> => {
+export const checkoutCartRequest = async (token: string, paymentMethodId: string): Promise<any> => {
   const response = await fetch(`${BACKEND_URL}/pagar`, {
     method: 'POST',
     headers: {

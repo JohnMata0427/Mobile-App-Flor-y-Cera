@@ -70,9 +70,7 @@ export const InvoiceDetailsModal = memo(
 
                 return (
                   <View key={_id} style={styles.tableBody}>
-                    <Text style={[styles.tableBodyText, styles.tableDescriptionColumn]}>
-                      {_id}
-                    </Text>
+                    <Text style={[styles.tableBodyText, styles.tableDescriptionColumn]}>{_id}</Text>
                     <Text style={styles.tableBodyText}>{cantidad}</Text>
                     <Text style={styles.tableBodyText}>${unitPrice?.toFixed(2)}</Text>
                     <Text style={styles?.tableBodyText}>

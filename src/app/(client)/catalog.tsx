@@ -11,9 +11,8 @@ import {
 } from '@/constants/Colors';
 import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContext';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
-import type { Product } from '@/interfaces/Product';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo, use, useEffect, useMemo, useState } from 'react';
+import { memo, use, useEffect } from 'react';
 import {
   FlatList,
   Pressable,
@@ -29,34 +28,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Catalog = memo(() => {
   const { top } = useSafeAreaInsets();
   const { categories } = use(CategoriesContext);
-  const { products, loading, refreshing, setRefreshing, setLimit, getProducts } =
-    use(ProductsContext);
-
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-
-  const filterProductsByCategory = useMemo(
-    () => (categoryId: string) => {
-      setSelectedCategory(categoryId);
-      console.log('Selected category:', categoryId);
-
-      if (categoryId === '') {
-        setFilteredProducts(products);
-      } else {
-        const filtered = products.filter(product => product.id_categoria._id === categoryId);
-        setFilteredProducts(filtered);
-      }
-    },
-    [products],
-  );
-
-  useEffect(() => {
-    setLimit(10);
-  }, []);
-
-  useEffect(() => {
-    setFilteredProducts(products);
-  }, [products]);
+  const {
+    searchedProducts,
+    filter,
+    loading,
+    refreshing,
+    setRefreshing,
+    getProducts,
+    setFilter,
+  } = use(ProductsContext);
 
   return (
     <>
@@ -99,10 +79,10 @@ const Catalog = memo(() => {
 
           <View>
             <View style={styles.categoryContainer}>
-              <Pressable onPress={() => filterProductsByCategory('')}>
+              <Pressable onPress={() => setFilter({ key: 'tipo', value: '' })}>
                 <Text
                   style={[
-                    selectedCategory === '' ? styles.selectedCategoryText : {},
+                    !filter.value ? styles.selectedCategoryText : {},
                     { paddingHorizontal: 10 },
                   ]}
                 >
@@ -116,10 +96,10 @@ const Catalog = memo(() => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (
-                  <Pressable onPress={() => filterProductsByCategory(item._id)}>
+                  <Pressable onPress={() => setFilter({ key: 'id_categoria', value: item._id })}>
                     <Text
                       style={[
-                        selectedCategory === item._id ? styles.selectedCategoryText : {},
+                        filter.value === item._id ? styles.selectedCategoryText : {},
                         { paddingHorizontal: 10 },
                       ]}
                     >
@@ -136,7 +116,7 @@ const Catalog = memo(() => {
           </View>
 
           <FlatList
-            data={filteredProducts}
+            data={searchedProducts}
             keyExtractor={({ _id }) => _id.toString()}
             showsVerticalScrollIndicator={false}
             scrollEnabled={false}

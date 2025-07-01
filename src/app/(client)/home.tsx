@@ -11,18 +11,10 @@ import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link } from 'expo-router';
 import { memo, use } from 'react';
-import {
-  FlatList,
-  Image,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const Home = memo(() => {
-  const { products } = use(ProductsContext);
+  const { searchedProducts } = use(ProductsContext);
 
   return (
     <ScrollView
@@ -85,15 +77,11 @@ const Home = memo(() => {
           >
             Ver más
           </Text>
-          <MaterialCommunityIcons
-            name="chevron-right"
-            size={18}
-            color={GRAY_COLOR_DARK}
-          />
+          <MaterialCommunityIcons name="chevron-right" size={18} color={GRAY_COLOR_DARK} />
         </Link>
       </View>
       <FlatList
-        data={products}
+        data={searchedProducts}
         contentContainerStyle={styles.benefitsContainer}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -105,7 +93,7 @@ const Home = memo(() => {
       <Image source={require('@/assets/ia-banner.png')} style={styles.bannerIA} />
     </ScrollView>
   );
-})
+});
 
 export default function HomeScreen() {
   return (

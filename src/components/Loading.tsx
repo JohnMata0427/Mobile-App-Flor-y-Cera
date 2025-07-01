@@ -9,12 +9,12 @@ export const Loading = memo(() => {
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.2,
-          duration: 500,
+          duration: 600,
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
           toValue: 1,
-          duration: 500,
+          duration: 600,
           useNativeDriver: true,
         }),
       ]),
@@ -33,14 +33,14 @@ export const Loading = memo(() => {
 });
 
 const styles = StyleSheet.create({
-  image: {
-    width: 75,
-    height: 75,
-    margin: 'auto',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    rowGap: 10,
+  },
+  image: {
+    width: 75,
+    height: 75,
   },
 });

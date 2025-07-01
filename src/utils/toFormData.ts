@@ -10,6 +10,10 @@ export const toFormData = (data: any, selectedImage?: string | null) => {
         name: `photo.${fileType}`,
         type: `image/${fileType}`,
       } as any);
+    } else if (key === 'beneficios' && typeof value === 'string') {
+      value.split(',').forEach((item: string) => {
+        formData.append('beneficios[]', item.trim());
+      });
     } else {
       formData.append(key, value as any);
     }

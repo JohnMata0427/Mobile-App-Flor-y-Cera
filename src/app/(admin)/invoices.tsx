@@ -1,14 +1,15 @@
+import { AdminFilter } from '@/components/AdminFilter';
 import { AdminHeader } from '@/components/AdminHeader';
 import { InvoiceCard } from '@/components/cards/InvoiceCard';
 import { Loading } from '@/components/Loading';
 import { InvoiceDetailsModal } from '@/components/modals/InvoiceDetailsModal';
-import { Pagination } from '@/components/Pagination';
 import {
   GRAY_COLOR_DARK,
   GREEN_COLOR,
   GREEN_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_LIGHT,
   RED_COLOR,
   RED_COLOR_DARK,
   SECONDARY_COLOR,
@@ -16,9 +17,9 @@ import {
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { InvoicesContext, InvoicesProvider } from '@/contexts/InvoicesContext';
-import type { Invoice } from '@/interfaces/Invoice';
+import type { Invoice, InvoiceFilter } from '@/interfaces/Invoice';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use, useCallback, useState } from 'react';
+import { memo, use, useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -30,16 +31,30 @@ import {
   View,
 } from 'react-native';
 
-function Invoices() {
+interface FilterButton {
+  label: string;
+  filter: InvoiceFilter
+}
+
+const filterButtons: FilterButton[] = [
+  { label: 'Todas', filter: { key: 'estado', value: '' } },
+  { label: 'Pendientes', filter: { key: 'estado', value: 'pendiente' } },
+  { label: 'Finalizadas', filter: { key: 'estado', value: 'finalizado' } },
+];
+
+const Invoices = memo(() => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice>({} as Invoice);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
-    invoices,
+    searchedInvoices,
     loading,
     page,
     totalPages,
     refreshing,
+    filter,
     setPage,
+    setFilter,
+    setSearch,
     setRefreshing,
     getInvoices,
     updateInvoiceStatus,
@@ -84,7 +99,10 @@ function Invoices() {
       }
     >
       <View style={styles.container}>
-        <AdminHeader />
+        <AdminHeader 
+          setSearch={setSearch}
+          placeholder="Buscar por nombre del cliente..."
+        />
         <InvoiceDetailsModal
           isVisible={modalVisible}
           invoice={selectedInvoice}
@@ -94,7 +112,7 @@ function Invoices() {
           <Loading />
         ) : (
           <FlatList
-            data={invoices}
+            data={searchedInvoices}
             scrollEnabled={false}
             contentContainerStyle={styles.listContent}
             keyExtractor={({ _id }) => _id}
@@ -103,9 +121,10 @@ function Invoices() {
                 _id,
                 total,
                 estado,
-                cliente_id: { nombre, apellido },
+                cliente_id,
               } = item;
               const isPending = estado === 'pendiente';
+              const { nombre, apellido } = cliente_id ?? {};
 
               return (
                 <InvoiceCard data={item} isPending={isPending}>
@@ -162,14 +181,14 @@ function Invoices() {
               </View>
             }
             ListHeaderComponent={
-              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+              <AdminFilter filterButtons={filterButtons} filter={filter} setFilter={setFilter as any} />
             }
           />
         )}
       </View>
     </ScrollView>
   );
-}
+});
 
 export default function AdminInvoices() {
   return (

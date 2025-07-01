@@ -1,44 +1,73 @@
 import { AdminHeader } from '@/components/AdminHeader';
+import { Button } from '@/components/Button';
+import { Loading } from '@/components/Loading';
 import {
+  GRAY_COLOR,
   GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import { getInvoicesDashboardRequest } from '@/services/InvoiceService';
+import { DashboardContext, DashboardProvider } from '@/contexts/DashboardContext';
+import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { getItemAsync } from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { memo, use, useCallback, useEffect, useState } from 'react';
 import {
+  Alert,
   Dimensions,
-  Image,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { LineChart, ProgressChart } from 'react-native-chart-kit';
+import { LineChart, PieChart } from 'react-native-chart-kit';
 
-export default function AdminDashboard() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [weeklySales, setWeeklySales] = useState([]);
+const screenWidth = Dimensions.get('window').width - 55;
+
+const Dashboard = memo(() => {
+  const { logout } = useAuthStore();
+  const {
+    currentWeekSales,
+    lastWeekSales,
+    productNames,
+    productSales,
+    totals,
+    weekdays,
+    loading,
+    refreshing,
+    setRefreshing,
+    getDashboardGraphicsData,
+  } = use(DashboardContext);
+  const [hour, setHour] = useState<string>('');
+
+  const requestLogout = useCallback(() => {
+    Alert.alert('Cerrar sesión', '¿Está seguro de que desea cerrar sesión?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Cerrar sesión',
+        onPress: () => {
+          logout();
+        },
+      },
+    ]);
+  }, [logout]);
+
+  const updateTime = useCallback(() => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    setHour(`${hours}:${minutes < 10 ? '0' + minutes : minutes}`);
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      const token = (await getItemAsync('token')) ?? '';
-      const now = new Date();
-      const since = new Date(now.setDate(now.getDate() - 14));
+    updateTime();
+    const interval = setInterval(() => {
+      updateTime();
+    }, 60000);
 
-      const data = await getInvoicesDashboardRequest(token, {
-        fechaInicio: since.toISOString().split('T')[0],
-        fechaFin: now.toISOString().split('T')[0],
-      });
-
-      console.log('Dashboard data:', data);
-    })();
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -47,12 +76,9 @@ export default function AdminDashboard() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() => {
+          onRefresh={async () => {
             setRefreshing(true);
-            // Simulate a network request
-            setTimeout(() => {
-              setRefreshing(false);
-            }, 1000);
+            await getDashboardGraphicsData();
           }}
           colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
@@ -62,105 +88,128 @@ export default function AdminDashboard() {
         <AdminHeader showSearchBar={false}>
           <View style={styles.userInfoRow}>
             <MaterialCommunityIcons name="bell" size={24} color={GRAY_COLOR_DARK} />
-            <Image source={require('@/assets/profile.jpg')} style={styles.profileImage} />
+            <Button
+              label="Salir"
+              icon="logout"
+              onPress={requestLogout}
+              buttonStyle={{
+                paddingVertical: 5,
+              }}
+              textStyle={{ fontSize: 12 }}
+            />
           </View>
         </AdminHeader>
         <View style={styles.greetingCard}>
           <View>
             <Text style={styles.greetingText}>Buenas tardes</Text>
-            <Text style={styles.greetingName}>Estefanía Sanchez</Text>
+            <Text style={styles.greetingName}>Actualmente son las {hour}</Text>
           </View>
           <View style={styles.adminCard}>
             <MaterialCommunityIcons name="shield-account" size={16} color="white" />
-            <Text style={styles.adminText}>Administrador</Text>
+            <Text style={styles.adminText}>Administrador/a</Text>
           </View>
         </View>
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Clientes</Text>
-            <MaterialCommunityIcons
-              name="account-multiple-plus"
-              size={24}
-              color={PRIMARY_COLOR}
-            />
-            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Ventas</Text>
-            <MaterialCommunityIcons
-              name="lightning-bolt"
-              size={24}
-              color={SECONDARY_COLOR}
-            />
-            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Productos</Text>
-            <MaterialCommunityIcons name="candle" size={24} color={TERTIARY_COLOR} />
-            <Text style={styles.statValue}>{Math.floor(Math.random() * 1000)}</Text>
-          </View>
-        </View>
+        {loading ? (
+          <Loading />
+        ) : (
+          <>
+            <View style={styles.statsRow}>
+              <View style={styles.statCard}>
+                <Text style={styles.statTitle}>Clientes</Text>
+                <MaterialCommunityIcons
+                  name="account-multiple-plus"
+                  size={24}
+                  color={PRIMARY_COLOR}
+                />
+                <Text style={styles.statValue}>{totals.clients}</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statTitle}>Ventas</Text>
+                <MaterialCommunityIcons name="lightning-bolt" size={24} color={SECONDARY_COLOR} />
+                <Text style={styles.statValue}>{totals.sales}</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statTitle}>Productos</Text>
+                <MaterialCommunityIcons name="candle" size={24} color={TERTIARY_COLOR} />
+                <Text style={styles.statValue}>{totals.products}</Text>
+              </View>
+            </View>
 
-        <View style={styles.chartCard}>
-          <Text style={styles.chartTitle}>Ventas Semanales</Text>
-          <LineChart
-            data={{
-              labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
-              datasets: [
-                {
-                  data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
+            <View style={styles.chartCard}>
+              <Text style={styles.chartTitle}>Ingresos Semanales</Text>
+              <LineChart
+                data={{
+                  labels: weekdays,
+                  datasets: [
+                    {
+                      data: lastWeekSales,
+                      strokeDashArray: [5],
+                    },
+                    {
+                      data: currentWeekSales,
+                      strokeDashArray: [5],
+                      color: () => PRIMARY_COLOR,
+                    },
                   ],
-                  strokeDashArray: [5],
-                },
-                {
-                  data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                  ],
-                  strokeDashArray: [5],
-                },
-              ],
-            }}
-            chartConfig={{
-              backgroundGradientFrom: 'white',
-              backgroundGradientTo: 'white',
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-            width={Dimensions.get('window').width - 65}
-            height={200}
-            bezier
-          />
-        </View>
-        <View style={styles.chartCard}>
-          <Text style={styles.chartTitle}>Productos Vendidos</Text>
-          <ProgressChart
-            data={{
-              labels: ['Velas', 'Jabones'],
-              data: [Math.random(), Math.random()],
-            }}
-            width={Dimensions.get('window').width - 65}
-            height={140}
-            chartConfig={{
-              backgroundGradientFrom: 'white',
-              backgroundGradientTo: 'white',
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-          />
-        </View>
+                }}
+                chartConfig={{
+                  backgroundGradientFrom: 'white',
+                  backgroundGradientTo: 'white',
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                width={screenWidth}
+                height={200}
+                bezier
+                yAxisLabel="$"
+              />
+              <View style={styles.chartLegend}>
+                <Text>
+                  <MaterialCommunityIcons name="circle" size={14} color={GRAY_COLOR_DARK} /> Última
+                  semana
+                </Text>
+                <Text>
+                  <MaterialCommunityIcons name="circle" size={14} color={PRIMARY_COLOR} /> Semana
+                  actual
+                </Text>
+              </View>
+            </View>
+            <View style={styles.chartCard}>
+              <Text style={styles.chartTitle}>Comparativa de Productos Vendidos</Text>
+              <PieChart
+                data={[
+                  {
+                    name: productNames[0],
+                    sales: productSales[0],
+                    color: GRAY_COLOR_DARK,
+                  },
+                  {
+                    name: productNames[1],
+                    sales: productSales[1],
+                    color: GRAY_COLOR,
+                  },
+                ]}
+                paddingLeft="15"
+                width={screenWidth}
+                height={135}
+                accessor="sales"
+                backgroundColor="transparent"
+                chartConfig={{
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+              />
+            </View>
+          </>
+        )}
       </View>
     </ScrollView>
+  );
+});
+
+export default function AdminDashboard() {
+  return (
+    <DashboardProvider>
+      <Dashboard />
+    </DashboardProvider>
   );
 }
 
@@ -169,6 +218,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   container: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingBottom: 10,
     rowGap: 10,
@@ -216,7 +266,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: GRAY_COLOR_LIGHT,
+    borderColor: GRAY_COLOR_DARK,
   },
   statsRow: {
     flexDirection: 'row',
@@ -272,5 +322,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+
+  chartLegend: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
 });

@@ -12,7 +12,7 @@ export const loginRequest = async (credentials: { email: string; password: strin
   return await response.json();
 };
 
-export const registerRequest = async (credentials: any) => {
+export const registerClientRequest = async (credentials: any) => {
   const response = await fetch(`${BACKEND_URL}/registro`, {
     method: 'POST',
     headers: {

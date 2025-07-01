@@ -3,9 +3,19 @@ import { BODY_FONT } from '@/constants/Fonts';
 import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
-import React, { memo } from 'react';
+import React, { memo, type Dispatch, type SetStateAction } from 'react';
 import { Controller } from 'react-hook-form';
 import { StyleSheet, Text, View } from 'react-native';
+
+interface OptionValue {
+  nombre: string;
+  _id: string;
+}
+
+interface OptionsPicker {
+  label: string;
+  value: OptionValue | string;
+}
 
 interface PickerFieldProps {
   control: any;
@@ -13,24 +23,14 @@ interface PickerFieldProps {
   rules: any;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
-  options: { label: string; value: string }[];
-  onSelect?: React.Dispatch<React.SetStateAction<string>>;
+  options: OptionsPicker[];
+  onSelect?: Dispatch<SetStateAction<OptionValue>> | Dispatch<SetStateAction<string>>;
   prompt: string;
   error: string;
 }
 
 export const PickerField = memo(
-  ({
-    control,
-    name,
-    rules,
-    icon,
-    label,
-    options,
-    onSelect,
-    prompt,
-    error,
-  }: PickerFieldProps) => {
+  ({ control, name, rules, icon, label, options, onSelect, prompt, error }: PickerFieldProps) => {
     return (
       <View style={styles.pickerContainer}>
         <Text style={globalStyles.labelText}>
@@ -48,10 +48,10 @@ export const PickerField = memo(
             return (
               <View style={styles.pickerSelect}>
                 <Picker
-                  style={{ color, marginLeft: 15 }}
+                  style={{ color, marginLeft: 17 }}
                   selectedValue={value}
                   onValueChange={itemValue => {
-                    onChange(itemValue);
+                    onChange(typeof itemValue === 'string' ? itemValue : itemValue._id);
                     onSelect && onSelect(itemValue);
                   }}
                   mode="dropdown"
@@ -68,7 +68,7 @@ export const PickerField = memo(
                   />
                   {options.map(({ label, value }) => (
                     <Picker.Item
-                      key={value}
+                      key={typeof value === 'string' ? value : value._id}
                       value={value}
                       label={label}
                       style={styles.pickerItem}
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   icon: {
     position: 'absolute',
     insetBlock: 0,
-    left: 8,
+    left: 10,
     textAlignVertical: 'center',
   },
 });

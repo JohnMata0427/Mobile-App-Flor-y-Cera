@@ -1,20 +1,15 @@
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-  PRIMARY_COLOR,
-} from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
 import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, type FieldValues, type RegisterOptions } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface InputFieldProps {
   control: any;
   name: string;
-  rules: any;
+  rules: Omit<RegisterOptions<FieldValues, string>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   placeholder: string;
@@ -48,7 +43,6 @@ export const InputField = memo(
     showPasswordIcon,
   }: InputFieldProps) => {
     const color = error ? 'red' : GRAY_COLOR_DARK;
-    const beneficiosField = name === 'beneficios';
 
     return (
       <View style={styles.inputContainer}>
@@ -66,11 +60,9 @@ export const InputField = memo(
                 style={[styles.textInput, { color }]}
                 placeholder={placeholder}
                 placeholderTextColor={error ? 'red' : GRAY_COLOR}
-                onChangeText={
-                  beneficiosField ? text => onChange(text.split(',')) : onChange
-                }
+                onChangeText={onChange}
                 onBlur={onBlur}
-                value={beneficiosField ? value.join(',') : value}
+                value={value}
                 autoComplete={autoComplete}
                 autoCapitalize={autoCapitalize}
                 textContentType={textContentType}
@@ -81,12 +73,7 @@ export const InputField = memo(
                 secureTextEntry={secureTextEntry}
                 selectionColor={PRIMARY_COLOR}
               />
-              <MaterialCommunityIcons
-                style={styles.icon}
-                name={icon}
-                color={color}
-                size={16}
-              />
+              <MaterialCommunityIcons style={styles.icon} name={icon} color={color} size={16} />
               {showPasswordIcon}
             </View>
           )}
@@ -105,7 +92,7 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: GRAY_COLOR_LIGHT,
     fontFamily: BODY_FONT,
-    fontSize: 12,
+    // fontSize: 12,
     borderRadius: 10,
     paddingVertical: 10,
     paddingRight: 10,

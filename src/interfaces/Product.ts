@@ -18,3 +18,8 @@ export interface Product {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface ProductFilter {
+	key: keyof Product;
+	value: string;
+}

@@ -8,7 +8,7 @@ import {
 import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Product } from '@/interfaces/Product';
 import { useCartStore } from '@/store/useCartStore';
-import { capitalizeFirstLetter } from '@/utils/textTransform';
+import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
 import { Image, StyleSheet, Text, View, type DimensionValue } from 'react-native';
@@ -36,20 +36,12 @@ export const ClientProductCard = memo(({ data, width = 150 }: ClientProductCardP
         <View style={styles.badgesContainer}>
           <Text style={[styles.badge, styles.categoryBadge]}>{id_categoria?.nombre}</Text>
           <View style={{ flexDirection: 'row', columnGap: 2 }}>
-            <Text style={[styles.badge, styles.aromaBadge]}>
-              {capitalizeFirstLetter(aroma)}
-            </Text>
-            <Text style={[styles.badge, styles.typeBadge]}>
-              {capitalizeFirstLetter(tipo)}
-            </Text>
+            <Text style={[styles.badge, styles.aromaBadge]}>{capitalizeWord(aroma)}</Text>
+            <Text style={[styles.badge, styles.typeBadge]}>{capitalizeWord(tipo)}</Text>
           </View>
         </View>
 
-        <Text
-          style={{ fontSize: 12, color: GRAY_COLOR }}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
+        <Text style={{ fontSize: 12, color: GRAY_COLOR }} numberOfLines={1} ellipsizeMode="tail">
           {descripcion}
         </Text>
 
@@ -73,14 +65,13 @@ export const ClientProductCard = memo(({ data, width = 150 }: ClientProductCardP
             label="¡Lo quiero!"
             icon="cart-plus"
             onPress={() => addProductToCart(data, 1)}
-            paddingVertical={5}
-            moreStyles={{ flex: 1 }}
+            buttonStyle={{
+              flex: 1,
+              paddingVertical: 5,
+            }}
+            textStyle={{ fontSize: 12 }}
           />
-          <MaterialCommunityIcons
-            name="heart-outline"
-            size={20}
-            color={GRAY_COLOR_DARK}
-          />
+          <MaterialCommunityIcons name="heart-outline" size={20} color={GRAY_COLOR_DARK} />
         </View>
       </View>
     </View>

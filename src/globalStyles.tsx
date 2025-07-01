@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK } from './constants/Colors';
-import { BOLD_BODY_FONT } from './constants/Fonts';
+import { BODY_FONT, BOLD_BODY_FONT } from './constants/Fonts';
 
 export const tabsGlobalStyles = StyleSheet.create({
   viewContent: {
@@ -32,9 +32,10 @@ export const tabsGlobalStyles = StyleSheet.create({
 
 export const globalStyles = StyleSheet.create({
   errorText: {
-    fontFamily: BOLD_BODY_FONT,
+    fontFamily: BODY_FONT,
     color: 'red',
-    fontSize: 10,
+    // fontSize: 10,
+    fontSize: 12,
   },
   requiredMark: {
     color: 'red',
@@ -42,6 +43,6 @@ export const globalStyles = StyleSheet.create({
   labelText: {
     fontFamily: BOLD_BODY_FONT,
     color: GRAY_COLOR_DARK,
-    fontSize: 12,
+    // fontSize: 12,
   },
 });

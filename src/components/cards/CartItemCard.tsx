@@ -8,7 +8,7 @@ import {
 import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { CartItem } from '@/interfaces/Cart';
 import { useCartStore } from '@/store/useCartStore';
-import { capitalizeFirstLetter } from '@/utils/textTransform';
+import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -20,8 +20,8 @@ interface CartItemCardProps {
 export const CartItemCard = memo(({ data }: CartItemCardProps) => {
   const { removeProductFromCart, modifyProductQuantity } = useCartStore();
 
-  const { producto_id, cantidad } = data;
-  const { _id, imagen, nombre, aroma, tipo, beneficios, precio } = producto_id;
+  const { producto, cantidad } = data;
+  const { _id, imagen, nombre, aroma, tipo, beneficios = [], precio = 0 } = producto;
 
   const [int, decimal] = precio.toFixed(2).split('.');
   const priceWithoutDiscount = precio * 1.123;
@@ -40,12 +40,8 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
         </View>
         <View style={styles.badgesContainer}>
           <Text style={[styles.badge, styles.categoryBadge]}>Productos artesanales</Text>
-          <Text style={[styles.badge, styles.aromaBadge]}>
-            {capitalizeFirstLetter(aroma)}
-          </Text>
-          <Text style={[styles.badge, styles.typeBadge]}>
-            {capitalizeFirstLetter(tipo)}
-          </Text>
+          <Text style={[styles.badge, styles.aromaBadge]}>{capitalizeWord(aroma)}</Text>
+          <Text style={[styles.badge, styles.typeBadge]}>{capitalizeWord(tipo)}</Text>
         </View>
         <Text style={styles.benefitsText}>{beneficios.join(', ')}</Text>
 
@@ -63,7 +59,7 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
             <Pressable
               onPress={() => {
                 setQuantity(prev => prev + 1);
-                modifyProductQuantity(producto_id, 1);
+                modifyProductQuantity(producto, 1);
               }}
             >
               <MaterialCommunityIcons name="plus" size={16} color="gray" />
@@ -72,7 +68,7 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
             <Pressable
               onPress={() => {
                 if (quantity > 1) {
-                  modifyProductQuantity(producto_id, -1);
+                  modifyProductQuantity(producto, -1);
                   setQuantity(prev => prev - 1);
                 }
               }}

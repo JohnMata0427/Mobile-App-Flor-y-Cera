@@ -170,7 +170,8 @@ const styles = StyleSheet.create({
   loginContainer: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 35,
+    paddingHorizontal: 30,
+    paddingVertical: 40,
   },
   headerContainer: {
     rowGap: 3,
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     color: GRAY_COLOR_DARK,
@@ -207,13 +208,13 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: SECONDARY_COLOR_DARK,
     fontWeight: 'bold',
-    fontSize: 12,
+    // fontSize: 12,
     textAlign: 'right',
   },
   registerText: {
     color: GRAY_COLOR_DARK,
     fontFamily: BODY_FONT,
-    fontSize: 12,
+    // fontSize: 12,
     textAlign: 'center',
   },
   registerLinkText: {
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    fontSize: 12,
+    // fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',
   },

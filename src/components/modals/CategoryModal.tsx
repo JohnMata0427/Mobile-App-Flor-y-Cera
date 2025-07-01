@@ -7,12 +7,12 @@ import {
   SECONDARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import { PromotionsContext } from '@/contexts/PromotionsContext';
-import type { Promotion } from '@/interfaces/Promotion';
+import { CategoriesContext } from '@/contexts/CategoryContext';
+import type { Category } from '@/interfaces/Category';
 import { toFormData } from '@/utils/toFormData';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
@@ -24,40 +24,33 @@ import {
   View,
 } from 'react-native';
 
-type Action = 'Actualizar' | 'Agregar';
-
-export function PromotionModal({
-  data,
-  action,
-  isVisible,
-  setIsVisible,
-}: {
-  data?: Promotion;
-  action: Action;
+interface CategoryModalProps {
+  category: Category;
   isVisible: boolean;
-  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+  setIsVisible: Dispatch<SetStateAction<boolean>>;
+}
+
+export function CategoryModal({ category, isVisible, setIsVisible }: CategoryModalProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { createPromotion, updatePromotion } = use(PromotionsContext);
+  const { updateCategory } = use(CategoriesContext);
   const {
     control,
     handleSubmit,
     formState: { errors },
     clearErrors,
-    reset,
     setValue,
   } = useForm({
     defaultValues: {
       imagen: '',
-      nombre: '',
+      descripcion: '',
     },
   });
 
   const pickImage = async () => {
     const { canceled, assets } = await launchImageLibraryAsync({
       allowsEditing: true,
-      aspect: [16, 9],
+      aspect: [1, 1],
     });
 
     if (!canceled) {
@@ -73,10 +66,7 @@ export function PromotionModal({
 
     setIsLoading(true);
 
-    const { msg } =
-      action === 'Agregar'
-        ? await createPromotion(formData)
-        : await updatePromotion(data!._id, formData);
+    const { msg } = await updateCategory(category._id, formData);
 
     alert(msg);
     setIsLoading(false);
@@ -85,16 +75,11 @@ export function PromotionModal({
 
   useEffect(() => {
     clearErrors();
-    if (data) {
-      const { imagen, nombre } = data;
-      setSelectedImage(imagen);
-      setValue('imagen', imagen);
-      setValue('nombre', nombre);
-    } else {
-      setSelectedImage(null);
-      reset();
-    }
-  }, [data]);
+    const { imagen, descripcion } = category;
+    setSelectedImage(imagen);
+    setValue('imagen', imagen);
+    setValue('descripcion', descripcion);
+  }, [category]);
 
   return (
     <Modal
@@ -106,43 +91,41 @@ export function PromotionModal({
     >
       <ScrollView contentContainerStyle={styles.scrollContent} style={styles.modalContainer}>
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>{action} promoción</Text>
+          <Text style={styles.titleText}>Actualizar {category.nombre?.toLowerCase()}</Text>
           <View style={styles.subtitleContainer}>
             <MaterialCommunityIcons name="information" size={14} color={PRIMARY_COLOR} />
             <Text style={styles.subtitleText}>Recuerde que todos los campos son obligatorios.</Text>
           </View>
+
           <ImageField
             control={control}
             name="imagen"
             rules={{ required: 'Debe seleccionar una imagen' }}
             label="Imagen"
             error={errors.imagen?.message as string}
-            aspectRatio={16 / 9}
             selectedImage={selectedImage}
             onChange={pickImage}
           />
 
           <InputField
             control={control}
-            name="nombre"
+            name="descripcion"
             rules={{
               required: 'Este campo es obligatorio',
-              minLength: {
-                value: 3,
-                message: 'El nombre debe tener al menos 3 caracteres',
-              },
               pattern: {
-                value: /^(?=.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]).{8,}$/,
-                message: 'El nombre debe contener al menos 8 letras',
+                message:
+                  'La descripcion debe tener al menos 10 letras y como máximo 500 caracteres de cualquier tipo',
+                value: /^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){10})[\s\S]{10,500}$/,
               },
             }}
-            icon="tag"
-            label="Nombre"
-            placeholder="Ej: Promoción del 10% para este verano"
-            error={errors.nombre?.message as string}
+            icon="script-text"
+            label="Descripción"
+            placeholder="Ej: Vela natural con aroma a canela, ideal para relajarse, meditar y dormir mejor."
+            error={errors.descripcion?.message as string}
             autoComplete="off"
-            autoCapitalize="words"
-            textContentType="name"
+            autoCapitalize="sentences"
+            multiline
+            numberOfLines={4}
           />
 
           <View style={styles.actionRow}>
@@ -151,7 +134,7 @@ export function PromotionModal({
                 <ActivityIndicator size={14} color="white" />
               ) : (
                 <>
-                  <Text style={styles.submitButtonText}>{action}</Text>
+                  <Text style={styles.submitButtonText}>Actualizar</Text>
                   <MaterialCommunityIcons name="content-save" size={14} color="white" />
                 </>
               )}
@@ -175,15 +158,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     margin: 'auto',
     width: '90%',
-    maxHeight: '46%',
+    maxHeight: '62%',
     borderRadius: 10,
     backgroundColor: 'white',
-    rowGap: 5,
   },
   formContainer: {
+    rowGap: 5,
     paddingVertical: 20,
     paddingHorizontal: 30,
-    rowGap: 5,
   },
   titleText: {
     fontFamily: BOLD_BODY_FONT,

@@ -1,31 +1,34 @@
 import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { HEADING_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type Dispatch, type ReactNode } from 'react';
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface AdminHeaderProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   showSearchBar?: boolean;
+  setSearch?: Dispatch<React.SetStateAction<string>>;
+  placeholder?: string;
 }
 
 export const AdminHeader = memo(
-  ({ children, showSearchBar = true }: AdminHeaderProps) => {
+  ({ children, showSearchBar = true, setSearch, placeholder }: AdminHeaderProps) => {
     return (
       <>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
-            <Image
-              style={styles.iconImage}
-              source={require('@/assets/images/icon.png')}
-            />
+            <Image style={styles.iconImage} source={require('@/assets/images/icon.png')} />
             <Text style={styles.titleText}>Flor & Cera</Text>
           </View>
           {children}
         </View>
         {showSearchBar && (
           <View>
-            <TextInput style={styles.searchInput} placeholder="Buscar por nombre..." />
+            <TextInput
+              style={styles.searchInput}
+              placeholder={placeholder}
+              onChangeText={text => setSearch && setSearch(text)}
+            />
             <Pressable style={styles.searchIcon}>
               <MaterialCommunityIcons name="magnify" size={20} color="white" />
             </Pressable>

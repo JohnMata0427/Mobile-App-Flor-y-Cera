@@ -11,11 +11,13 @@ import {
 } from '@/constants/Colors';
 import { IngredientsContext, IngredientsProvider } from '@/contexts/IngredientsContext';
 import type { Ingredient } from '@/interfaces/Ingredient';
+import { createPersonalizedProductRequest } from '@/services/PersonalizedProductService';
+import { useAuthStore } from '@/store/useAuthStore';
 import { getDominantColor } from '@/utils/getDominantColor';
-import { capitalizeFirstLetter } from '@/utils/textTransform';
+import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useEffect, useState } from 'react';
-import { FlatList, Image, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Image, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { DraxProvider, DraxView } from 'react-native-drax';
 import {
   GestureHandlerRootView,
@@ -28,6 +30,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type ingredientType = 'molde' | 'aroma' | 'esencia' | 'color';
 
 const Personalization = memo(() => {
+  const { token } = useAuthStore();
   const { top } = useSafeAreaInsets();
   const { ingredients } = use(IngredientsContext);
   const [filteredIngredients, setFilteredIngredients] = useState<Ingredient[]>([]);
@@ -42,7 +45,7 @@ const Personalization = memo(() => {
 
   const [form, setForm] = useState({
     id_categoria: '680fd248f613dc80267ba5d7',
-    tipo_producto: 'piel grasa',
+    tipo_producto: 'piel grasa' as 'piel grasa',
     ingredientes: [] as Ingredient[],
   });
 
@@ -73,6 +76,53 @@ const Personalization = memo(() => {
     })();
   }, [selectedColor]);
 
+  const handleSubmit = async () => {
+    if (
+      !selectedMold?._id ||
+      !selectedColor?._id ||
+      !selectedAroma?._id ||
+      selectedEssences.length < 2
+    ) {
+      Alert.alert('Error', 'Recuerde colocar un molde, un color, un aroma y dos esencias.');
+      return;
+    }
+
+    const newForm = {
+      ...form,
+      ingredientes: [selectedMold, selectedColor, selectedAroma, ...selectedEssences],
+    };
+
+    const response = await createPersonalizedProductRequest(newForm, token);
+
+    Alert.alert('Mensaje del sistema', response.msg, [
+      {
+        text: 'Aceptar',
+        onPress: () => {
+          setSelectedMold(null);
+          setSelectedColor(null);
+          setSelectedAroma(null);
+          setSelectedEssences([]);
+        },
+      },
+    ]);
+  };
+
+  const handleSubmitRecommendation = () => {
+    setTimeout(() => {
+      Alert.alert('Mensaje del sistema', 'Ocurrio un error al generar la recomendación.', [
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            setSelectedMold(null);
+            setSelectedColor(null);
+            setSelectedAroma(null);
+            setSelectedEssences([]);
+          },
+        },
+      ]);
+    }, 1000);
+  };
+
   return (
     <>
       <View style={[styles.searchContainer, { paddingTop: top + 5 }]}>
@@ -97,6 +147,10 @@ const Personalization = memo(() => {
       >
         <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
           Bienvenido al Taller de Flor & Cera
+        </Text>
+
+        <Text style={{ textAlign: 'center', color: GRAY_COLOR_DARK }}>
+          Aquí podrás crear tu propio producto personalizado
         </Text>
 
         <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
@@ -198,13 +252,15 @@ const Personalization = memo(() => {
         </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'center', columnGap: 10 }}>
-          <Button label="Crear producto" icon="shimmer" onPress={() => {}} />
+          <Button label="Crear producto" icon="shimmer" onPress={handleSubmit} />
           <Button
             label="Recomendación con IA"
             icon="shimmer"
-            onPress={() => {}}
-            backgroundColor={TERTIARY_COLOR}
-            borderColor={TERTIARY_COLOR_DARK}
+            onPress={handleSubmitRecommendation}
+            buttonStyle={{
+              backgroundColor: TERTIARY_COLOR,
+              borderColor: TERTIARY_COLOR_DARK,
+            }}
           />
         </View>
 
@@ -226,7 +282,7 @@ const Personalization = memo(() => {
               }}
               onPress={() => setSelectedFilter(type)}
             >
-              {capitalizeFirstLetter(type)}
+              {capitalizeWord(type)}
             </Text>
           ))}
         </View>
@@ -255,7 +311,7 @@ const Personalization = memo(() => {
                     resizeMode="contain"
                   />
                 </DraxView>
-                <Text>{capitalizeFirstLetter(item.nombre)}</Text>
+                <Text>{capitalizeWord(item.nombre)}</Text>
               </View>
             )}
           />

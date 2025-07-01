@@ -13,13 +13,14 @@ interface Response {
 }
 
 interface PromotionsContextProps {
-  promotions: Promotion[];
+  searchedPromotions: Promotion[];
   loading: boolean;
   refreshing: boolean;
   page: number;
   totalPages: number;
   setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
   getPromotions: () => Promise<void>;
   createPromotion: (product: FormData) => Promise<Response>;
   updatePromotion: (productId: string, product: FormData) => Promise<Response>;
@@ -27,13 +28,14 @@ interface PromotionsContextProps {
 }
 
 export const PromotionsContext = createContext<PromotionsContextProps>({
-  promotions: [],
+  searchedPromotions: [],
   loading: false,
   refreshing: false,
   page: 1,
   totalPages: 0,
   setRefreshing: () => {},
   setPage: () => {},
+  setSearch: () => {},
   getPromotions: async () => {},
   createPromotion: async (_: FormData) => ({ msg: '' }),
   updatePromotion: async (_: string, __: FormData) => ({ msg: '' }),
@@ -48,6 +50,14 @@ export const PromotionsProvider = ({ children }: { children: React.ReactNode }) 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(4);
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState<string>('');
+
+  const searchedPromotions = useMemo(() => {
+    if (search) {
+      return promotions.filter(({ nombre }) => nombre.toLowerCase().includes(search.toLowerCase()));
+    }
+    return promotions;
+  }, [promotions, search]);
 
   const getPromotions = useCallback(async () => {
     try {
@@ -75,18 +85,17 @@ export const PromotionsProvider = ({ children }: { children: React.ReactNode }) 
     } catch {
       return { msg: 'Ocurrio un error al crear el promocion' };
     }
-  }, []);
+  }, [promotions, token]);
 
   const updatePromotion = useCallback(async (id: string, product: FormData) => {
     try {
       const { promocion, msg } = await updatePromotionRequest(id, product, token);
-      promocion?._id &&
-        setPromotions(prev => prev.map(p => (p._id === id ? promocion : p)));
+      promocion?._id && setPromotions(prev => prev.map(p => (p._id === id ? promocion : p)));
       return { msg };
     } catch {
       return { msg: 'Ocurrio un error al actualizar el promocion' };
     }
-  }, []);
+  }, [promotions, token]);
 
   const deletePromotion = useCallback(async (id: string) => {
     try {
@@ -96,7 +105,7 @@ export const PromotionsProvider = ({ children }: { children: React.ReactNode }) 
     } catch {
       return { msg: 'Ocurrio un error al eliminar el promocion' };
     }
-  }, []);
+  }, [promotions, token]);
 
   useEffect(() => {
     getPromotions();
@@ -104,26 +113,25 @@ export const PromotionsProvider = ({ children }: { children: React.ReactNode }) 
 
   const contextValue = useMemo(
     () => ({
-      promotions,
+      searchedPromotions,
       loading,
       refreshing,
       page,
       totalPages,
       setRefreshing,
       setPage,
+      setSearch,
       getPromotions,
       createPromotion,
       updatePromotion,
       deletePromotion,
     }),
     [
-      promotions,
+      searchedPromotions,
       loading,
       refreshing,
       page,
       totalPages,
-      setRefreshing,
-      setPage,
       getPromotions,
       createPromotion,
       updatePromotion,
@@ -131,9 +139,5 @@ export const PromotionsProvider = ({ children }: { children: React.ReactNode }) 
     ],
   );
 
-  return (
-    <PromotionsContext.Provider value={contextValue}>
-      {children}
-    </PromotionsContext.Provider>
-  );
+  return <PromotionsContext.Provider value={contextValue}>{children}</PromotionsContext.Provider>;
 };

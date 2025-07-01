@@ -13,8 +13,10 @@ export interface Cart {
 
 export interface CartItem {
   _id: string;
-  producto_id: Product;
+  producto: Product;
+  producto_id: string;
   cantidad: number;
   precio_unitario: number;
   subtotal: number;
+  tipo_producto: 'normal' | 'personalizado';
 }

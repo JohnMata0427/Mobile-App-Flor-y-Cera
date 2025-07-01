@@ -36,12 +36,7 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
             source={imagen ? { uri: imagen } : defaultImageUrl}
             resizeMode="cover"
           />
-          <Text
-            style={[
-              styles.stateBadge,
-              isActive ? styles.badgeActive : styles.badgeInactive,
-            ]}
-          >
+          <Text style={[styles.stateBadge, isActive ? styles.badgeActive : styles.badgeInactive]}>
             {estado}
           </Text>
         </View>
@@ -57,22 +52,12 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
             />
           </View>
           <View style={styles.detailRow}>
-            <MaterialCommunityIcons
-              name="email-check-outline"
-              size={14}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="email-check-outline" size={14} color={GRAY_COLOR_DARK} />
             <Text style={styles.detailText}>{email}</Text>
           </View>
           <View style={styles.detailRow}>
-            <MaterialCommunityIcons
-              name="home-outline"
-              size={14}
-              color={GRAY_COLOR_DARK}
-            />
-            <Text style={styles.detailText}>
-              {direccion ?? 'Dirección no registrada'}
-            </Text>
+            <MaterialCommunityIcons name="home-outline" size={14} color={GRAY_COLOR_DARK} />
+            <Text style={styles.detailText}>{direccion ?? 'Dirección no registrada'}</Text>
           </View>
           <View style={styles.detailRow}>
             <MaterialCommunityIcons name="calendar" size={14} color={GRAY_COLOR_DARK} />

@@ -19,11 +19,12 @@ interface InvoiceCardProps {
 
 export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps) => {
   const {
-    cliente_id: { nombre, apellido, email },
+    cliente_id,
     fecha_venta,
     productos: { length },
     estado,
   } = data;
+  const { nombre, apellido, email } = cliente_id ?? {};
 
   return (
     <View style={styles.invoiceCard}>
@@ -32,11 +33,7 @@ export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps
           {nombre} {apellido}
         </Text>
         <View style={styles.detailRow}>
-          <MaterialCommunityIcons
-            name="email-check-outline"
-            size={14}
-            color={GRAY_COLOR_DARK}
-          />
+          <MaterialCommunityIcons name="email-check-outline" size={14} color={GRAY_COLOR_DARK} />
           <Text style={styles.detailText}>{email}</Text>
         </View>
         <View style={styles.detailRow}>
@@ -44,11 +41,7 @@ export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps
           <Text style={styles.detailText}>{toLocaleDate(fecha_venta)}</Text>
         </View>
         <View style={styles.detailRow}>
-          <MaterialCommunityIcons
-            name="format-list-bulleted"
-            size={14}
-            color={GRAY_COLOR_DARK}
-          />
+          <MaterialCommunityIcons name="format-list-bulleted" size={14} color={GRAY_COLOR_DARK} />
           <Text style={styles.detailText}>
             {length + (length > 1 ? ' productos' : ' producto')}
           </Text>

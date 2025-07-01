@@ -51,63 +51,44 @@ export const ClientInformationModal = memo(
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="account" size={16} />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Nombre:</Text>
+                <Text style={styles.detailTextBold}>Nombre: </Text>
                 {nombre} {apellido}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="email" size={16} />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Email:</Text> {email}
+                <Text style={styles.detailTextBold}>Correo electrónico:</Text> {email}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="gender-male-female"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="gender-male-female" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Género:</Text> {genero}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="lock-open"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="lock-open" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Estado:</Text> {estado}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="identifier"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="identifier" size={16} />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Cédula:</Text>{' '}
-                {cedula ?? 'No registrada'}
+                <Text style={styles.detailTextBold}>Cédula:</Text> {cedula ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="map-marker"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="map-marker" size={16} />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Dirección:</Text>{' '}
-                {direccion ?? 'No registrada'}
+                <Text style={styles.detailTextBold}>Dirección:</Text> {direccion ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="phone" size={16} />
               <Text style={styles.detailText}>
-                <Text style={styles.detailTextBold}>Teléfono:</Text>{' '}
-                {telefono ?? 'No registrado'}
+                <Text style={styles.detailTextBold}>Teléfono:</Text> {telefono ?? 'No registrado'}
               </Text>
             </View>
             <View style={styles.detailRow}>
@@ -118,11 +99,7 @@ export const ClientInformationModal = memo(
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons
-                color={GRAY_COLOR_DARK}
-                name="calendar-check"
-                size={16}
-              />
+              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="calendar-check" size={16} />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Fecha de creación:</Text>{' '}
                 {toLocaleDate(createdAt)}
@@ -167,6 +144,7 @@ const styles = StyleSheet.create({
   },
   informationCard: {
     marginTop: 80,
+    rowGap: 4,
   },
   titleText: {
     fontFamily: BOLD_BODY_FONT,

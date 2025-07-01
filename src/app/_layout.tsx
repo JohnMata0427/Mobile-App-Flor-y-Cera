@@ -15,7 +15,9 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    checkAuth();
+    (async() => {
+      await checkAuth();
+    })();
   }, []);
 
   if (!loaded || loading) {
@@ -24,16 +26,16 @@ export default function RootLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false, statusBarStyle: 'dark' }}>
-      <Stack.Protected guard={isAuthenticated}>
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="(auth)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={isAuthenticated && !isAdmin}>
         <Stack.Screen name="(client)" />
       </Stack.Protected>
 
       <Stack.Protected guard={isAdmin}>
         <Stack.Screen name="(admin)" />
-      </Stack.Protected>
-
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="(auth)" />
       </Stack.Protected>
     </Stack>
   );

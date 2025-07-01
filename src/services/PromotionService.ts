@@ -24,11 +24,7 @@ export const createPromotionRequest = async (body: FormData, token: string) => {
   return await response.json();
 };
 
-export const updatePromotionRequest = async (
-  id: string,
-  body: FormData,
-  token: string,
-) => {
+export const updatePromotionRequest = async (id: string, body: FormData, token: string) => {
   const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'PUT',
     headers: {

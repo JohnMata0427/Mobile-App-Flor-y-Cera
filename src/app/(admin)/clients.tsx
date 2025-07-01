@@ -1,8 +1,8 @@
+import { AdminFilter } from '@/components/AdminFilter';
 import { AdminHeader } from '@/components/AdminHeader';
 import { ClientCard } from '@/components/cards/ClientCard';
 import { Loading } from '@/components/Loading';
 import { ClientInformationModal } from '@/components/modals/ClientInformationModal';
-import { Pagination } from '@/components/Pagination';
 import {
   GREEN_COLOR,
   GREEN_COLOR_DARK,
@@ -15,9 +15,9 @@ import {
 } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
 import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
-import type { Client } from '@/interfaces/Client';
+import type { Client, ClientFilter } from '@/interfaces/Client';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use, useCallback, useState } from 'react';
+import { memo, use, useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -29,17 +29,33 @@ import {
   View,
 } from 'react-native';
 
-function Clients() {
+interface FilterButton {
+  label: string;
+  filter: ClientFilter;
+}
+
+const filterButtons: FilterButton[] = [
+  { label: 'Todos', filter: { key: 'estado', value: '' } },
+  { label: 'Masculino', filter: { key: 'genero', value: 'masculino' } },
+  { label: 'Femenino', filter: { key: 'genero', value: 'femenino' } },
+  { label: 'Activos', filter: { key: 'estado', value: 'activo' } },
+  { label: 'Inactivos', filter: { key: 'estado', value: 'inactivo' } },
+];
+
+const Clients = memo(() => {
   const [selectedClient, setSelectedClient] = useState<Client>({} as Client);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
-    clients,
+    searchedClients,
     loading,
     refreshing,
     page,
     totalPages,
+    filter,
     setRefreshing,
     setPage,
+    setFilter,
+    setSearch,
     getClients,
     activateClientAccount,
     deleteClientAccount,
@@ -50,8 +66,8 @@ function Clients() {
       const { nombre, apellido, _id } = client;
 
       Alert.alert(
-        '¿Está seguro de realizar está acción?',
-        `¿Está seguro de ${
+        'Cambiar estado de cuenta',
+        `¿Está seguro/a que desea ${
           isActive ? 'desactivar' : 'activar'
         } la cuenta de ${nombre} ${apellido}?`,
         [
@@ -86,7 +102,7 @@ function Clients() {
       }
     >
       <View style={styles.container}>
-        <AdminHeader />
+        <AdminHeader setSearch={setSearch} placeholder="Buscar por nombre, apellido o correo..." />
         <ClientInformationModal
           isVisible={modalVisible}
           client={selectedClient}
@@ -97,7 +113,7 @@ function Clients() {
           <Loading />
         ) : (
           <FlatList
-            data={clients}
+            data={searchedClients}
             scrollEnabled={false}
             contentContainerStyle={styles.listContent}
             keyExtractor={({ _id }) => _id}
@@ -115,18 +131,12 @@ function Clients() {
                         setSelectedClient(item);
                       }}
                     >
-                      <MaterialCommunityIcons
-                        name="information-variant"
-                        size={20}
-                        color="white"
-                      />
+                      <MaterialCommunityIcons name="information-variant" size={20} color="white" />
                     </Pressable>
                     <Pressable
                       style={[
                         styles.actionButton,
-                        isActive
-                          ? styles.toggleButtonActive
-                          : styles.toggleButtonInactive,
+                        isActive ? styles.toggleButtonActive : styles.toggleButtonInactive,
                       ]}
                       onPress={() => showChangeStateAlert(isActive, item)}
                     >
@@ -143,20 +153,18 @@ function Clients() {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <MaterialCommunityIcons name="account-off" size={30} />
-                <Text style={styles.emptyText}>
-                  No se encontraron clientes, intente más tarde.
-                </Text>
+                <Text style={styles.emptyText}>No se encontraron clientes, intente más tarde.</Text>
               </View>
             }
             ListHeaderComponent={
-              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+              <AdminFilter filterButtons={filterButtons} filter={filter} setFilter={setFilter as any} />
             }
           />
         )}
       </View>
     </ScrollView>
   );
-}
+});
 
 export default function AdminClients() {
   return (

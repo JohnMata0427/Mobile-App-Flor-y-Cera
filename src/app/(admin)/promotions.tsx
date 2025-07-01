@@ -1,6 +1,5 @@
 import { AdminHeader } from '@/components/AdminHeader';
 import { Loading } from '@/components/Loading';
-import { Pagination } from '@/components/Pagination';
 import { PromotionCard } from '@/components/cards/PromotionCard';
 import { PromotionModal } from '@/components/modals/PromotionModal';
 import {
@@ -15,7 +14,7 @@ import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { PromotionsContext, PromotionsProvider } from '@/contexts/PromotionsContext';
 import { Promotion } from '@/interfaces/Promotion';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { use, useCallback, useState } from 'react';
+import { memo, use, useCallback, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -29,18 +28,19 @@ import {
 
 type Action = 'Agregar' | 'Actualizar';
 
-function Promotions() {
+const Promotions = memo(() => {
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState<Action>('Agregar');
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion>();
   const {
-    promotions,
+    searchedPromotions,
     loading,
     page,
     totalPages,
     refreshing,
     setRefreshing,
     setPage,
+    setSearch,
     getPromotions,
     deletePromotion,
   } = use(PromotionsContext);
@@ -81,7 +81,7 @@ function Promotions() {
       }
     >
       <View style={styles.container}>
-        <AdminHeader>
+        <AdminHeader setSearch={setSearch} placeholder="Buscar por nombre de la promoción...">
           <Pressable
             style={styles.addButton}
             onPress={() => {
@@ -104,7 +104,7 @@ function Promotions() {
           <Loading />
         ) : (
           <FlatList
-            data={promotions}
+            data={searchedPromotions}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             keyExtractor={({ _id }) => _id}
@@ -125,10 +125,7 @@ function Promotions() {
                     >
                       <MaterialCommunityIcons name="pencil" size={20} color="white" />
                     </Pressable>
-                    <Pressable
-                      style={styles.deleteButton}
-                      onPress={() => showDeleteAlert(_id)}
-                    >
+                    <Pressable style={styles.deleteButton} onPress={() => showDeleteAlert(_id)}>
                       <MaterialCommunityIcons name="trash-can" size={20} color="white" />
                     </Pressable>
                   </View>
@@ -137,21 +134,18 @@ function Promotions() {
             }}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <MaterialCommunityIcons name="ticket" size={24} />
+                <MaterialCommunityIcons name="ticket-percent-outline" size={30} />
                 <Text style={styles.emptyText}>
-                  No se encontraron promociones, agregue una nueva
+                  No se encontraron promociones, intente más tarde.
                 </Text>
               </View>
-            }
-            ListHeaderComponent={
-              <Pagination page={page} setPage={setPage} totalPages={totalPages} />
             }
           />
         )}
       </View>
     </ScrollView>
   );
-}
+});
 
 export default function AdminPromotions() {
   return (
@@ -223,5 +217,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontFamily: BODY_FONT,
+    textAlign: 'center',
   },
 });

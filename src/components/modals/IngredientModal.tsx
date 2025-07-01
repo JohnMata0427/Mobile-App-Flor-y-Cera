@@ -1,49 +1,56 @@
 import { Button } from '@/components/Button';
 import { ImageField } from '@/components/fields/ImageField';
 import { InputField } from '@/components/fields/InputField';
-import { MultipleCheckBoxField } from '@/components/fields/MultipleCheckBoxField';
 import { PickerField } from '@/components/fields/PickerField';
 import { PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
 import { CategoriesContext } from '@/contexts/CategoryContext';
 import { IngredientsContext } from '@/contexts/IngredientsContext';
-import { ProductsContext } from '@/contexts/ProductsContext';
 import type { Ingredient } from '@/interfaces/Ingredient';
-import type { Product } from '@/interfaces/Product';
+import { getDominantColor } from '@/utils/getDominantColor';
 import { toFormData } from '@/utils/toFormData';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ColorField } from '../fields/ColorField';
+import ViewShot from 'react-native-view-shot';
 
-interface OptionValue {
-  nombre: string;
-  _id: string;
-}
-
+const typesValues = ['Molde', 'Color', 'Esencia', 'Aroma'] as const;
 type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
 
-export function ProductModal({
-  product,
-  action = 'Agregar',
-  isVisible,
-  setIsVisible,
-}: {
-  product?: Product;
+interface IngredientModalProps {
+  ingredient?: Ingredient;
   action?: Action;
   isVisible: boolean;
   setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}
+
+export function IngredientModal({
+  ingredient,
+  action = 'Agregar',
+  isVisible,
+  setIsVisible,
+}: IngredientModalProps) {
   const isEditable = action !== 'Visualizar';
-  const [typeValues, setTypeValues] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<OptionValue>({ nombre: '', _id: '' });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [essences, setEssences] = useState<Ingredient[]>([]);
-  const { ingredients } = use(IngredientsContext);
-  const { createProduct, updateProduct } = use(ProductsContext);
+  const [selectedType, setSelectedType] = useState<string>('');
+  const { createIngredient, updateIngredient } = use(IngredientsContext);
   const { categories } = use(CategoriesContext);
+
+  const categoryOptions = useMemo(() => {
+    const options = [{ label: 'Ambas categorias', value: 'ambas' }];
+
+    return options.concat(
+      categories.map(({ nombre, _id }) => ({
+        label: nombre,
+        value: _id,
+      })),
+    );
+  }, [categories]);
+
   const {
     control,
     handleSubmit,
@@ -54,14 +61,10 @@ export function ProductModal({
   } = useForm({
     defaultValues: {
       nombre: '',
-      descripcion: '',
-      beneficios: '',
       id_categoria: '',
       precio: '',
       stock: '',
       imagen: '',
-      ingredientes: [] as string[],
-      aroma: '',
       tipo: '',
     },
   });
@@ -83,12 +86,20 @@ export function ProductModal({
   const onSubmit = async (form: any) => {
     const formData = toFormData(form, selectedImage);
 
+    if (form.id_categoria === 'ambas') {
+      formData.delete('id_categoria');
+
+      categories.forEach(({ _id }) => {
+        formData.append('id_categoria[]', _id);
+      });
+    }
+
     setIsLoading(true);
 
     const { msg } =
       action === 'Agregar'
-        ? await createProduct(formData)
-        : await updateProduct(product!._id, formData);
+        ? await createIngredient(formData)
+        : await updateIngredient(ingredient!._id, formData);
 
     Alert.alert('Mensaje del sistema', msg);
     setIsLoading(false);
@@ -97,62 +108,33 @@ export function ProductModal({
   };
 
   useEffect(() => {
-    const nombre = selectedCategory.nombre.toLocaleLowerCase();
-
-    if (nombre === 'jabones artesanales') {
-      setTypeValues(['Piel Seca', 'Piel Grasa', 'Piel Mixta']);
-    } else if (nombre === 'velas artesanales') {
-      setTypeValues(['Decorativa', 'Aromatizante', 'Humidificación']);
-    } else {
-      setTypeValues([]);
-    }
-  }, [selectedCategory, categories]);
-
-  useEffect(() => {
     clearErrors();
-    if (product) {
-      const {
-        imagen,
-        nombre,
-        descripcion,
-        beneficios,
-        id_categoria,
-        precio,
-        stock,
-        ingredientes,
-        aroma,
-        tipo,
-      } = product;
-      const categoria = id_categoria?._id ?? id_categoria;
+    if (ingredient) {
+      const { imagen, nombre, id_categoria, precio, stock, tipo } = ingredient;
+
+      const category = id_categoria.length > 1 ? 'ambas' : id_categoria[0];
 
       setSelectedImage(imagen);
-      setSelectedCategory({
-        nombre: id_categoria?.nombre ?? '',
-        _id: categoria,
-      });
+      setSelectedType(tipo);
 
-      setValue('imagen', imagen);
+      if (tipo === 'color') {
+        getDominantColor(imagen).then(color => {
+          setValue('imagen', color);
+        });
+      } else {
+        setValue('imagen', imagen);
+      }
+
       setValue('nombre', nombre);
-      setValue('descripcion', descripcion);
-      setValue('beneficios', beneficios.join(','));
       setValue('precio', precio.toString());
       setValue('stock', stock.toString());
-      setValue('aroma', aroma);
       setValue('tipo', tipo);
-      setValue('id_categoria', categoria);
-      setValue(
-        'ingredientes',
-        ingredientes.map((i: any) => i?._id ?? i),
-      );
+      setValue('id_categoria', category);
     } else {
       setSelectedImage(null);
       reset();
     }
-  }, [product]);
-
-  useEffect(() => {
-    setEssences(ingredients.filter(({ tipo }) => tipo === 'esencia'));
-  }, [ingredients]);
+  }, [ingredient]);
 
   return (
     <Modal
@@ -167,7 +149,7 @@ export function ProductModal({
         style={styles.modalContainer}
       >
         <View style={styles.formContainer}>
-          <Text style={styles.titleText}>{action} producto</Text>
+          <Text style={styles.titleText}>{action} ingrediente</Text>
           {action !== 'Visualizar' && (
             <View style={styles.subtitleContainer}>
               <MaterialCommunityIcons name="information" size={14} color={PRIMARY_COLOR} />
@@ -177,15 +159,25 @@ export function ProductModal({
             </View>
           )}
 
-          <ImageField
-            control={control}
-            name="imagen"
-            rules={{ required: 'Debe seleccionar una imagen' }}
-            label="Imagen"
-            error={errors.imagen?.message as string}
-            selectedImage={selectedImage}
-            onChange={pickImage}
-          />
+          {selectedType === 'color' ? (
+            <ColorField
+              control={control}
+              name="imagen"
+              rules={{ required: 'Debe seleccionar un color' }}
+              label="Colorante"
+              error={errors.imagen?.message as string}
+            />
+          ) : (
+            <ImageField
+              control={control}
+              name="imagen"
+              rules={{ required: 'Debe seleccionar una imagen' }}
+              label="Imagen"
+              error={errors.imagen?.message as string}
+              selectedImage={selectedImage}
+              onChange={pickImage}
+            />
+          )}
 
           <InputField
             control={control}
@@ -206,51 +198,6 @@ export function ProductModal({
             textContentType="name"
           />
 
-          <View style={styles.rowInputs}>
-            <InputField
-              control={control}
-              name="aroma"
-              rules={{
-                required: 'Este campo es obligatorio',
-                pattern: {
-                  value: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]{3,25}$/,
-                  message: 'El aroma debe tener entre 3 y 25 letras y solo letras',
-                },
-              }}
-              icon="flower"
-              label="Aroma"
-              placeholder="Ej: Canela"
-              error={errors.aroma?.message as string}
-              autoComplete="family-name"
-              autoCapitalize="words"
-              textContentType="familyName"
-            />
-            <InputField
-              control={control}
-              name="precio"
-              rules={{
-                required: 'Este campo es obligatorio',
-                pattern: {
-                  value: /^(100(\.0{1,2})?|\d{1,2}(\.\d{1,2})?)$/,
-                  message: 'El precio debe ser un número válido',
-                },
-                min: {
-                  value: 0.49,
-                  message: 'El precio debe ser mayor a $ 0.49',
-                },
-                max: {
-                  value: 100,
-                  message: 'El precio no puede ser mayor a $ 100.00',
-                },
-              }}
-              icon="currency-usd"
-              label="Precio"
-              placeholder="Ej: 5.49"
-              error={errors.precio?.message as string}
-              autoComplete="off"
-              keyboardType="numeric"
-            />
-          </View>
           <View style={styles.rowInputs}>
             <InputField
               control={control}
@@ -277,48 +224,32 @@ export function ProductModal({
               autoComplete="off"
               keyboardType="numeric"
             />
+            <InputField
+              control={control}
+              name="precio"
+              rules={{
+                required: 'Este campo es obligatorio',
+                pattern: {
+                  value: /^(20(\.0{1,2})?|\d{1,2}(\.\d{1,2})?)$/,
+                  message: 'El precio debe ser un número válido',
+                },
+                min: {
+                  value: 0.49,
+                  message: 'El precio debe ser mayor a $ 0.49',
+                },
+                max: {
+                  value: 20,
+                  message: 'El precio no puede ser mayor a $ 20.00',
+                },
+              }}
+              icon="currency-usd"
+              label="Precio"
+              placeholder="Ej: 5.49"
+              error={errors.precio?.message as string}
+              autoComplete="off"
+              keyboardType="numeric"
+            />
           </View>
-          <InputField
-            control={control}
-            name="descripcion"
-            rules={{
-              required: 'Este campo es obligatorio',
-              pattern: {
-                message:
-                  'La descripcion debe tener al menos 10 letras y como máximo 500 caracteres de cualquier tipo',
-                value: /^(?=(.*[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]){10})[\s\S]{10,500}$/,
-              },
-            }}
-            icon="script-text"
-            label="Descripción"
-            placeholder="Ej: Vela natural con aroma a canela, ideal para relajarse, meditar y dormir mejor."
-            error={errors.descripcion?.message as string}
-            autoComplete="off"
-            autoCapitalize="sentences"
-            multiline
-            numberOfLines={4}
-          />
-
-          <InputField
-            control={control}
-            name="beneficios"
-            rules={{
-              required: 'Este campo es obligatorio',
-              pattern: {
-                message:
-                  'Los beneficios deben ser 3, separados por comas y tener entre 10 y 100 caracteres cada uno',
-                value: /^[^,]{10,100},\s*[^,]{10,100},\s*[^,]{10,100}$/,
-              },
-            }}
-            icon="script-text"
-            label="Beneficios (separados por comas)"
-            placeholder="Ej: Aroma relajante, ayuda a dormir mejor"
-            error={errors.beneficios?.message as string}
-            autoComplete="off"
-            autoCapitalize="sentences"
-            multiline
-            numberOfLines={4}
-          />
 
           <PickerField
             control={control}
@@ -326,11 +257,7 @@ export function ProductModal({
             rules={{ required: 'Este campo es obligatorio' }}
             icon="tag"
             label="Categoría"
-            options={categories.map(({ _id, nombre }) => ({
-              label: nombre,
-              value: { nombre, _id },
-            }))}
-            onSelect={setSelectedCategory}
+            options={categoryOptions}
             prompt="Seleccionar categoría"
             error={errors.id_categoria?.message as string}
           />
@@ -339,30 +266,15 @@ export function ProductModal({
             control={control}
             name="tipo"
             rules={{ required: 'Este campo es obligatorio' }}
-            icon="leaf"
+            icon="shape"
             label="Tipo"
-            options={typeValues.map(type => ({
+            options={typesValues.map(type => ({
               label: type,
               value: type.toLowerCase(),
             }))}
+            onSelect={setSelectedType}
             prompt="Seleccionar tipo"
             error={errors.tipo?.message as string}
-          />
-
-          <MultipleCheckBoxField
-            control={control}
-            name="ingredientes"
-            rules={{
-              validate: {
-                minLength: (value: any[]) => value.length > 1 || 'Este campo es obligatorio',
-              },
-            }}
-            label="Ingredientes (se requiere 2)"
-            error={errors.ingredientes?.message as string}
-            options={essences.map(({ _id, nombre }) => ({
-              optionLabel: nombre,
-              optionValue: _id,
-            }))}
           />
 
           <View style={styles.actionRow}>
@@ -395,7 +307,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     margin: 'auto',
     width: '90%',
-    maxHeight: '90%',
+    maxHeight: '85%',
     borderRadius: 10,
     backgroundColor: 'white',
   },
@@ -435,5 +347,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     columnGap: 5,
     justifyContent: 'center',
+  },
+
+  hiddenCanvas: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    top: -100,
+    left: -100,
   },
 });

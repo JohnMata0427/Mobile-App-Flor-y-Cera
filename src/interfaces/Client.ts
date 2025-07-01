@@ -3,14 +3,19 @@ export interface Client {
   nombre: string;
   apellido: string;
   genero: 'Masculino' | 'Femenino';
-  email: string;
+  email: `${string}@${string}.${string}`;
   estado: 'activo' | 'inactivo';
   imagen?: string;
   telefono?: string;
-  fecha_nacimiento?: Date;
+  fecha_nacimiento?: `${number}-${number}-${number}`;
   direccion?: string;
   cedula?: string;
   ciudad?: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface ClientFilter {
+  key: keyof Client;
+  value: 'activo' | 'inactivo' | 'masculino' | 'femenino' | '';
 }

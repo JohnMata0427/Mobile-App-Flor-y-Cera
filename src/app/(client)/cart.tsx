@@ -12,7 +12,7 @@ import {
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { useCartStore } from '@/store/useCartStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { CardField, CardForm, CardFormView, initPaymentSheet, PlatformPay, PlatformPayButton, presentPaymentSheet, StripeContainer, StripeProvider, useStripe } from '@stripe/stripe-react-native';
+import { CardField, StripeProvider, useStripe } from '@stripe/stripe-react-native';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -63,11 +63,7 @@ export default function CartScreen() {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <View style={[styles.header, { paddingTop: top + 10 }]}>
           <Pressable style={styles.todoButton}>
-            <MaterialCommunityIcons
-              name="circle-outline"
-              size={20}
-              color={GRAY_COLOR_DARK}
-            />
+            <MaterialCommunityIcons name="circle-outline" size={20} color={GRAY_COLOR_DARK} />
             <Text style={styles.todoText}>Todo</Text>
           </Pressable>
           <View style={styles.cartInfo}>
@@ -93,16 +89,14 @@ export default function CartScreen() {
           }
           data={products}
           contentContainerStyle={styles.flatListContent}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => <CartItemCard data={item} />}
+          keyExtractor={({ _id }: any) => _id}
+          renderItem={({ item }: any) => <CartItemCard data={item} />}
         />
 
         {/* <PlatformPayButton
           style={{ height: 50 }}
           onPress={() => {}}
         /> */}
-
-
 
         <Text style={{ alignSelf: 'center', paddingBottom: 10, color: GRAY_COLOR }}>
           Ingresa los datos de tu tarjeta para continuar con el pago
@@ -120,7 +114,7 @@ export default function CartScreen() {
         {totalProducts > 0 && (
           <View style={styles.footerContainer}>
             <View>
-              <Text style={styles.priceText}>${totalPrice.toFixed(2)}</Text>
+              <Text style={styles.priceText}>${totalPrice?.toFixed(2)}</Text>
               <Text style={{ fontSize: 12, color: GRAY_COLOR }}>
                 Total de productos: {totalProducts} producto(s)
               </Text>
@@ -129,8 +123,10 @@ export default function CartScreen() {
               label="Hacer pedido"
               icon="tag"
               onPress={handlePayment}
-              paddingHorizontal={10}
-              paddingVertical={5}
+              buttonStyle={{
+                paddingVertical: 10,
+                paddingHorizontal: 15,
+              }}
             />
           </View>
         )}
