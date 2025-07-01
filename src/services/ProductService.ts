@@ -15,6 +15,7 @@ export const createProductRequest = async (body: FormData, token: string) => {
   const response = await fetch(BACKEND_URL, {
     method: 'POST',
     headers: {
+      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
     body,
@@ -27,6 +28,7 @@ export const updateProductRequest = async (id: string, body: FormData, token: st
   const response = await fetch(`${BACKEND_URL}/${id}`, {
     method: 'PUT',
     headers: {
+      'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
     body,

@@ -10,12 +10,13 @@ import type { Ingredient } from '@/interfaces/Ingredient';
 import { getDominantColor } from '@/utils/getDominantColor';
 import { toFormData } from '@/utils/toFormData';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { cacheDirectory, EncodingType, writeAsStringAsync } from 'expo-file-system';
 import { launchImageLibraryAsync } from 'expo-image-picker';
-import { use, useEffect, useMemo, useState } from 'react';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Canvas from 'react-native-canvas';
 import { ColorField } from '../fields/ColorField';
-import ViewShot from 'react-native-view-shot';
 
 const typesValues = ['Molde', 'Color', 'Esencia', 'Aroma'] as const;
 type Action = 'Visualizar' | 'Actualizar' | 'Agregar';
@@ -37,6 +38,8 @@ export function IngredientModal({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedType, setSelectedType] = useState<string>('');
+  const [color, setColor] = useState<string>('#000000');
+  const canvas = useRef<Canvas>(null);
   const { createIngredient, updateIngredient } = use(IngredientsContext);
   const { categories } = use(CategoriesContext);
 
@@ -83,6 +86,41 @@ export function IngredientModal({
     }
   };
 
+  const handleCanvas = async () => {
+    const { current } = canvas;
+
+    try {
+      if (current) {
+        current.width = 200;
+        current.height = 200;
+
+        const ctx = current.getContext('2d');
+
+        ctx.clearRect(0, 0, 200, 200);
+
+        ctx.beginPath();
+        ctx.arc(200 / 2, 200 / 2, 200 / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        const dataUrl = await current.toDataURL();
+        const base64 = dataUrl.split(',')[1];
+
+        const fileUri = `${cacheDirectory}color_${Date.now()}.png`;
+
+        await writeAsStringAsync(fileUri, base64, {
+          encoding: EncodingType.Base64,
+        });
+
+        return fileUri;
+      }
+    } catch {
+      Alert.alert('Flor & Cera', 'No se pudo generar la imagen del color seleccionado.');
+      return '';
+    }
+  };
+
   const onSubmit = async (form: any) => {
     const formData = toFormData(form, selectedImage);
 
@@ -92,6 +130,16 @@ export function IngredientModal({
       categories.forEach(({ _id }) => {
         formData.append('id_categoria[]', _id);
       });
+    }
+
+    if (form.tipo === 'color') {
+      const uri = await handleCanvas();
+
+      formData.set('imagen', {
+        uri,
+        type: 'image/png',
+        name: `color_${Date.now()}.png`,
+      } as any);
     }
 
     setIsLoading(true);
@@ -166,6 +214,7 @@ export function IngredientModal({
               rules={{ required: 'Debe seleccionar un color' }}
               label="Colorante"
               error={errors.imagen?.message as string}
+              setColor={setColor}
             />
           ) : (
             <ImageField
@@ -178,6 +227,10 @@ export function IngredientModal({
               onChange={pickImage}
             />
           )}
+
+          <View style={{ width: 0, height: 0, opacity: 0 }}>
+            <Canvas ref={canvas} />
+          </View>
 
           <InputField
             control={control}
@@ -347,13 +400,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
     columnGap: 5,
     justifyContent: 'center',
-  },
-
-  hiddenCanvas: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    top: -100,
-    left: -100,
   },
 });
