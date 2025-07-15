@@ -8,20 +8,13 @@ import {
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { DashboardContext, DashboardProvider } from '@/contexts/DashboardContext';
+import { globalStyles } from '@/globalStyles';
 import { useAuthStore } from '@/store/useAuthStore';
+import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useCallback, useEffect, useState } from 'react';
-import {
-  Alert,
-  Dimensions,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Dimensions, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LineChart, PieChart } from 'react-native-chart-kit';
 
 const screenWidth = Dimensions.get('window').width - 55;
@@ -43,15 +36,11 @@ const Dashboard = memo(() => {
   const [hour, setHour] = useState<string>('');
 
   const requestLogout = useCallback(() => {
-    Alert.alert('Cerrar sesión', '¿Está seguro de que desea cerrar sesión?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Cerrar sesión',
-        onPress: () => {
-          logout();
-        },
-      },
-    ]);
+    showConfirmationAlert({
+      message: '¿Está seguro/a de que desea cerrar sesión?',
+      onConfirm: () => logout(),
+      confirmButtonText: 'Cerrar sesión',
+    });
   }, [logout]);
 
   const updateTime = useCallback(() => {
@@ -68,11 +57,12 @@ const Dashboard = memo(() => {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [updateTime]);
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
+      contentContainerStyle={globalStyles.scrollViewContent}
+      stickyHeaderIndices={[0]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -84,29 +74,28 @@ const Dashboard = memo(() => {
         />
       }
     >
+      <AdminHeader>
+        <View style={[globalStyles.rowContainer, styles.headerContainer]}>
+          <MaterialCommunityIcons name="bell" size={24} color={GRAY_COLOR_DARK} />
+          <Button
+            label="Salir"
+            icon="logout"
+            onPress={requestLogout}
+            buttonStyle={styles.logoutButton}
+            textStyle={styles.logoutButtonText}
+          />
+        </View>
+      </AdminHeader>
+
       <View style={styles.container}>
-        <AdminHeader showSearchBar={false}>
-          <View style={styles.userInfoRow}>
-            <MaterialCommunityIcons name="bell" size={24} color={GRAY_COLOR_DARK} />
-            <Button
-              label="Salir"
-              icon="logout"
-              onPress={requestLogout}
-              buttonStyle={{
-                paddingVertical: 5,
-              }}
-              textStyle={{ fontSize: 12 }}
-            />
-          </View>
-        </AdminHeader>
         <View style={styles.greetingCard}>
           <View>
-            <Text style={styles.greetingText}>Buenas tardes</Text>
-            <Text style={styles.greetingName}>Actualmente son las {hour}</Text>
+            <Text style={globalStyles.bodyText}>Buenas tardes</Text>
+            <Text style={globalStyles.labelText}>Actualmente son las {hour}</Text>
           </View>
           <View style={styles.adminCard}>
             <MaterialCommunityIcons name="shield-account" size={16} color="white" />
-            <Text style={styles.adminText}>Administrador/a</Text>
+            <Text style={[globalStyles.buttonText, styles.adminText]}>Administrador</Text>
           </View>
         </View>
         {loading ? (
@@ -115,7 +104,7 @@ const Dashboard = memo(() => {
           <>
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
-                <Text style={styles.statTitle}>Clientes</Text>
+                <Text style={globalStyles.labelText}>Clientes</Text>
                 <MaterialCommunityIcons
                   name="account-multiple-plus"
                   size={24}
@@ -124,12 +113,12 @@ const Dashboard = memo(() => {
                 <Text style={styles.statValue}>{totals.clients}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statTitle}>Ventas</Text>
+                <Text style={globalStyles.labelText}>Ventas</Text>
                 <MaterialCommunityIcons name="lightning-bolt" size={24} color={SECONDARY_COLOR} />
                 <Text style={styles.statValue}>{totals.sales}</Text>
               </View>
               <View style={styles.statCard}>
-                <Text style={styles.statTitle}>Productos</Text>
+                <Text style={globalStyles.labelText}>Productos</Text>
                 <MaterialCommunityIcons name="candle" size={24} color={TERTIARY_COLOR} />
                 <Text style={styles.statValue}>{totals.products}</Text>
               </View>
@@ -189,6 +178,7 @@ const Dashboard = memo(() => {
                   },
                 ]}
                 paddingLeft="15"
+                absolute
                 width={screenWidth}
                 height={135}
                 accessor="sales"
@@ -214,30 +204,21 @@ export default function AdminDashboard() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
+  headerContainer: { columnGap: 10 },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
     rowGap: 10,
+    paddingHorizontal: 15,
+    paddingTop: 5,
   },
   greetingCard: {
     backgroundColor: 'white',
     borderRadius: 10,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  greetingText: {
-    fontFamily: BODY_FONT,
-    fontSize: 12,
-  },
-  greetingName: {
-    fontFamily: BOLD_BODY_FONT,
   },
   adminCard: {
     backgroundColor: GRAY_COLOR_DARK,
@@ -249,28 +230,11 @@ const styles = StyleSheet.create({
     columnGap: 5,
   },
   adminText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
     fontSize: 12,
-  },
-  userInfoRow: {
-    flexDirection: 'row',
-    columnGap: 10,
-    alignItems: 'center',
-  },
-  notificationIcon: {
-    marginRight: 5,
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: GRAY_COLOR_DARK,
   },
   statsRow: {
     flexDirection: 'row',
-    columnGap: 5,
+    columnGap: 10,
   },
   statCard: {
     backgroundColor: 'white',
@@ -280,34 +244,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     rowGap: 5,
-  },
-  statTitle: {
-    fontFamily: BOLD_BODY_FONT,
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  statIcon: {
-    padding: 5,
-    borderWidth: 2,
-    borderRadius: 50,
-  },
-  usersIcon: {
-    borderColor: PRIMARY_COLOR,
-    padding: 5,
-    borderWidth: 2,
-    borderRadius: 50,
-  },
-  productsSoldIcon: {
-    borderColor: SECONDARY_COLOR,
-    padding: 5,
-    borderWidth: 2,
-    borderRadius: 50,
-  },
-  activeProductsIcon: {
-    borderColor: TERTIARY_COLOR,
-    padding: 5,
-    borderWidth: 2,
-    borderRadius: 50,
   },
   statValue: {
     fontWeight: 'bold',
@@ -323,9 +259,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
   chartLegend: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+  },
+  logoutButton: {
+    paddingVertical: 5,
+  },
+  logoutButtonText: {
+    fontSize: 12,
   },
 });

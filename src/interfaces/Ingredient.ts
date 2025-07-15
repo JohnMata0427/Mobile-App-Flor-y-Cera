@@ -1,3 +1,5 @@
+export type IngredientType = 'molde' | 'aroma' | 'esencia' | 'color';
+
 export interface Ingredient {
   _id: string;
   nombre: string;
@@ -5,7 +7,7 @@ export interface Ingredient {
   stock: number;
   id_categoria: string[];
   precio: number;
-  tipo: string;
+  tipo: IngredientType;
   createdAt?: string;
   updatedAt?: string;
 }

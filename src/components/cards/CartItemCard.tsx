@@ -6,12 +6,14 @@ import {
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { BOLD_BODY_FONT } from '@/constants/Fonts';
+import { CategoriesContext } from '@/contexts/CategoryContext';
 import type { CartItem } from '@/interfaces/Cart';
+import type { Ingredient } from '@/interfaces/Ingredient';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { memo, use, useEffect, useState } from 'react';
+import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface CartItemCardProps {
   data: CartItem;
@@ -19,47 +21,93 @@ interface CartItemCardProps {
 
 export const CartItemCard = memo(({ data }: CartItemCardProps) => {
   const { removeProductFromCart, modifyProductQuantity } = useCartStore();
+  const { categories } = use(CategoriesContext);
 
-  const { producto, cantidad } = data;
-  const { _id, imagen, nombre, aroma, tipo, beneficios = [], precio = 0 } = producto;
+  const { producto, cantidad, tipo_producto } = data;
+
+  const {
+    _id = '',
+    imagen,
+    nombre = '',
+    aroma,
+    tipo,
+    beneficios = [],
+    precio = 0,
+    id_categoria = '',
+    ingredientes = [],
+  } = (producto as any) || {};
 
   const [int, decimal] = precio.toFixed(2).split('.');
-  const priceWithoutDiscount = precio * 1.123;
 
   const [quantity, setQuantity] = useState(cantidad);
+  const [esencias, setEsencias] = useState<string[]>([]);
+  const [molde, setMolde] = useState<string>('');
+  const [color, setColor] = useState<string>('');
+
+  useEffect(() => {
+    setEsencias([]);
+
+    ingredientes.forEach(({ nombre, tipo }: Ingredient) => {
+      if (tipo === 'esencia') {
+        setEsencias(prev => [...prev, nombre]);
+      } else if (tipo === 'molde') {
+        setMolde(nombre);
+      } else if (tipo === 'color') {
+        setColor(nombre);
+      }
+    });
+  }, [ingredientes]);
 
   return (
     <View style={styles.cartItemCard}>
       <Image source={{ uri: imagen }} style={styles.cardImage} />
       <View style={styles.cardContainer}>
         <View style={styles.cardEnds}>
-          <Text style={styles.cardTitle}>{nombre}</Text>
-          <Pressable onPress={() => removeProductFromCart(_id)} hitSlop={10}>
+          <Text style={styles.cardTitle}>
+            {nombre
+              ? nombre
+              : tipo_producto === 'personalizado'
+                ? 'Producto personalizado'
+                : 'Recomendación de IA'}
+          </Text>
+          <Pressable onPress={() => removeProductFromCart(_id, tipo_producto)} hitSlop={10}>
             <MaterialCommunityIcons name="trash-can-outline" size={20} color="gray" />
           </Pressable>
         </View>
         <View style={styles.badgesContainer}>
-          <Text style={[styles.badge, styles.categoryBadge]}>Productos artesanales</Text>
+          <Text style={[styles.badge, styles.categoryBadge]}>
+            {categories.find(cat => cat?._id === id_categoria)?.nombre ?? 'Sin categoría'}
+          </Text>
           <Text style={[styles.badge, styles.aromaBadge]}>{capitalizeWord(aroma)}</Text>
-          <Text style={[styles.badge, styles.typeBadge]}>{capitalizeWord(tipo)}</Text>
+          {tipo ? (
+            <Text style={[styles.badge, styles.typeBadge]}>{capitalizeWord(tipo)}</Text>
+          ) : (
+            <FlatList
+              data={esencias}
+              contentContainerStyle={{ columnGap: 2 }}
+              renderItem={({ item }) => (
+                <Text style={[styles.badge, styles.typeBadge]}>{capitalizeWord(item)}</Text>
+              )}
+              keyExtractor={item => item}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
+          )}
         </View>
-        <Text style={styles.benefitsText}>{beneficios.join(', ')}</Text>
+        <Text style={styles.benefitsText}>
+          {beneficios.join(', ') || `Producto con forma ${molde} de color ${color} y aroma ${aroma} con esencias ${esencias.join(', ')}`}
+        </Text>
 
         <View style={styles.cardEnds}>
           <Text style={styles.cardIntPrice}>
             ${int}
-            <Text style={styles.cardDecimalPrice}>
-              .{decimal}
-              <Text style={styles.cardPriceWithoutDiscount}>
-                {'  $' + priceWithoutDiscount.toFixed(2)}
-              </Text>
-            </Text>
+            <Text style={styles.cardDecimalPrice}>.{decimal}</Text>
           </Text>
           <View style={styles.quantityContainer}>
             <Pressable
               onPress={() => {
                 setQuantity(prev => prev + 1);
-                modifyProductQuantity(producto, 1);
+                modifyProductQuantity(producto, 1, tipo_producto);
               }}
             >
               <MaterialCommunityIcons name="plus" size={16} color="gray" />
@@ -68,7 +116,7 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
             <Pressable
               onPress={() => {
                 if (quantity > 1) {
-                  modifyProductQuantity(producto, -1);
+                  modifyProductQuantity(producto, -1, tipo_producto);
                   setQuantity(prev => prev - 1);
                 }
               }}
@@ -130,7 +178,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
 
-  badgesContainer: { flexDirection: 'row', columnGap: 2 },
+  badgesContainer: { flexDirection: 'row', columnGap: 2, flexWrap: 'wrap' },
   badge: {
     fontFamily: BOLD_BODY_FONT,
     fontSize: 10,

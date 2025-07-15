@@ -1,48 +1,167 @@
 import { StyleSheet } from 'react-native';
-import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK } from './constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from './constants/Fonts';
+import {
+  GRAY_COLOR,
+  GRAY_COLOR_DARK,
+  GRAY_COLOR_LIGHT,
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+  SECONDARY_COLOR,
+  SECONDARY_COLOR_DARK,
+} from './constants/Colors';
+import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from './constants/Fonts';
 
-export const tabsGlobalStyles = StyleSheet.create({
-  viewContent: {
+export const welcomeStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    rowGap: 10,
   },
-  tabBarStyle: {
-    paddingHorizontal: 4,
-    paddingTop: 5,
-    height: 100,
+  splashImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: GRAY_COLOR_LIGHT,
   },
-  tabBarLabelStyle: {
-    fontWeight: 'bold',
-    marginTop: 4,
-  },
-  tabBarBadgeStyle: {
-    backgroundColor: PRIMARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
-    fontSize: 10,
-    paddingTop: 2,
-  },
-  tabBarIcon: {
-    width: 55,
-    height: 30,
-    borderRadius: 10,
-    textAlignVertical: 'center',
+  subtitle: {
+    fontFamily: BODY_FONT,
+    color: GRAY_COLOR,
     textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '100%',
+    marginTop: 20,
+  },
+  primaryButton: { width: '45%' },
+  secondaryButton: {
+    width: '45%',
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR_DARK,
   },
 });
 
 export const globalStyles = StyleSheet.create({
-  errorText: {
+  // Containers
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    paddingHorizontal: 30,
+    paddingVertical: 40,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: 10,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  // Text
+  title: {
+    fontFamily: HEADING_FONT,
+    fontSize: 24,
+    color: GRAY_COLOR_DARK,
+    textAlign: 'center',
+  },
+  subtitle: {
     fontFamily: BODY_FONT,
-    color: 'red',
-    // fontSize: 10,
+    color: GRAY_COLOR,
+    textAlign: 'center',
     fontSize: 12,
   },
-  requiredMark: {
+  bodyText: {
+    fontFamily: BODY_FONT,
+    color: GRAY_COLOR_DARK,
+    fontSize: 12,
+  },
+  link: {
+    fontFamily: BOLD_BODY_FONT,
+    color: SECONDARY_COLOR_DARK,
+  },
+  errorText: {
+    fontFamily: BOLD_BODY_FONT,
     color: 'red',
+    fontSize: 12,
+    textAlign: 'center',
   },
   labelText: {
     fontFamily: BOLD_BODY_FONT,
     color: GRAY_COLOR_DARK,
-    // fontSize: 12,
+  },
+
+  // Button
+  button: {
+    flexDirection: 'row',
+    borderRadius: 8,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+  },
+  buttonPrimary: {
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR_DARK,
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    color: 'white',
+  },
+
+  // Input
+  inputContainer: {
+    marginBottom: 10,
+  },
+  input: {
+    backgroundColor: GRAY_COLOR_LIGHT,
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontFamily: BODY_FONT,
+    fontSize: 14,
+    color: GRAY_COLOR_DARK,
+    borderWidth: 1,
+    borderColor: GRAY_COLOR,
+  },
+  inputIcon: {
+    position: 'absolute',
+    left: 15,
+    top: '50%',
+    transform: [{ translateY: -10 }],
+  },
+  inputIconRight: {
+    position: 'absolute',
+    right: 15,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+  },
+
+  // Image
+  logo: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+  },
+
+  // Misc
+  divider: {
+    borderTopColor: GRAY_COLOR_LIGHT,
+    borderTopWidth: 1,
+    marginVertical: 15,
+  },
+  requiredMark: {
+    color: 'red',
   },
 });

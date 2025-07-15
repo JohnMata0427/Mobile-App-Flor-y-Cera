@@ -1,7 +1,14 @@
+import { useEntityManagement } from '@/hooks/useEntityManagement';
 import type { Invoice, InvoiceFilter } from '@/interfaces/Invoice';
 import { getInvoicesRequest, updateInvoiceStatusRequest } from '@/services/InvoiceService';
-import { useAuthStore } from '@/store/useAuthStore';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useMemo,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from 'react';
 
 interface Response {
   msg: string;
@@ -14,86 +21,70 @@ interface InvoicesContextProps {
   page: number;
   totalPages: number;
   filter: InvoiceFilter;
-  setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  setFilter: React.Dispatch<React.SetStateAction<InvoiceFilter>>;
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
+  setPage: Dispatch<SetStateAction<number>>;
+  setLimit: Dispatch<SetStateAction<number>>;
+  setFilter: Dispatch<SetStateAction<InvoiceFilter>>;
+  setSearch: Dispatch<SetStateAction<string>>;
   getInvoices: () => Promise<void>;
   updateInvoiceStatus: (id: string, estado: 'pendiente' | 'finalizado') => Promise<Response>;
 }
 
-export const InvoicesContext = createContext<InvoicesContextProps>({
-  searchedInvoices: [],
-  loading: false,
-  refreshing: false,
-  page: 1,
-  totalPages: 0,
-  filter: { key: 'estado', value: '' },
-  setRefreshing: () => {},
-  setPage: () => {},
-  setFilter: () => {},
-  setSearch: () => {},
-  getInvoices: async () => {},
-  updateInvoiceStatus: async (_: string, __: 'pendiente' | 'finalizado') => ({ msg: '' }),
-});
+export const InvoicesContext = createContext<InvoicesContextProps>({} as InvoicesContextProps);
 
-export const InvoicesProvider = ({ children }: { children: React.ReactNode }) => {
-  const { token } = useAuthStore();
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState<InvoiceFilter>({ key: 'estado', value: '' });
-  const [search, setSearch] = useState<string>('');
+const filterFunction = (invoices: Invoice[], filter: InvoiceFilter) => {
+  const { key, value } = filter;
+  if (value) {
+    return invoices?.filter(invoice => invoice[key] === value);
+  }
+  return invoices;
+};
 
-  const filteredInvoices = useMemo(() => {
-    const { key, value } = filter;
-
-    if (value) {
-      return invoices.filter(invoice => invoice[key] === value);
-    }
-
-    return invoices;
-  }, [invoices, filter]);
-
-  const searchedInvoices = useMemo(() => {
-    if (search) {
-      return filteredInvoices.filter(
-        ({ cliente_id }) => {
-          const { nombre = '', apellido = '' } = cliente_id ?? {};
-          return (
-            nombre.toLowerCase().includes(search.toLowerCase()) ||
-            apellido.toLowerCase().includes(search.toLowerCase())
-          );
-        },
+const searchFunction = (invoices: Invoice[], search: string) => {
+  if (search) {
+    return invoices?.filter(({ cliente }) => {
+      const { nombre = '', apellido = '' } = cliente ?? {};
+      return (
+        nombre.toLowerCase().includes(search.toLowerCase()) ||
+        apellido.toLowerCase().includes(search.toLowerCase())
       );
-    }
+    });
+  }
+  return invoices;
+};
 
-    return filteredInvoices;
-  }, [filteredInvoices, search]);
+export const InvoicesProvider = ({ children }: { children: ReactNode }) => {
+  const fetchEntities = async (page: number, limit: number) => {
+    const { ventas, totalPaginas } = await getInvoicesRequest(page, limit);
+    return { data: ventas, totalPages: totalPaginas };
+  };
 
-  const getInvoices = useCallback(async () => {
-    try {
-      setLoading(true);
-      setInvoices([]);
-      const { ventas, totalPaginas } = await getInvoicesRequest(page, limit, token);
-
-      setTotalPages(totalPaginas);
-      setInvoices(ventas);
-    } catch {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [page, limit]);
+  const {
+    setEntities: setInvoices,
+    loading,
+    refreshing,
+    page,
+    totalPages,
+    filter,
+    searchedEntities: searchedInvoices,
+    setRefreshing,
+    setPage,
+    setLimit,
+    setFilter,
+    setSearch,
+    getEntities: getInvoices,
+  } = useEntityManagement<Invoice>({
+    fetchEntities,
+    filterFunction,
+    searchFunction,
+    initialFilter: { key: 'estado', value: '' },
+  });
 
   const updateInvoiceStatus = useCallback(
     async (id: string, estado: 'pendiente' | 'finalizado') => {
       try {
-        const { msg } = await updateInvoiceStatusRequest(id, estado, token);
-        setInvoices(invoices => invoices.map(i => (i._id === id ? { ...i, estado } : i)));
+        const { msg } = await updateInvoiceStatusRequest(id, estado);
+        setInvoices(prev => prev.map(i => (i._id === id ? { ...i, estado } : i)));
         return { msg };
       } catch {
         return {
@@ -101,12 +92,8 @@ export const InvoicesProvider = ({ children }: { children: React.ReactNode }) =>
         };
       }
     },
-    [invoices, token],
+    [setInvoices],
   );
-
-  useEffect(() => {
-    getInvoices();
-  }, [page, limit]);
 
   const contextValue = useMemo(
     () => ({
@@ -118,6 +105,7 @@ export const InvoicesProvider = ({ children }: { children: React.ReactNode }) =>
       filter,
       setRefreshing,
       setPage,
+      setLimit,
       setFilter,
       setSearch,
       getInvoices,
@@ -130,6 +118,11 @@ export const InvoicesProvider = ({ children }: { children: React.ReactNode }) =>
       page,
       totalPages,
       filter,
+      setRefreshing,
+      setPage,
+      setLimit,
+      setFilter,
+      setSearch,
       getInvoices,
       updateInvoiceStatus,
     ],

@@ -1,5 +1,6 @@
 import { AdminFilter } from '@/components/AdminFilter';
 import { AdminHeader } from '@/components/AdminHeader';
+import { AdminSearch } from '@/components/AdminSearch';
 import { InvoiceCard } from '@/components/cards/InvoiceCard';
 import { Loading } from '@/components/Loading';
 import { InvoiceDetailsModal } from '@/components/modals/InvoiceDetailsModal';
@@ -9,19 +10,19 @@ import {
   GREEN_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
-  PRIMARY_COLOR_LIGHT,
+  PRIMARY_COLOR_EXTRA_LIGHT,
   RED_COLOR,
   RED_COLOR_DARK,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { InvoicesContext, InvoicesProvider } from '@/contexts/InvoicesContext';
+import { globalStyles } from '@/globalStyles';
 import type { Invoice, InvoiceFilter } from '@/interfaces/Invoice';
+import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useCallback, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -33,7 +34,7 @@ import {
 
 interface FilterButton {
   label: string;
-  filter: InvoiceFilter
+  filter: InvoiceFilter;
 }
 
 const filterButtons: FilterButton[] = [
@@ -42,17 +43,67 @@ const filterButtons: FilterButton[] = [
   { label: 'Finalizadas', filter: { key: 'estado', value: 'finalizado' } },
 ];
 
-const Invoices = memo(() => {
+const RenderItem = memo(
+  ({
+    item,
+    showChangeStateAlert,
+    setSelectedInvoice,
+    setModalVisible,
+  }: {
+    item: Invoice;
+    showChangeStateAlert: (isPending: boolean, _id: string, nombre: string) => void;
+    setSelectedInvoice: (invoice: Invoice) => void;
+    setModalVisible: (visible: boolean) => void;
+  }) => {
+    const { _id, total, estado, cliente } = item;
+    const isPending = estado === 'pendiente';
+    const { nombre, apellido } = cliente ?? {};
+
+    return (
+      <InvoiceCard data={item} isPending={isPending}>
+        <View style={styles.actionContainer}>
+          <View style={styles.amountContainer}>
+            <MaterialCommunityIcons name="cash-multiple" size={26} color={GRAY_COLOR_DARK} />
+            <Text style={globalStyles.labelText}>${total?.toFixed(2)} USD</Text>
+          </View>
+          <View style={styles.actionButtons}>
+            <Pressable
+              style={[styles.actionButton, styles.infoButton]}
+              onPress={() => {
+                setSelectedInvoice(item);
+                setModalVisible(true);
+              }}
+            >
+              <MaterialCommunityIcons name="information-variant" size={20} color="white" />
+            </Pressable>
+            <Pressable
+              style={[
+                styles.actionButton,
+                isPending ? styles.toggleButtonPending : styles.toggleButtonCompleted,
+              ]}
+              onPress={() => showChangeStateAlert(isPending, _id, `${nombre} ${apellido}`)}
+            >
+              <MaterialCommunityIcons
+                name={isPending ? 'truck-check' : 'truck-fast'}
+                size={20}
+                color="white"
+              />
+            </Pressable>
+          </View>
+        </View>
+      </InvoiceCard>
+    );
+  },
+);
+
+const Invoices = memo(function Invoices() {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice>({} as Invoice);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const {
     searchedInvoices,
     loading,
-    page,
-    totalPages,
     refreshing,
     filter,
-    setPage,
     setFilter,
     setSearch,
     setRefreshing,
@@ -62,31 +113,22 @@ const Invoices = memo(() => {
 
   const showChangeStateAlert = useCallback(
     (isPending: boolean, _id: string, nombre: string) => {
-      Alert.alert(
-        'Actualizar estado',
-        `¿Está seguro de que desea ${
+      showConfirmationAlert({
+        message: `¿Está seguro de que desea ${
           isPending ? 'completar' : 'cancelar'
         } la factura de ${nombre}?`,
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'Aceptar',
-            onPress: async () => {
-              await updateInvoiceStatus(_id, isPending ? 'finalizado' : 'pendiente');
-            },
-          },
-        ],
-      );
+        onConfirm: async () => {
+          await updateInvoiceStatus(_id, isPending ? 'finalizado' : 'pendiente');
+        },
+      });
     },
     [updateInvoiceStatus],
   );
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
+      contentContainerStyle={globalStyles.scrollViewContent}
+      stickyHeaderIndices={[1]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -98,94 +140,48 @@ const Invoices = memo(() => {
         />
       }
     >
-      <View style={styles.container}>
-        <AdminHeader 
-          setSearch={setSearch}
-          placeholder="Buscar por nombre del cliente..."
-        />
-        <InvoiceDetailsModal
-          isVisible={modalVisible}
-          invoice={selectedInvoice}
-          onClose={() => setModalVisible(false)}
-        />
-        {loading ? (
-          <Loading />
-        ) : (
-          <FlatList
-            data={searchedInvoices}
-            scrollEnabled={false}
-            contentContainerStyle={styles.listContent}
-            keyExtractor={({ _id }) => _id}
-            renderItem={({ item }) => {
-              const {
-                _id,
-                total,
-                estado,
-                cliente_id,
-              } = item;
-              const isPending = estado === 'pendiente';
-              const { nombre, apellido } = cliente_id ?? {};
+      <AdminHeader />
 
-              return (
-                <InvoiceCard data={item} isPending={isPending}>
-                  <View style={styles.actionContainer}>
-                    <View style={styles.amountContainer}>
-                      <MaterialCommunityIcons
-                        name="cash-multiple"
-                        size={26}
-                        color={GRAY_COLOR_DARK}
-                      />
-                      <Text style={styles.amountText}>${total} USD</Text>
-                    </View>
-                    <View style={styles.actionButtons}>
-                      <Pressable
-                        style={[styles.actionButton, styles.infoButton]}
-                        onPress={() => {
-                          setSelectedInvoice(item);
-                          setModalVisible(true);
-                        }}
-                      >
-                        <MaterialCommunityIcons
-                          name="information-variant"
-                          size={20}
-                          color="white"
-                        />
-                      </Pressable>
-                      <Pressable
-                        style={[
-                          styles.actionButton,
-                          {
-                            backgroundColor: isPending ? GREEN_COLOR : RED_COLOR,
-                            borderColor: isPending ? GREEN_COLOR_DARK : RED_COLOR_DARK,
-                          },
-                        ]}
-                        onPress={() =>
-                          showChangeStateAlert(isPending, _id, `${nombre} ${apellido}`)
-                        }
-                      >
-                        <MaterialCommunityIcons
-                          name={isPending ? 'truck-check' : 'truck-fast'}
-                          size={20}
-                          color="white"
-                        />
-                      </Pressable>
-                    </View>
-                  </View>
-                </InvoiceCard>
-              );
-            }}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <MaterialCommunityIcons name="file-document-outline" size={30} />
-                <Text style={styles.emptyText}>No hay facturas registradas</Text>
-              </View>
-            }
-            ListHeaderComponent={
-              <AdminFilter filterButtons={filterButtons} filter={filter} setFilter={setFilter as any} />
-            }
+      <View key="search-bar-container">
+        <View style={styles.stickyHeader}>
+          <AdminSearch
+            setSearch={setSearch}
+            placeholder="Buscar factura por nombre del cliente..."
           />
-        )}
+
+          <AdminFilter filterButtons={filterButtons} filter={filter} setFilter={setFilter as any} />
+        </View>
       </View>
+
+      <InvoiceDetailsModal
+        isVisible={modalVisible}
+        invoice={selectedInvoice}
+        onClose={() => setModalVisible(false)}
+      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={searchedInvoices}
+          scrollEnabled={false}
+          contentContainerStyle={styles.listContent}
+          keyExtractor={({ _id }) => _id}
+          renderItem={({ item }) => (
+            <RenderItem
+              item={item}
+              showChangeStateAlert={showChangeStateAlert}
+              setSelectedInvoice={setSelectedInvoice}
+              setModalVisible={setModalVisible}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={globalStyles.centeredContainer}>
+              <MaterialCommunityIcons name="file-document-outline" size={30} />
+              <Text style={globalStyles.bodyText}>No hay facturas registradas</Text>
+            </View>
+          }
+        />
+      )}
     </ScrollView>
   );
 });
@@ -199,17 +195,15 @@ export default function AdminInvoices() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+  stickyHeader: {
     rowGap: 10,
+    backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
+    paddingBottom: 5,
+    paddingHorizontal: 15,
   },
   listContent: {
     rowGap: 10,
+    paddingHorizontal: 15,
   },
   actionContainer: {
     rowGap: 5,
@@ -218,11 +212,9 @@ const styles = StyleSheet.create({
   amountContainer: {
     alignItems: 'center',
   },
-  amountText: {
-    fontFamily: BOLD_BODY_FONT,
-  },
   actionButtons: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     columnGap: 5,
   },
   actionButton: {
@@ -242,14 +234,5 @@ const styles = StyleSheet.create({
   toggleButtonCompleted: {
     backgroundColor: RED_COLOR,
     borderColor: RED_COLOR_DARK,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    rowGap: 5,
-  },
-  emptyText: {
-    fontFamily: BODY_FONT,
   },
 });

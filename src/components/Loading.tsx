@@ -1,31 +1,62 @@
-import { memo, useEffect } from 'react';
-import { Animated, StyleSheet, useAnimatedValue, View } from 'react-native';
+import { globalStyles } from '@/globalStyles';
+import { memo, useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
-export const Loading = memo(() => {
-  const scaleAnim = useAnimatedValue(1);
+export const Loading = memo(function Loading() {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const opacityAnim = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const scaleAnimation = Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.2,
-          duration: 600,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
           toValue: 1,
-          duration: 600,
+          duration: 800,
           useNativeDriver: true,
         }),
       ]),
-    ).start();
-  }, [scaleAnim]);
+    );
+
+    const opacityAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 0.6,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    scaleAnimation.start();
+    opacityAnimation.start();
+
+    return () => {
+      scaleAnimation.stop();
+      opacityAnimation.stop();
+    };
+  }, [scaleAnim, opacityAnim]);
 
   return (
-    <View style={styles.loadingContainer}>
+    <View style={globalStyles.centeredContainer}>
       <Animated.Image
-        source={require('@/assets/images/icon.png')}
-        style={[styles.image, { transform: [{ scale: scaleAnim }] }]}
+        source={require('@/assets/logo.png')}
+        style={[
+          styles.image,
+          {
+            transform: [{ scale: scaleAnim }],
+            opacity: opacityAnim,
+          },
+        ]}
         resizeMode="contain"
       />
     </View>
@@ -33,12 +64,6 @@ export const Loading = memo(() => {
 });
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    rowGap: 10,
-  },
   image: {
     width: 75,
     height: 75,

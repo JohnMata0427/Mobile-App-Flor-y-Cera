@@ -1,55 +1,58 @@
 import type { Client } from '@/interfaces/Client';
-import { getProfileRequest, updateProfileRequest } from '@/services/ProfileService';
-import { useAuthStore } from '@/store/useAuthStore';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { getClientProfileRequest, updateClientProfileRequest } from '@/services/AuthService';
+import { createContext, useCallback, useEffect, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 interface ProfileContextProps {
   client: Client;
   loading: boolean;
+  refreshing: boolean;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
   getProfile: () => Promise<void>;
-  updateProfile: (client: Client) => Promise<void>;
+  updateProfile: (client: FormData) => Promise<{ msg: string }>;
+  modifyNotificationPushToken: (token: string | null) => void
 }
 
-export const ProfileContext = createContext<ProfileContextProps>({
-  client: {} as Client,
-  loading: false,
-  getProfile: async () => {},
-  updateProfile: async (_: Client) => {},
-});
+export const ProfileContext = createContext<ProfileContextProps>({} as ProfileContextProps);
 
-export function ProfileProvider({ children }: { children: React.ReactNode }) {
-  const { token } = useAuthStore();
+export function ProfileProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<Client>({} as Client);
   const [loading, setLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const getProfile = useCallback(async () => {
     setLoading(true);
     try {
-      const { cliente } = await getProfileRequest(token);
+      const { cliente } = await getClientProfileRequest();
       setClient(cliente);
     } catch {
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, [token]);
+  }, []);
 
-  const updateProfile = useCallback(
-    async (updatedClient: Client) => {
-      try {
-        const { cliente } = await updateProfileRequest(token, updatedClient);
-        setClient(cliente);
-      } catch {}
-    },
-    [token],
-  );
+  const updateProfile = async (formData: FormData) => {
+    try {
+      const { cliente, msg } = await updateClientProfileRequest(formData);
+      setClient(cliente);
+
+      return { msg };
+    } catch {
+      return { msg: 'Error al actualizar el perfil' };
+    }
+  };
+
+  const modifyNotificationPushToken = useCallback((token: string | null) => {
+    setClient((prev) => ({ ...prev, notificationPushToken: token }));
+  }, []);
 
   useEffect(() => {
     getProfile();
   }, []);
 
   const contextValue = useMemo(
-    () => ({ client, loading, getProfile, updateProfile }),
-    [client, loading, getProfile, updateProfile],
+    () => ({ client, loading, refreshing, setRefreshing, getProfile, updateProfile, modifyNotificationPushToken }),
+    [client, loading, refreshing, updateProfile],
   );
 
   return <ProfileContext.Provider value={contextValue}>{children}</ProfileContext.Provider>;

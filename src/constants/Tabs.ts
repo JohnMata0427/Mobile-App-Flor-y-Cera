@@ -1,4 +1,12 @@
-export const ADMIN_TABS = [
+import type MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
+export interface Tab {
+  name: string;
+  title: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+}
+
+export const ADMIN_TABS: Tab[] = [
   {
     name: 'clients',
     title: 'Clientes',
@@ -26,29 +34,29 @@ export const ADMIN_TABS = [
   },
 ];
 
-export const CLIENT_TABS = [
+export const CLIENT_TABS: Tab[] = [
   {
     name: 'home',
     title: 'Inicio',
     icon: 'home-heart',
   },
   {
-    name: 'catalog',
+    name: '(catalog)',
     title: 'Catálogo',
     icon: 'candle',
   },
   {
-    name: 'personalization',
+    name: '(personalization)',
     title: 'Personalizar',
     icon: 'shimmer',
   },
   {
-    name: 'cart',
+    name: '(cart)',
     title: 'Carrito',
     icon: 'cart-variant',
   },
   {
-    name: 'profile',
+    name: '(profile)',
     title: 'Perfil',
     icon: 'badge-account',
   },

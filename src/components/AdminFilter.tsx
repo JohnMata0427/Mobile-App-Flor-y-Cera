@@ -1,4 +1,5 @@
 import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
+import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type Dispatch, type SetStateAction } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -19,11 +20,26 @@ interface AdminFilterProps {
   setFilter: Dispatch<SetStateAction<AnyFilter>>;
 }
 
+const RenderItem = memo(({ item, filter, setFilter }: any) => (
+  <Pressable onPress={() => setFilter(item.filter)}>
+    <Text
+      style={[
+        filter.value === item.filter.value
+          ? styles.selectedCategoryText
+          : styles.noSelectedCategoryText,
+        styles.categoryText,
+      ]}
+    >
+      {item.label}
+    </Text>
+  </Pressable>
+));
+
 export const AdminFilter = memo(({ filterButtons, filter, setFilter }: AdminFilterProps) => (
   <View style={styles.container}>
     <View style={styles.filterContainer}>
       <MaterialCommunityIcons name="cards" size={16} color="white" />
-      <Text style={styles.filterText}>Filtros:</Text>
+      <Text style={globalStyles.buttonText}>Filtros:</Text>
     </View>
 
     <FlatList
@@ -32,20 +48,7 @@ export const AdminFilter = memo(({ filterButtons, filter, setFilter }: AdminFilt
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.filterListContent}
       keyExtractor={({ filter: { value } }) => value}
-      renderItem={({ item }) => (
-        <Pressable onPress={() => setFilter(item.filter)}>
-          <Text
-            style={[
-              filter.value === item.filter.value
-                ? styles.selectedCategoryText
-                : styles.noSelectedCategoryText,
-              styles.categoryText,
-            ]}
-          >
-            {item.label}
-          </Text>
-        </Pressable>
-      )}
+      renderItem={({ item }) => <RenderItem item={item} filter={filter} setFilter={setFilter} />}
     />
   </View>
 ));
@@ -71,7 +74,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   filterListContent: { columnGap: 5, alignItems: 'center' },
-  filterText: { color: 'white', fontWeight: '900' },
   selectedCategoryText: {
     fontWeight: '900',
     color: PRIMARY_COLOR_DARK,

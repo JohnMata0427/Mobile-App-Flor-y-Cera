@@ -1,57 +1,58 @@
 import { Button } from '@/components/Button';
 import { InputField } from '@/components/fields/InputField';
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-  SECONDARY_COLOR_DARK,
-} from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
-import { useAuthStore } from '@/store/useAuthStore';
-import { Link, useRouter } from 'expo-router';
+import { globalStyles } from '@/globalStyles';
+import { forgotPasswordRequest } from '@/services/AuthService';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function Login() {
-  const router = useRouter();
+export default function ForgotPasswordScreen() {
   const { top } = useSafeAreaInsets();
-  const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: '',
+    },
+  });
 
-  const onSubmit = async (form: any) => {
+  const onSubmit = async ({ email }: any) => {
     setIsLoading(true);
+    const { msg, ok } = await forgotPasswordRequest(email);
 
-    const { msg, success, isAdmin } = await login(form);
-
-    setMessage(msg);
+    Alert.alert('Mensaje del sistema', msg, [
+      {
+        text: 'Aceptar',
+        onPress: () => {
+          if (ok) {
+            router.push({
+              pathname: '/(auth)/recovery-password',
+              params: { email },
+            });
+          }
+        },
+      },
+    ]);
     setIsLoading(false);
-
-    // if (success) {
-    //   router.push('/');
-    // }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <ScrollView contentContainerStyle={globalStyles.scrollViewContent}>
       <ImageBackground
-        style={{ paddingTop: top * 4, flex: 1 }}
+        style={[styles.imageBackground, { paddingTop: top * 4 }]}
         source={require('@/assets/bg-auth.jpg')}
       >
-        <View style={styles.loginContainer}>
+        <View style={globalStyles.container}>
           <View style={[styles.headerContainer, { marginBottom: top * 1.5 }]}>
-            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
-            <Text style={styles.headerTitle}>Recupera tu contraseña</Text>
-            <Text style={styles.headerSubtitle}>
+            <Image source={require('@/assets/logo.png')} style={globalStyles.logo} />
+            <Text style={globalStyles.title}>Recupera tu contraseña</Text>
+            <Text style={globalStyles.subtitle}>
               Ingresa tu correo electrónico para recibir el código de verificación.
             </Text>
           </View>
@@ -76,26 +77,24 @@ export default function Login() {
               keyboardType="email-address"
             />
             <View style={styles.footerContainer}>
-              {message && <Text style={styles.errorMessageText}>{message}</Text>}
-
               <Button
-                label="Enviar código"
+                label="Enviar código de verificación"
                 icon="arrow-right"
                 disabled={isLoading}
                 onPress={handleSubmit(onSubmit)}
               />
 
               <Link href="/(auth)/register">
-                <Text style={styles.registerText}>
+                <Text style={[globalStyles.bodyText, styles.registerText]}>
                   ¿No tienes cuenta?
-                  <Text style={styles.registerLinkText}> Crea una cuenta</Text>
+                  <Text style={globalStyles.link}> Crea una cuenta</Text>
                 </Text>
               </Link>
 
-              <Link href="/(auth)/register">
-                <Text style={styles.registerText}>
+              <Link href="/(auth)/login">
+                <Text style={[globalStyles.bodyText, styles.registerText]}>
                   ¿Ya tienes cuenta?
-                  <Text style={styles.registerLinkText}> Inicia sesión</Text>
+                  <Text style={globalStyles.link}> Inicia sesión</Text>
                 </Text>
               </Link>
             </View>
@@ -107,33 +106,11 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  loginContainer: {
+  imageBackground: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 35,
   },
   headerContainer: {
     rowGap: 3,
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: GRAY_COLOR_DARK,
-  },
-  headerSubtitle: {
-    fontFamily: BODY_FONT,
-    color: GRAY_COLOR,
-    textAlign: 'center',
-    fontSize: 12,
   },
   bodyContainer: {
     rowGap: 10,
@@ -141,56 +118,7 @@ const styles = StyleSheet.create({
   footerContainer: {
     rowGap: 10,
   },
-  iconRight: {
-    position: 'absolute',
-    insetBlock: 0,
-    right: 8,
-    justifyContent: 'center',
-  },
-  forgotPasswordText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
-    fontSize: 12,
-    textAlign: 'right',
-  },
   registerText: {
-    color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  registerLinkText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
-  },
-  anotherMethodText: {
-    color: GRAY_COLOR_DARK,
-    fontSize: 12,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  methodIcon: {
-    width: 25,
-    height: 25,
-  },
-  methodsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    columnGap: 20,
-    borderTopColor: GRAY_COLOR_LIGHT,
-    borderTopWidth: 1,
-    paddingTop: 10,
-  },
-  methodButton: {
-    borderRadius: 50,
-    borderColor: GRAY_COLOR_LIGHT,
-    borderWidth: 1,
-    padding: 5,
-  },
-  errorMessageText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'red',
-    fontSize: 12,
     textAlign: 'center',
   },
 });

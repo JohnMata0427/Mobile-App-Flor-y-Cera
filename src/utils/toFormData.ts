@@ -1,17 +1,19 @@
 export const toFormData = (data: any, selectedImage?: string | null) => {
   const formData = new FormData();
+
   Object.entries(data).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       value.forEach(item => formData.append(key + '[]', item));
     } else if (key === 'imagen' && selectedImage) {
       const fileType = selectedImage.split('.').pop();
+
       formData.append('imagen', {
         uri: selectedImage,
         name: `photo.${fileType}`,
         type: `image/${fileType}`,
       } as any);
     } else if (key === 'beneficios' && typeof value === 'string') {
-      value.split(',').forEach((item: string) => {
+      value.split(';').forEach((item: string) => {
         formData.append('beneficios[]', item.trim());
       });
     } else {

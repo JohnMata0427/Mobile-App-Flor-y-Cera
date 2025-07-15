@@ -1,73 +1,71 @@
 import { loginRequest } from '@/services/AuthService';
+import { router } from 'expo-router';
 import { deleteItemAsync, getItemAsync, setItemAsync } from 'expo-secure-store';
 import { create } from 'zustand';
-
-interface Response {
-  msg: string;
-  success: boolean;
-  isAdmin?: boolean;
-}
-
-interface User {
-  id: string;
-  role: string;
-}
 
 interface UserStore {
   token: string;
   loading: boolean;
-  isAuthenticated: boolean;
   isAdmin: boolean;
-  user: User;
-  login: (userData: { email: string; password: string }) => Promise<Response>;
-  logout: () => void;
+  login: (credentials: { email: string; password: string }) => Promise<{ msg: string }>;
+  logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<UserStore>(set => ({
   token: '',
-  isAuthenticated: false,
   loading: true,
   isAdmin: false,
-  user: { id: '', role: '' },
   login: async credentials => {
     try {
-      const { token = '', msg } = await loginRequest(credentials);
-      const success = !!token;
+      const { token = '', msg = '', ok } = await loginRequest(credentials);
 
-      let isAdmin = false;
       if (token) {
-        const payload = atob(token.split('.')[1]);
-        const { rol: role = '', id = '' } = JSON.parse(payload);
-        isAdmin = role === 'admin';
+        const { rol = '' } = JSON.parse(atob(token.split('.')[1]));
+        const isAdmin = rol === 'admin';
 
         await setItemAsync('token', token);
-        await setItemAsync('user', JSON.stringify({ id, role }));
 
-        set({ token, isAuthenticated: success, isAdmin, user: { id, role } });
+        set({ token, isAdmin });
+
+        if (isAdmin) router.replace('/(admin)/dashboard');
+        else router.replace('/(client)/home');
       }
 
-      return { msg, success, isAdmin };
+      return { msg };
     } catch {
-      return { msg: 'Ocurrio un error al iniciar sesión', success: false };
+      return { msg: 'Ocurrió un error al iniciar sesión' };
     }
   },
   logout: async () => {
-    try {
-      await deleteItemAsync('token');
-      await deleteItemAsync('user');
+    await deleteItemAsync('token');
+    router.replace('/(auth)/login');
 
-      set({ token: '', isAuthenticated: false, isAdmin: false, user: { id: '', role: '' } });
-    } catch {}
+    set({ token: '', isAdmin: false });
   },
   checkAuth: async () => {
+    let welcomeCompleted = !!(await getItemAsync('welcomeCompleted'));
+    let isAdmin = false;
+    let isAuth = false;
     try {
-      const token = (await getItemAsync('token')) ?? '';
-      const userString = (await getItemAsync('user')) ?? '{}';
-      const { role = '', id = '' } = JSON.parse(userString);
-      const isAdmin = role === 'admin';
+      if (welcomeCompleted) {
+        const token = (await getItemAsync('token')) ?? '';
+        if (token) {
+          const { rol = '' } = JSON.parse(atob(token.split('.')[1]));
+          isAdmin = rol === 'admin';
+          isAuth = true;
 
-      set({ token, isAuthenticated: !!token, isAdmin, user: { id, role }, loading: false });
-    } catch {}
+          set({ token, isAdmin });
+        }
+      }
+    } catch {
+    } finally {
+      set({ loading: false });
+
+      if (!welcomeCompleted) router.replace('/(welcome)/first');
+      else if (isAdmin) router.replace('/(admin)/dashboard');
+      else if (isAuth) router.replace('/(client)/home');
+      else router.replace('/(auth)/login');
+    }
   },
 }));

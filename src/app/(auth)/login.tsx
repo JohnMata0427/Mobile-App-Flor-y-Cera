@@ -1,15 +1,10 @@
 import { Button } from '@/components/Button';
 import { InputField } from '@/components/fields/InputField';
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-  SECONDARY_COLOR_DARK,
-} from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
+import { globalStyles } from '@/globalStyles';
 import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Link, useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -24,7 +19,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Login() {
-  const router = useRouter();
   const { top } = useSafeAreaInsets();
   const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -35,31 +29,31 @@ export default function Login() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
   const onSubmit = async (form: any) => {
     setLoading(true);
-    const { msg, success, isAdmin } = await login(form);
+    const { msg } = await login(form);
     setMessage(msg);
-
     setLoading(false);
-
-    if (success) {
-      router.push(isAdmin ? '/(admin)/dashboard' : '/(client)/home');
-    }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <ScrollView contentContainerStyle={globalStyles.scrollViewContent}>
       <ImageBackground
-        style={{ paddingTop: top * 4, flex: 1 }}
+        style={[styles.imageBackground, { paddingTop: top * 4 }]}
         source={require('@/assets/bg-auth.jpg')}
       >
-        <View style={styles.loginContainer}>
+        <View style={globalStyles.container}>
           <View style={[styles.headerContainer, { marginBottom: top * 1.5 }]}>
-            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
-            <Text style={styles.headerTitle}>Bienvenido a Flor & Cera</Text>
-            <Text style={styles.headerSubtitle}>
+            <Image source={require('@/assets/logo.png')} style={globalStyles.logo} />
+            <Text style={globalStyles.title}>Bienvenido a Flor & Cera</Text>
+            <Text style={globalStyles.subtitle}>
               Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se unen para
               ofrecerte una experiencia única
             </Text>
@@ -93,13 +87,13 @@ export default function Login() {
               }}
               icon="key"
               label="Contraseña"
-              placeholder="••••••••••"
+              placeholder="••••••••••••••••••••"
               error={errors.password?.message as string}
               autoComplete="password"
               autoCapitalize="none"
               textContentType="password"
               secureTextEntry={!showPassword}
-              showPasswordIcon={
+              passwordIcon={
                 <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
                   <MaterialCommunityIcons
                     name={showPassword ? 'eye-off' : 'eye'}
@@ -111,10 +105,12 @@ export default function Login() {
             />
 
             <Link href="/forgot-password">
-              <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+              <Text style={[globalStyles.link, styles.forgotPasswordText]}>
+                ¿Olvidaste tu contraseña?
+              </Text>
             </Link>
             <View style={styles.footerContainer}>
-              {message && <Text style={styles.errorMessageText}>{message}</Text>}
+              {message && <Text style={globalStyles.errorText}>{message}</Text>}
 
               <Button
                 label="Iniciar sesión"
@@ -123,7 +119,7 @@ export default function Login() {
                 onPress={handleSubmit(onSubmit)}
               />
 
-              <Text style={styles.anotherMethodText}>O puedes iniciar sesión con</Text>
+              {/* <Text style={styles.anotherMethodText}>O puedes iniciar sesión con</Text>
 
               <View style={styles.methodsContainer}>
                 <Pressable style={styles.methodButton}>
@@ -147,12 +143,12 @@ export default function Login() {
                     resizeMode="contain"
                   />
                 </Pressable>
-              </View>
+              </View> */}
 
               <Link href="/(auth)/register">
-                <Text style={styles.registerText}>
+                <Text style={[globalStyles.bodyText, styles.registerText]}>
                   ¿No tienes cuenta?
-                  <Text style={styles.registerLinkText}> Crea una cuenta</Text>
+                  <Text style={globalStyles.link}> Crea una cuenta</Text>
                 </Text>
               </Link>
             </View>
@@ -164,34 +160,11 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  loginContainer: {
+  imageBackground: {
     flex: 1,
-    backgroundColor: 'white',
-    paddingHorizontal: 30,
-    paddingVertical: 40,
   },
   headerContainer: {
     rowGap: 3,
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: GRAY_COLOR_DARK,
-  },
-  headerSubtitle: {
-    fontFamily: BODY_FONT,
-    color: GRAY_COLOR,
-    textAlign: 'center',
-    fontSize: 12,
   },
   bodyContainer: {
     rowGap: 10,
@@ -206,24 +179,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   forgotPasswordText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
-    // fontSize: 12,
     textAlign: 'right',
   },
   registerText: {
-    color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
-    // fontSize: 12,
     textAlign: 'center',
-  },
-  registerLinkText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    // fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -244,11 +206,5 @@ const styles = StyleSheet.create({
     borderColor: GRAY_COLOR_LIGHT,
     borderWidth: 1,
     padding: 5,
-  },
-  errorMessageText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'red',
-    fontSize: 12,
-    textAlign: 'center',
   },
 });

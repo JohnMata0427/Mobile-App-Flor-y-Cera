@@ -1,3 +1,4 @@
+import { useEntityManagement } from '@/hooks/useEntityManagement';
 import type { Ingredient, IngredientFilter } from '@/interfaces/Ingredient';
 import {
   createIngredientRequest,
@@ -5,25 +6,15 @@ import {
   getIngredientsRequest,
   updateIngredientRequest,
 } from '@/services/IngredientService';
-import { useAuthStore } from '@/store/useAuthStore';
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from 'react';
+import { createContext, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 interface Response {
   msg: string;
 }
 
 interface IngredientsContextProps {
-  searchedIngredients: Ingredient[];
   ingredients: Ingredient[];
+  searchedIngredients: Ingredient[];
   loading: boolean;
   refreshing: boolean;
   page: number;
@@ -40,110 +31,93 @@ interface IngredientsContextProps {
   deleteIngredient: (ingredientId: string) => Promise<Response>;
 }
 
-export const IngredientsContext = createContext<IngredientsContextProps>({
-  searchedIngredients: [],
-  ingredients: [],
-  loading: false,
-  refreshing: false,
-  page: 1,
-  totalPages: 0,
-  filter: { key: 'tipo', value: '' },
-  setRefreshing: () => {},
-  setPage: () => {},
-  setLimit: () => {},
-  setFilter: () => {},
-  setSearch: () => {},
-  getIngredients: async () => {},
-  createIngredient: async (_: FormData) => ({ msg: '' }),
-  updateIngredient: async (_: string, __: FormData) => ({ msg: '' }),
-  deleteIngredient: async (_: string) => ({ msg: '' }),
-});
+export const IngredientsContext = createContext<IngredientsContextProps>(
+  {} as IngredientsContextProps,
+);
+
+const filterFunction = (ingredients: Ingredient[], filter: IngredientFilter) => {
+  const { key, value } = filter;
+  if (value) {
+    return ingredients?.filter(({ id_categoria, tipo }) => {
+      if (key === 'id_categoria') {
+        return id_categoria.some(cat => cat === value);
+      }
+      return tipo === value;
+    });
+  }
+  return ingredients;
+};
+
+const searchFunction = (ingredients: Ingredient[], search: string) => {
+  if (search.trim()) {
+    const searchLower = search.toLowerCase().trim();
+    return ingredients?.filter(({ nombre }) => nombre.toLowerCase().includes(searchLower)) || [];
+  }
+  return ingredients;
+};
 
 export const IngredientsProvider = ({ children }: { children: ReactNode }) => {
-  const { token } = useAuthStore();
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [filter, setFilter] = useState<IngredientFilter>({ key: 'tipo', value: '' });
-  const [search, setSearch] = useState<string>('');
+  const fetchEntities = async (page: number, limit: number) => {
+    const { ingredientes, totalPaginas } = await getIngredientsRequest(page, limit);
+    return { data: ingredientes, totalPages: totalPaginas };
+  };
 
-  const filteredIngredients = useMemo<Ingredient[]>(() => {
-    const { key, value } = filter;
-    if (value) {
-      return ingredients.filter(({ id_categoria, tipo }) => {
-        if (key === 'id_categoria') {
-          return id_categoria.some(cat => cat === value);
-        }
-        return tipo === value;
-      });
-    }
-    return ingredients;
-  }, [ingredients, filter]);
-
-  const searchedIngredients = useMemo<Ingredient[]>(() => {
-    if (search) {
-      return filteredIngredients.filter(({ nombre }) =>
-        nombre.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-    return filteredIngredients;
-  }, [filteredIngredients, search]);
-
-  const getIngredients = useCallback(async () => {
-    try {
-      setLoading(true);
-      setIngredients([]);
-      const { ingredientes, totalPaginas } = await getIngredientsRequest(page, limit);
-      setTotalPages(totalPaginas);
-      setIngredients(ingredientes);
-    } catch {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [page, limit]);
+  const {
+    entities: ingredients,
+    setEntities: setIngredients,
+    loading,
+    refreshing,
+    page,
+    totalPages,
+    filter,
+    searchedEntities: searchedIngredients,
+    setRefreshing,
+    setPage,
+    setLimit,
+    setFilter,
+    setSearch,
+    getEntities: getIngredients,
+  } = useEntityManagement<Ingredient>({
+    fetchEntities,
+    filterFunction,
+    searchFunction,
+    initialFilter: { key: 'tipo', value: '' },
+  });
 
   const createIngredient = async (ingredient: FormData) => {
     try {
-      const { ingrediente, msg } = await createIngredientRequest(ingredient, token);
-      ingrediente?._id && setIngredients(prev => [...prev, ingrediente]);
+      const { ingrediente, msg } = await createIngredientRequest(ingredient);
+      if (ingrediente?._id) setIngredients(prev => [...prev, ingrediente]);
       return { msg };
     } catch {
-      return { msg: 'Ocurrio un error al crear el ingrediente' };
+      return { msg: 'Ocurrió un error al crear el ingrediente' };
     }
   };
 
   const updateIngredient = async (id: string, ingredient: FormData) => {
     try {
-      const { ingrediente, msg } = await updateIngredientRequest(id, ingredient, token);
-      ingrediente?._id && setIngredients(prev => prev.map(p => (p._id === id ? ingrediente : p)));
+      const { ingrediente, msg } = await updateIngredientRequest(id, ingredient);
+      if (ingrediente?._id) setIngredients(prev => prev.map(p => (p._id === id ? ingrediente : p)));
       return { msg };
     } catch {
-      return { msg: 'Ocurrio un error al actualizar el ingrediente' };
+      return { msg: 'Ocurrió un error al actualizar el ingrediente' };
     }
   };
 
   const deleteIngredient = async (id: string) => {
     try {
-      await deleteIngredientRequest(id, token);
+      await deleteIngredientRequest(id);
       setIngredients(prev => prev.filter(({ _id }) => _id !== id));
       return { msg: 'Ingrediente eliminado exitosamente' };
     } catch {
-      return { msg: 'Ocurrio un error al eliminar el ingrediente' };
+      return { msg: 'Ocurrió un error al eliminar el ingrediente' };
     }
   };
 
-  useEffect(() => {
-    getIngredients();
-  }, [page, limit]);
-
   const contextValue = useMemo(
     () => ({
-      searchedIngredients,
       ingredients,
+      searchedIngredients,
       loading,
       refreshing,
       page,
@@ -160,6 +134,7 @@ export const IngredientsProvider = ({ children }: { children: ReactNode }) => {
       deleteIngredient,
     }),
     [
+      ingredients,
       searchedIngredients,
       loading,
       refreshing,
@@ -167,6 +142,11 @@ export const IngredientsProvider = ({ children }: { children: ReactNode }) => {
       totalPages,
       filter,
       getIngredients,
+      setRefreshing,
+      setPage,
+      setLimit,
+      setFilter,
+      setSearch,
       createIngredient,
       updateIngredient,
       deleteIngredient,

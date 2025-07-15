@@ -1,6 +1,7 @@
 export const PRIMARY_COLOR = '#9F93E7';
 export const PRIMARY_COLOR_DARK = '#7555D2';
 export const PRIMARY_COLOR_LIGHT = '#C5C0F2';
+export const PRIMARY_COLOR_EXTRA_LIGHT = '#F9F8FF';
 
 export const SECONDARY_COLOR = '#9FD6CF';
 export const SECONDARY_COLOR_DARK = '#58A9A3';

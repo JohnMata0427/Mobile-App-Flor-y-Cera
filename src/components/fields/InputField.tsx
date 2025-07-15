@@ -1,27 +1,27 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
-import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
-import { Controller, type FieldValues, type RegisterOptions } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { memo, type ReactNode } from 'react';
+import type { TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, View, type KeyboardTypeOptions } from 'react-native';
+import { BaseField } from './BaseField';
 
 interface InputFieldProps {
   control: any;
   name: string;
-  rules: Omit<RegisterOptions<FieldValues, string>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
+  rules?: any;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   placeholder: string;
   error: string;
-  autoComplete?: any;
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  textContentType?: any;
-  keyboardType?: any;
+  autoComplete?: TextInputProps['autoComplete'];
+  autoCapitalize?: TextInputProps['autoCapitalize'];
+  textContentType?: TextInputProps['textContentType'];
+  keyboardType?: KeyboardTypeOptions;
   multiline?: boolean;
   numberOfLines?: number;
   secureTextEntry?: boolean;
-  showPasswordIcon?: React.ReactNode;
+  passwordIcon?: ReactNode;
 }
 
 export const InputField = memo(
@@ -40,59 +40,44 @@ export const InputField = memo(
     multiline,
     numberOfLines,
     secureTextEntry,
-    showPasswordIcon,
+    passwordIcon,
   }: InputFieldProps) => {
     const color = error ? 'red' : GRAY_COLOR_DARK;
 
     return (
-      <View style={styles.inputContainer}>
-        <Text style={globalStyles.labelText}>
-          {label}
-          <Text style={globalStyles.requiredMark}> *</Text>
-        </Text>
-        <Controller
-          control={control}
-          name={name}
-          rules={rules}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View>
-              <TextInput
-                style={[styles.textInput, { color }]}
-                placeholder={placeholder}
-                placeholderTextColor={error ? 'red' : GRAY_COLOR}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                autoComplete={autoComplete}
-                autoCapitalize={autoCapitalize}
-                textContentType={textContentType}
-                keyboardType={keyboardType}
-                multiline={multiline}
-                numberOfLines={numberOfLines}
-                textAlignVertical="top"
-                secureTextEntry={secureTextEntry}
-                selectionColor={PRIMARY_COLOR}
-              />
-              <MaterialCommunityIcons style={styles.icon} name={icon} color={color} size={16} />
-              {showPasswordIcon}
-            </View>
-          )}
-        />
-        {error && <Text style={globalStyles.errorText}>{error}</Text>}
-      </View>
+      <BaseField control={control} name={name} rules={rules} label={label} error={error}>
+        {({ onChange, onBlur, value }) => (
+          <View>
+            <TextInput
+              style={[styles.textInput, { color }]}
+              placeholder={placeholder}
+              placeholderTextColor={error ? 'red' : GRAY_COLOR}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+              autoComplete={autoComplete}
+              autoCapitalize={autoCapitalize}
+              textContentType={textContentType}
+              keyboardType={keyboardType}
+              multiline={multiline}
+              numberOfLines={numberOfLines}
+              textAlignVertical="top"
+              secureTextEntry={secureTextEntry}
+              selectionColor={PRIMARY_COLOR}
+            />
+            <MaterialCommunityIcons style={styles.icon} name={icon} color={color} size={16} />
+            {passwordIcon}
+          </View>
+        )}
+      </BaseField>
     );
   },
 );
 
 const styles = StyleSheet.create({
-  inputContainer: {
-    rowGap: 3,
-    flex: 1,
-  },
   textInput: {
     backgroundColor: GRAY_COLOR_LIGHT,
     fontFamily: BODY_FONT,
-    // fontSize: 12,
     borderRadius: 10,
     paddingVertical: 10,
     paddingRight: 10,

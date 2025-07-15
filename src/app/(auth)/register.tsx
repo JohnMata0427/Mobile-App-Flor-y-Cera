@@ -1,16 +1,11 @@
 import { Button } from '@/components/Button';
 import { InputField } from '@/components/fields/InputField';
 import { PickerField } from '@/components/fields/PickerField';
-import {
-  GRAY_COLOR,
-  GRAY_COLOR_DARK,
-  GRAY_COLOR_LIGHT,
-  SECONDARY_COLOR_DARK,
-} from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
+import { globalStyles } from '@/globalStyles';
 import { registerClientRequest } from '@/services/AuthService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Link, useRouter } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
@@ -26,53 +21,58 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Login() {
-  const router = useRouter();
   const { top } = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+    getValues,
+  } = useForm({
+    defaultValues: {
+      nombre: '',
+      apellido: '',
+      genero: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
 
   const onSubmit = async (form: any) => {
     try {
-      const response = await registerClientRequest(form);
+      setIsLoading(true);
+      const { msg, ok } = await registerClientRequest(form);
 
-      Alert.alert(
-        'Mensaje del sistema',
-        response.msg,
-        [
-          {
-            text: 'Aceptar',
-            onPress: () => {
-              if (response.ok) {
-                router.push('/(auth)/login');
-              }
-            },
+      Alert.alert('Mensaje del sistema', msg, [
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            if (ok) {
+              router.push('/(auth)/login');
+            }
           },
-        ],  
-      )
-
-    } catch (error) {
-      
+        },
+      ]);
+    } catch {
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+    <ScrollView contentContainerStyle={globalStyles.scrollViewContent}>
       <ImageBackground
-        style={{ paddingTop: top * 4, flex: 1 }}
+        style={[styles.imageBackground, { paddingTop: top * 4 }]}
         source={require('@/assets/bg-auth.jpg')}
       >
-        <View style={styles.loginContainer}>
+        <View style={globalStyles.container}>
           <View style={[styles.headerContainer, { marginBottom: top }]}>
-            <Image source={require('@/assets/images/icon.png')} style={styles.logoImage} />
-            <Text style={styles.headerTitle}>Registro a Flor & Cera</Text>
-            <Text style={styles.headerSubtitle}>
+            <Image source={require('@/assets/logo.png')} style={globalStyles.logo} />
+            <Text style={globalStyles.title}>Registro a Flor & Cera</Text>
+            <Text style={globalStyles.subtitle}>
               Descubre la magia de Flor & Cera, donde la naturaleza y la creatividad se unen para
               ofrecerte una experiencia única
             </Text>
@@ -91,6 +91,10 @@ export default function Login() {
                   maxLength: {
                     value: 20,
                     message: 'El nombre no puede exceder los 20 caracteres',
+                  },
+                  pattern: {
+                    value: /^[a-zA-ZÀ-ÿ\s]+$/,
+                    message: 'El nombre solo puede contener letras y espacios',
                   },
                 }}
                 icon="account"
@@ -115,6 +119,10 @@ export default function Login() {
                     value: 20,
                     message: 'El apellido no puede exceder los 20 caracteres',
                   },
+                  pattern: {
+                    value: /^[a-zA-ZÀ-ÿ\s]+$/,
+                    message: 'El apellido solo puede contener letras y espacios',
+                  },
                 }}
                 icon="account"
                 label="Apellido"
@@ -129,16 +137,13 @@ export default function Login() {
             <PickerField
               control={control}
               name="genero"
-              rules={{
-                required: 'El género es requerido',
-              }}
+              rules={{ required: 'El género es requerido' }}
               icon="gender-male-female"
               label="Género"
               options={[
-                { label: 'Masculino', value: 'Masculino' },
-                { label: 'Femenino', value: 'Femenino' },
+                { optionLabel: 'Masculino', optionValue: 'Masculino' },
+                { optionLabel: 'Femenino', optionValue: 'Femenino' },
               ]}
-              onSelect={value => console.log(value)}
               prompt="Selecciona un género"
               error={errors.genero?.message as string}
             />
@@ -168,6 +173,11 @@ export default function Login() {
               name="password"
               rules={{
                 required: 'La contraseña es requerida',
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/,
+                  message:
+                    'La contraseña debe tener entre 8 y 20 caracteres, con al menos una mayúscula, una minúscula, un número y un carácter especial',
+                },
               }}
               icon="key"
               label="Contraseña"
@@ -176,7 +186,7 @@ export default function Login() {
               autoComplete="new-password"
               textContentType="newPassword"
               secureTextEntry={!showPassword}
-              showPasswordIcon={
+              passwordIcon={
                 <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
                   <MaterialCommunityIcons
                     name={showPassword ? 'eye-off' : 'eye'}
@@ -192,6 +202,9 @@ export default function Login() {
               name="confirmPassword"
               rules={{
                 required: 'La contraseña es requerida',
+                deps: 'password',
+                validate: (value: string) =>
+                  value === getValues('password') || 'Las contraseñas no coinciden',
               }}
               icon="key"
               label="Confirmar contraseña"
@@ -200,7 +213,7 @@ export default function Login() {
               autoComplete="new-password"
               textContentType="newPassword"
               secureTextEntry={!showPassword}
-              showPasswordIcon={
+              passwordIcon={
                 <Pressable onPress={() => setShowPassword(prev => !prev)} style={styles.iconRight}>
                   <MaterialCommunityIcons
                     name={showPassword ? 'eye-off' : 'eye'}
@@ -211,18 +224,14 @@ export default function Login() {
               }
             />
 
-            <View style={styles.footerContainer}>
-              {message && <Text style={styles.errorMessageText}>{message}</Text>}
+            <Button
+              label="Crear una cuenta"
+              icon="account-plus"
+              disabled={isLoading}
+              onPress={handleSubmit(onSubmit)}
+            />
 
-              <Button
-                label="Crear una cuenta"
-                icon="account-plus"
-                disabled={isLoading}
-                onPress={handleSubmit(onSubmit)}
-              />
-            </View>
-
-            <Text style={styles.anotherMethodText}>O puedes registrarte con</Text>
+            {/* <Text style={styles.anotherMethodText}>O puedes registrarte con</Text>
 
             <View style={styles.methodsContainer}>
               <Pressable style={styles.methodButton}>
@@ -246,12 +255,12 @@ export default function Login() {
                   resizeMode="contain"
                 />
               </Pressable>
-            </View>
+            </View> */}
 
             <Link href="/(auth)/login">
-              <Text style={styles.registerText}>
+              <Text style={[globalStyles.bodyText, styles.registerText]}>
                 ¿Ya tienes una cuenta?
-                <Text style={styles.registerLinkText}> Inicia sesión</Text>
+                <Text style={globalStyles.link}> Inicia sesión</Text>
               </Text>
             </Link>
           </View>
@@ -262,35 +271,11 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  loginContainer: {
+  imageBackground: {
     flex: 1,
-    backgroundColor: 'white',
-    paddingHorizontal: 30,
-    paddingTop: 40,
-    paddingBottom: 60,
   },
   headerContainer: {
     rowGap: 3,
-  },
-  logoImage: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: GRAY_COLOR_DARK,
-  },
-  headerSubtitle: {
-    fontFamily: BODY_FONT,
-    color: GRAY_COLOR,
-    textAlign: 'center',
-    fontSize: 12,
   },
   bodyContainer: {
     rowGap: 10,
@@ -298,23 +283,6 @@ const styles = StyleSheet.create({
   rowInputs: {
     flexDirection: 'row',
     columnGap: 10,
-  },
-  rowGap: {
-    rowGap: 10,
-  },
-  registerText: {
-    fontFamily: BODY_FONT,
-    color: GRAY_COLOR,
-    // fontSize: 12,
-    textAlign: 'center',
-  },
-  registerLinkText: {
-    color: SECONDARY_COLOR_DARK,
-    fontWeight: 'bold',
-  },
-  footerContainer: {
-    rowGap: 10,
-    marginTop: 15,
   },
   iconRight: {
     position: 'absolute',
@@ -324,7 +292,6 @@ const styles = StyleSheet.create({
   },
   anotherMethodText: {
     color: GRAY_COLOR_DARK,
-    // fontSize: 12,
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -346,10 +313,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 5,
   },
-  errorMessageText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'red',
-    fontSize: 12,
+  registerText: {
     textAlign: 'center',
   },
 });

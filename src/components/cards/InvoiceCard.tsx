@@ -8,26 +8,27 @@ import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Invoice } from '@/interfaces/Invoice';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { BaseCard } from './BaseCard';
 
 interface InvoiceCardProps {
   data: Invoice;
   isPending: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps) => {
   const {
-    cliente_id,
+    cliente,
     fecha_venta,
     productos: { length },
     estado,
   } = data;
-  const { nombre, apellido, email } = cliente_id ?? {};
+  const { nombre, apellido, email } = cliente ?? {};
 
   return (
-    <View style={styles.invoiceCard}>
+    <BaseCard styles={styles.card}>
       <View style={styles.invoiceInfo}>
         <Text style={styles.customerName}>
           {nombre} {apellido}
@@ -74,20 +75,14 @@ export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps
         </View>
       </View>
       {children}
-    </View>
+    </BaseCard>
   );
 });
 
 const styles = StyleSheet.create({
-  invoiceCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    rowGap: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  card: { flexDirection: 'row', justifyContent: 'space-between' },
   invoiceInfo: {
+    width: '60%',
     rowGap: 2,
   },
   customerName: {

@@ -10,13 +10,7 @@ export interface PersonalizedProduct {
   precio: number;
   imagen: string;
   aroma: string;
-  tipo_producto:
-    | 'piel grasa'
-    | 'piel seca'
-    | 'piel mixta'
-    | 'decorativa'
-    | 'aromatizante'
-    | 'humidificación';
-  createdAt?: Date;
-  updatedAt?: Date;
+  tipo_producto: 'personalizado' | 'ia';
+  createdAt?: string;
+  updatedAt?: string;
 }

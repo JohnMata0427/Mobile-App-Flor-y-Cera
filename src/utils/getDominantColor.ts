@@ -1,26 +1,19 @@
-const API_COLOR_EXTRACTOR = process.env.EXPO_PUBLIC_API_COLOR_EXTRACTOR ?? '';
+import { requestAPI } from './requestAPI';
+import Constants from 'expo-constants';
+
+const { API_COLOR_EXTRACTOR = '' } = Constants.expoConfig?.extra ?? {};
+
+const API_COLOR = process.env.EXPO_PUBLIC_API_COLOR_EXTRACTOR ?? API_COLOR_EXTRACTOR;
 
 export const getDominantColor = async (imageUrl: string) => {
-  const response = await fetch(API_COLOR_EXTRACTOR, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ imageUrl }),
-  });
+  try {
+    const { color } = await requestAPI('/color-dominante', {
+      method: 'POST',
+      body: { imageUrl },
+    }, API_COLOR);
 
-  const data = await response.json();
-
-  if (response.ok) {
-    return data.color;
+    return color;
+  } catch (error) {
+    return '#000000';
   }
-
-  return '#000000';
 };
-
-export function colorToBase64(hex: string): string {
-  hex = hex.replace('#', '');
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="#${hex}"/></svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
-}

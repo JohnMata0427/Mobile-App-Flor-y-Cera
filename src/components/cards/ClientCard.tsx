@@ -10,25 +10,25 @@ import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { BaseCard } from './BaseCard';
 
 interface ClientCardProps {
   data: Client;
   isActive: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) => {
   const { nombre, apellido, email, direccion, imagen, genero, estado, createdAt } = data;
 
-  const isMale = genero === 'Masculino';
-  const defaultImageUrl =
-    genero === 'Masculino'
-      ? require('@/assets/male-user-default.jpg')
-      : require('@/assets/female-user-default.jpg');
+  const isMale = genero.toLowerCase() === 'masculino';
+  const defaultImageUrl = isMale
+    ? require('@/assets/male-user-default.jpg')
+    : require('@/assets/female-user-default.jpg');
   return (
-    <View style={styles.clientCard}>
+    <BaseCard styles={styles.card}>
       <View style={styles.clientInfoRow}>
         <View style={styles.clientInnerInfo}>
           <Image
@@ -66,21 +66,14 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
         </View>
       </View>
       {children}
-    </View>
+    </BaseCard>
   );
 });
 
 const styles = StyleSheet.create({
-  clientCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 12,
-    rowGap: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
+  card: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   clientInfoRow: {
+    flex: 1,
     flexDirection: 'row',
     columnGap: 10,
     alignItems: 'center',

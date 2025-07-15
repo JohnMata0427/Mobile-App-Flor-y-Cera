@@ -1,12 +1,15 @@
 import { Loading } from '@/components/Loading';
 import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from '@/constants/Fonts';
 import { useAuthStore } from '@/store/useAuthStore';
+import { type NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 
+const screenOptions: NativeStackNavigationOptions = { headerShown: false, statusBarStyle: 'dark' };
+
 export default function RootLayout() {
-  const { isAuthenticated, isAdmin, loading, checkAuth } = useAuthStore();
+  const { checkAuth, loading } = useAuthStore();
 
   const [loaded] = useFonts({
     [HEADING_FONT]: require('@/assets/fonts/PlayfairDisplay-Black.ttf'),
@@ -15,28 +18,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    (async() => {
-      await checkAuth();
-    })();
+    checkAuth();
   }, []);
 
-  if (!loaded || loading) {
-    return <Loading />;
-  }
+  if (!loaded || loading) return <Loading />;
 
-  return (
-    <Stack screenOptions={{ headerShown: false, statusBarStyle: 'dark' }}>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
-
-      <Stack.Protected guard={isAuthenticated && !isAdmin}>
-        <Stack.Screen name="(client)" />
-      </Stack.Protected>
-
-      <Stack.Protected guard={isAdmin}>
-        <Stack.Screen name="(admin)" />
-      </Stack.Protected>
-    </Stack>
-  );
+  return <Stack screenOptions={screenOptions} />;
 }

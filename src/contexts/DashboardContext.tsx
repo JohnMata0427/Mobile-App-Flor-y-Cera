@@ -1,9 +1,16 @@
 import { getClientsRequest } from '@/services/ClientService';
 import { getInvoicesDashboardRequest, getInvoicesRequest } from '@/services/InvoiceService';
 import { getProductsRequest } from '@/services/ProductService';
-import { useAuthStore } from '@/store/useAuthStore';
 import { capitalizeWord } from '@/utils/textTransform';
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from 'react';
 
 interface DashboardTotals {
   clients: number;
@@ -20,7 +27,7 @@ interface DashboardContextProps {
   productSales: number[];
   loading: boolean;
   refreshing: boolean;
-  setRefreshing: React.Dispatch<React.SetStateAction<boolean>>;
+  setRefreshing: Dispatch<SetStateAction<boolean>>;
   getDashboardGraphicsData: () => Promise<void>;
 }
 
@@ -41,8 +48,7 @@ export const DashboardContext = createContext<DashboardContextProps>({
   getDashboardGraphicsData: async () => {},
 });
 
-export const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
-  const { token } = useAuthStore();
+export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [totals, setTotals] = useState<DashboardTotals>({
     clients: 0,
     sales: 0,
@@ -64,20 +70,20 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const getDashboardGraphicsData = useCallback(async () => {
+  const getDashboardGraphicsData = async () => {
     setLoading(true);
     try {
-      const { clientes } = await getClientsRequest(1, 100, token);
-      const { ventas } = await getInvoicesRequest(1, 100, token);
+      const { clientes } = await getClientsRequest(1, 100);
+      const { ventas } = await getInvoicesRequest(1, 100);
       const { productos } = await getProductsRequest(1, 100);
 
       setTotals({
-        clients: clientes.length,
-        sales: ventas.length,
-        products: productos.length,
+        clients: clientes?.length ?? 0,
+        sales: ventas?.length ?? 0,
+        products: productos?.length ?? 0,
       });
 
-      const { ventasDiarias, ventasPorCategoria } = await getInvoicesDashboardRequest(token);
+      const { ventasDiarias, ventasPorCategoria } = await getInvoicesDashboardRequest();
 
       const weekdaysData: string[] = [];
       const lastWeekSalesData: number[] = [];
@@ -115,11 +121,11 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
       setLoading(false);
       setRefreshing(false);
     }
-  }, [token]);
+  };
 
   useEffect(() => {
     getDashboardGraphicsData();
-  }, [getDashboardGraphicsData]);
+  }, []);
 
   const contextValues = useMemo<DashboardContextProps>(
     () => ({
@@ -144,7 +150,6 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
       loading,
       refreshing,
       setRefreshing,
-      getDashboardGraphicsData,
     ],
   );
 

@@ -1,70 +1,22 @@
 import type { PersonalizedProduct } from '@/interfaces/PersonalizedProduct';
+import { requestAPI } from '@/utils/requestAPI';
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/productos-personalizados';
+const PERSONALIZED_PRODUCTS_ENDPOINT = '/productos-personalizados';
 
-export const getPersonalizedProductsRequest = async (page: number, limit: number) => {
-  const response = await fetch(`${BACKEND_URL}?page=${page}&limit=${limit}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export const getPersonalizedProductsRequest = (page: number, limit: number) =>
+  requestAPI(`${PERSONALIZED_PRODUCTS_ENDPOINT}?page=${page}&limit=${limit}`);
 
-  return await response.json();
-};
+export const getPersonalizedProductByIdRequest = (id: string) =>
+  requestAPI(`${PERSONALIZED_PRODUCTS_ENDPOINT}/${id}`);
 
-export const getPersonalizedProductByIdRequest = async (id: string) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export const createPersonalizedProductRequest = (body: Partial<PersonalizedProduct>) =>
+  requestAPI(PERSONALIZED_PRODUCTS_ENDPOINT, { method: 'POST', body });
 
-  return await response.json();
-};
+export const uploadPersonalizedProductImageRequest = (id: string, body: FormData) =>
+  requestAPI(`${PERSONALIZED_PRODUCTS_ENDPOINT}/${id}/imagen`, { method: 'PUT', body });
 
-export const createPersonalizedProductRequest = async (
-  body: Partial<PersonalizedProduct>,
-  token: string,
-) => {
-  const response = await fetch(BACKEND_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
+export const updatePersonalizedProductRequest = (id: string, body: Partial<PersonalizedProduct>) =>
+  requestAPI(`${PERSONALIZED_PRODUCTS_ENDPOINT}/${id}`, { method: 'PUT', body });
 
-  return await response.json();
-};
-
-export const updatePersonalizedProductRequest = async (
-  id: string,
-  body: Partial<PersonalizedProduct>,
-  token: string,
-) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  return await response.json();
-};
-
-export const deletePersonalizedProductRequest = async (id: string, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return await response.json();
-};
+export const deletePersonalizedProductRequest = (id: string) =>
+  requestAPI(`${PERSONALIZED_PRODUCTS_ENDPOINT}/${id}`, { method: 'DELETE' });

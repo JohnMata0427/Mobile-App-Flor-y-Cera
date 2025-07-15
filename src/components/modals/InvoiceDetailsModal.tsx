@@ -18,9 +18,10 @@ interface InvoiceDetailsModalProps {
 
 export const InvoiceDetailsModal = memo(
   ({ invoice, isVisible, onClose }: InvoiceDetailsModalProps) => {
-    const { _id, cliente_id, fecha_venta, updatedAt, productos, estado, total } = invoice;
+    if (!isVisible) return null;
 
-    const { nombre, apellido, email } = cliente_id ?? {};
+    const { _id, cliente, fecha_venta, updatedAt, productos, estado, total } = invoice;
+    const { nombre, apellido, email } = cliente ?? {};
 
     const subtotalWithoutTax = total / 1.15;
 
@@ -56,6 +57,7 @@ export const InvoiceDetailsModal = memo(
           </View>
           <View style={styles.table}>
             <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderText}>#</Text>
               <Text style={[styles.tableHeaderText, styles.tableDescriptionColumn]}>
                 Descripción
               </Text>
@@ -64,21 +66,30 @@ export const InvoiceDetailsModal = memo(
               <Text style={styles.tableHeaderText}>Total</Text>
             </View>
             <View>
-              {productos?.map(({ _id, cantidad, subtotal }) => {
-                const subtotalWithoutTaxProduct = subtotal / 1.15;
-                const unitPrice = subtotalWithoutTax / cantidad;
+              {productos?.map(
+                ({ cantidad, subtotal, nombre, producto_id, tipo, producto }, index) => {
+                  const subtotalWithoutTaxProduct = subtotal / 1.15;
+                  const unitPrice = subtotalWithoutTaxProduct / cantidad;
 
-                return (
-                  <View key={_id} style={styles.tableBody}>
-                    <Text style={[styles.tableBodyText, styles.tableDescriptionColumn]}>{_id}</Text>
-                    <Text style={styles.tableBodyText}>{cantidad}</Text>
-                    <Text style={styles.tableBodyText}>${unitPrice?.toFixed(2)}</Text>
-                    <Text style={styles?.tableBodyText}>
-                      ${subtotalWithoutTaxProduct.toFixed(2)}
-                    </Text>
-                  </View>
-                );
-              })}
+                  return (
+                    <View key={producto_id} style={styles.tableBody}>
+                      <Text style={styles.tableBodyText}>{index + 1}</Text>
+                      <Text style={[styles.tableBodyText, styles.tableDescriptionColumn]}>
+                        {nombre ??
+                          producto?.nombre ??
+                          ((tipo ?? producto?.tipo) === 'personalizado'
+                            ? 'Producto Personalizado'
+                            : 'Recomendación de IA')}
+                      </Text>
+                      <Text style={styles.tableBodyText}>{cantidad}</Text>
+                      <Text style={styles.tableBodyText}>${unitPrice?.toFixed(2)}</Text>
+                      <Text style={styles?.tableBodyText}>
+                        ${subtotalWithoutTaxProduct.toFixed(2)}
+                      </Text>
+                    </View>
+                  );
+                },
+              )}
             </View>
           </View>
           <View style={styles.tableFooter}>
@@ -96,7 +107,7 @@ export const InvoiceDetailsModal = memo(
           </View>
           <View style={styles.footer}>
             <Text style={styles.detailText}>
-              <Text style={styles.tableHeaderText}>Estado: </Text>
+              <Text style={styles.tableHeaderText}>Estado de entrega: </Text>
               {estado?.charAt(0).toUpperCase() + estado?.slice(1)}
             </Text>
             <Text style={styles.detailText}>
@@ -117,7 +128,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     margin: 'auto',
     width: '90%',
-    maxHeight: '56%',
+    minHeight: '10%',
     borderRadius: 10,
     backgroundColor: 'white',
     padding: 15,

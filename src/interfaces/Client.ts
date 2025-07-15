@@ -13,6 +13,7 @@ export interface Client {
   ciudad?: string;
   createdAt?: string;
   updatedAt?: string;
+  notificationPushToken?: string | null;
 }
 
 export interface ClientFilter {

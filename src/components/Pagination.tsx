@@ -1,16 +1,16 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
+import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface PaginationProps {
   page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setPage: Dispatch<SetStateAction<number>>;
   totalPages: number;
 }
 
-export const Pagination = memo(({ page, setPage, totalPages }: PaginationProps) => {
+export const Pagination = memo(function Pagination({ page, setPage, totalPages }: PaginationProps) {
   return (
     <View style={styles.footerRow}>
       <Pressable
@@ -36,7 +36,7 @@ export const Pagination = memo(({ page, setPage, totalPages }: PaginationProps) 
             },
           ]}
         >
-          <Text style={styles.paginationText}>{index + 1}</Text>
+          <Text style={globalStyles.buttonText}>{index + 1}</Text>
         </Pressable>
       ))}
       <Pressable
@@ -79,9 +79,5 @@ const styles = StyleSheet.create({
   iconDisabledButtons: {
     backgroundColor: GRAY_COLOR,
     borderColor: GRAY_COLOR_DARK,
-  },
-  paginationText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
   },
 });

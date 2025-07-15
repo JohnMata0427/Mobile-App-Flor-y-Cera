@@ -1,34 +1,35 @@
 import { AdminFilter } from '@/components/AdminFilter';
 import { AdminHeader } from '@/components/AdminHeader';
+import { AdminSearch } from '@/components/AdminSearch';
 import { Button } from '@/components/Button';
 import { Loading } from '@/components/Loading';
+import { AdminIngredientCard } from '@/components/cards/AdminIngredientCard';
+import { AdminProductCard } from '@/components/cards/AdminProductCard';
 import { CategoryCard } from '@/components/cards/CategoryCard';
-import { IngredientCard } from '@/components/cards/IngredientCard';
-import { ProductCard } from '@/components/cards/ProductCard';
 import { CategoryModal } from '@/components/modals/CategoryModal';
 import { IngredientModal } from '@/components/modals/IngredientModal';
 import { ProductModal } from '@/components/modals/ProductModal';
 import {
-  GRAY_COLOR,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_EXTRA_LIGHT,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContext';
 import { IngredientsContext, IngredientsProvider } from '@/contexts/IngredientsContext';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
+import { globalStyles } from '@/globalStyles';
 import type { Category } from '@/interfaces/Category';
 import type { Ingredient, IngredientFilter } from '@/interfaces/Ingredient';
 import type { Product, ProductFilter } from '@/interfaces/Product';
+import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useCallback, useEffect, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -50,7 +51,7 @@ interface FilterIngredientButton {
   filter: IngredientFilter;
 }
 
-const ProductsScreen = memo(() => {
+const ProductsScreen = memo(function ProductsScreen() {
   const [action, setAction] = useState<Action>('Agregar');
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -58,11 +59,8 @@ const ProductsScreen = memo(() => {
     searchedProducts,
     loading,
     refreshing,
-    page,
-    totalPages,
     filter,
     setRefreshing,
-    setPage,
     setFilter,
     setSearch,
     getProducts,
@@ -73,21 +71,12 @@ const ProductsScreen = memo(() => {
 
   const showDeleteAlert = useCallback(
     (productId: string, nombre: string) => {
-      Alert.alert(
-        'Eliminar producto',
-        '¿Está seguro de que desea eliminar ' + nombre + '? Esta acción no se puede deshacer.',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: () => deleteProduct(productId),
-          },
-        ],
-      );
+      showConfirmationAlert({
+        message:
+          '¿Está seguro de que desea eliminar ' + nombre + '? Esta acción no se puede deshacer.',
+        onConfirm: () => deleteProduct(productId),
+        confirmButtonText: 'Eliminar',
+      });
     },
     [deleteProduct],
   );
@@ -137,7 +126,8 @@ const ProductsScreen = memo(() => {
   return (
     <IngredientsProvider>
       <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
+        contentContainerStyle={globalStyles.scrollViewContent}
+        stickyHeaderIndices={[1]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -149,94 +139,166 @@ const ProductsScreen = memo(() => {
           />
         }
       >
-        <View style={styles.container}>
-          <AdminHeader setSearch={setSearch} placeholder="Buscar por nombre del producto...">
-            <Pressable
-              style={styles.addButton}
-              onPress={() => {
-                setAction('Agregar');
-                setModalVisible(true);
-                setSelectedProduct(undefined);
-              }}
-            >
-              <MaterialCommunityIcons name="plus" size={14} color="white" />
-              <Text style={styles.addButtonText}>Nuevo producto</Text>
-            </Pressable>
-          </AdminHeader>
-          <ProductModal
-            isVisible={modalVisible}
-            product={selectedProduct}
-            action={action}
-            setIsVisible={setModalVisible}
+        <AdminHeader>
+          <Button
+            label="Nuevo producto"
+            icon="plus"
+            onPress={() => {
+              setAction('Agregar');
+              setModalVisible(true);
+              setSelectedProduct(undefined);
+            }}
+            buttonStyle={styles.headerButton}
+            textStyle={styles.headerButtonText}
           />
+        </AdminHeader>
 
-          {loading ? (
-            <Loading />
-          ) : (
-            <FlatList
-              data={searchedProducts}
-              showsVerticalScrollIndicator={false}
-              numColumns={2}
-              columnWrapperStyle={styles.columnWrapper}
-              contentContainerStyle={styles.listContent}
-              keyExtractor={({ _id }) => _id}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <ProductCard data={item}>
-                  <View style={styles.actionRow}>
-                    <Pressable
-                      onPress={() => {
-                        setAction('Visualizar');
-                        setModalVisible(true);
-                        setSelectedProduct(item);
-                      }}
-                      style={[styles.actionButton, styles.primaryButton]}
-                    >
-                      <MaterialCommunityIcons name="information-variant" size={20} color="white" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setAction('Actualizar');
-                        setModalVisible(true);
-                        setSelectedProduct(item);
-                      }}
-                      style={[styles.actionButton, styles.secondaryButton]}
-                    >
-                      <MaterialCommunityIcons name="pencil" size={20} color="white" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => showDeleteAlert(item._id, item.nombre)}
-                      style={[styles.actionButton, styles.tertiaryButton]}
-                    >
-                      <MaterialCommunityIcons name="trash-can" size={20} color="white" />
-                    </Pressable>
-                  </View>
-                </ProductCard>
-              )}
-              ListEmptyComponent={
-                <View style={styles.emptyContainer}>
-                  <MaterialCommunityIcons name="cart-off" size={30} />
-                  <Text style={styles.emptyText}>
-                    No se encontraron productos, intente más tarde.
-                  </Text>
-                </View>
-              }
-              ListHeaderComponent={
-                <AdminFilter
-                  filterButtons={filterButtons}
-                  filter={filter}
-                  setFilter={setFilter as any}
-                />
-              }
+        <View key="search-bar-container">
+          <View style={styles.stickyHeader}>
+            <AdminSearch setSearch={setSearch} placeholder="Buscar producto por nombre..." />
+
+            <AdminFilter
+              filterButtons={filterButtons}
+              filter={filter}
+              setFilter={setFilter as any}
             />
-          )}
+          </View>
         </View>
+
+        <ProductModal
+          isVisible={modalVisible}
+          product={selectedProduct}
+          action={action}
+          setIsVisible={setModalVisible}
+        />
+
+        {loading ? (
+          <Loading />
+        ) : (
+          <FlatList
+            data={searchedProducts}
+            showsVerticalScrollIndicator={false}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.listContent}
+            keyExtractor={({ _id }) => _id}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <AdminProductCard data={item} categories={categories}>
+                <View style={styles.actionRow}>
+                  <Pressable
+                    onPress={() => {
+                      setAction('Visualizar');
+                      setModalVisible(true);
+                      setSelectedProduct(item);
+                    }}
+                    style={[styles.actionButton, styles.primaryButton]}
+                  >
+                    <MaterialCommunityIcons name="information-variant" size={20} color="white" />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setAction('Actualizar');
+                      setModalVisible(true);
+                      setSelectedProduct(item);
+                    }}
+                    style={[styles.actionButton, styles.secondaryButton]}
+                  >
+                    <MaterialCommunityIcons name="pencil" size={20} color="white" />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => showDeleteAlert(item._id, item.nombre)}
+                    style={[styles.actionButton, styles.tertiaryButton]}
+                  >
+                    <MaterialCommunityIcons name="trash-can" size={20} color="white" />
+                  </Pressable>
+                </View>
+              </AdminProductCard>
+            )}
+            ListEmptyComponent={
+              <View style={globalStyles.centeredContainer}>
+                <MaterialCommunityIcons name="cart-off" size={30} />
+                <Text style={globalStyles.bodyText}>
+                  No se encontraron productos, intente más tarde.
+                </Text>
+              </View>
+            }
+          />
+        )}
       </ScrollView>
     </IngredientsProvider>
   );
 });
 
-const IngredientsScreen = memo(() => {
+const RenderItem = memo(
+  ({
+    item,
+    categories,
+    showDeleteAlert,
+    setAction,
+    setModalVisible,
+    setSelectedIngredient,
+  }: {
+    item: Ingredient;
+    categories: Category[];
+    showDeleteAlert: (ingredientId: string, nombre: string) => void;
+    setAction: (action: Action) => void;
+    setModalVisible: (visible: boolean) => void;
+    setSelectedIngredient: (ingredient: Ingredient) => void;
+  }) => {
+    const category = item.id_categoria;
+    let categoryName = '';
+
+    if (typeof category[0] === 'string') {
+      switch (category.length) {
+        case 1:
+          const cat = categories.find(cat => cat._id === category[0]);
+          categoryName = cat?.nombre ?? 'Ninguna';
+          break;
+        case 2:
+          categoryName = 'Ambas categorías';
+          break;
+        default:
+          categoryName = 'Ninguna';
+      }
+    }
+
+    return (
+      <AdminIngredientCard data={item} category={categoryName}>
+        <View style={styles.actionRow}>
+          <Pressable
+            onPress={() => {
+              setAction('Visualizar');
+              setModalVisible(true);
+              setSelectedIngredient(item);
+            }}
+            style={[styles.actionButton, styles.primaryButton]}
+          >
+            <MaterialCommunityIcons name="information-variant" size={20} color="white" />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              setAction('Actualizar');
+              setModalVisible(true);
+              setSelectedIngredient(item);
+            }}
+            style={[styles.actionButton, styles.secondaryButton]}
+          >
+            <MaterialCommunityIcons name="pencil" size={20} color="white" />
+          </Pressable>
+          <Pressable
+            onPress={() => showDeleteAlert(item._id, item.nombre)}
+            style={[styles.actionButton, styles.tertiaryButton]}
+          >
+            <MaterialCommunityIcons name="trash-can" size={20} color="white" />
+          </Pressable>
+        </View>
+      </AdminIngredientCard>
+    );
+  },
+);
+
+const IngredientsScreen = memo(function IngredientsScreen() {
   const [action, setAction] = useState<Action>('Agregar');
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -256,21 +318,12 @@ const IngredientsScreen = memo(() => {
 
   const showDeleteAlert = useCallback(
     (ingredientId: string, nombre: string) => {
-      Alert.alert(
-        'Eliminar ingrediente',
-        '¿Está seguro de que desea eliminar ' + nombre + '? Esta acción no se puede deshacer.',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: () => deleteIngredient(ingredientId),
-          },
-        ],
-      );
+      showConfirmationAlert({
+        message:
+          '¿Está seguro de que desea eliminar ' + nombre + '? Esta acción no se puede deshacer.',
+        onConfirm: () => deleteIngredient(ingredientId),
+        confirmButtonText: 'Eliminar',
+      });
     },
     [deleteIngredient],
   );
@@ -311,7 +364,8 @@ const IngredientsScreen = memo(() => {
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
+      contentContainerStyle={globalStyles.scrollViewContent}
+      stickyHeaderIndices={[1]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -323,120 +377,78 @@ const IngredientsScreen = memo(() => {
         />
       }
     >
-      <View style={styles.container}>
-        <AdminHeader setSearch={setSearch} placeholder="Buscar por nombre del ingrediente...">
-          <Pressable
-            style={styles.addButton}
-            onPress={() => {
-              setAction('Agregar');
-              setModalVisible(true);
-              setSelectedIngredient(undefined);
-            }}
-          >
-            <MaterialCommunityIcons name="plus" size={14} color="white" />
-            <Text style={styles.addButtonText}>Nuevo ingrediente</Text>
-          </Pressable>
-        </AdminHeader>
-
-        <IngredientModal
-          ingredient={selectedIngredient}
-          action={action}
-          isVisible={modalVisible}
-          setIsVisible={setModalVisible}
+      <AdminHeader>
+        <Button
+          label="Nuevo ingrediente"
+          icon="plus"
+          onPress={() => {
+            setAction('Agregar');
+            setModalVisible(true);
+            setSelectedIngredient(undefined);
+          }}
+          buttonStyle={styles.headerButton}
+          textStyle={styles.headerButtonText}
         />
+      </AdminHeader>
 
-        {loading ? (
-          <Loading />
-        ) : (
-          <FlatList
-            data={searchedIngredients}
-            showsVerticalScrollIndicator={false}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            contentContainerStyle={styles.listContent}
-            keyExtractor={({ _id }) => _id}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              const category = item.id_categoria;
-              let categoryName = '';
+      <View key="search-bar-container">
+        <View style={styles.stickyHeader}>
+          <AdminSearch setSearch={setSearch} placeholder="Buscar ingrediente por nombre..." />
 
-              if (typeof category[0] === 'string') {
-                switch (category.length) {
-                  case 1:
-                    const cat = categories.find(cat => cat._id === category[0]);
-                    categoryName = cat?.nombre ?? 'Ninguna';
-                    break;
-                  case 2:
-                    categoryName = 'Ambas categorías';
-                    break;
-                  default:
-                    categoryName = 'Ninguna';
-                }
-              }
-
-              return (
-                <IngredientCard data={item} category={categoryName}>
-                  <View style={styles.actionRow}>
-                    <Pressable
-                      onPress={() => {
-                        setAction('Visualizar');
-                        setModalVisible(true);
-                        setSelectedIngredient(item);
-                      }}
-                      style={[styles.actionButton, styles.primaryButton]}
-                    >
-                      <MaterialCommunityIcons name="information-variant" size={20} color="white" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setAction('Actualizar');
-                        setModalVisible(true);
-                        setSelectedIngredient(item);
-                      }}
-                      style={[styles.actionButton, styles.secondaryButton]}
-                    >
-                      <MaterialCommunityIcons name="pencil" size={20} color="white" />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => showDeleteAlert(item._id, item.nombre)}
-                      style={[styles.actionButton, styles.tertiaryButton]}
-                    >
-                      <MaterialCommunityIcons name="trash-can" size={20} color="white" />
-                    </Pressable>
-                  </View>
-                </IngredientCard>
-              );
-            }}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <MaterialCommunityIcons name="cart-off" size={30} />
-                <Text style={styles.emptyText}>
-                  No se encontraron ingredientes, intente más tarde.
-                </Text>
-              </View>
-            }
-            ListHeaderComponent={
-              <AdminFilter
-                filterButtons={filterButtons}
-                filter={filter}
-                setFilter={setFilter as any}
-              />
-            }
-          />
-        )}
+          <AdminFilter filterButtons={filterButtons} filter={filter} setFilter={setFilter as any} />
+        </View>
       </View>
+
+      <IngredientModal
+        ingredient={selectedIngredient}
+        action={action}
+        isVisible={modalVisible}
+        setIsVisible={setModalVisible}
+      />
+
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={searchedIngredients}
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.listContent}
+          keyExtractor={({ _id }) => _id}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <RenderItem
+              item={item}
+              categories={categories}
+              showDeleteAlert={showDeleteAlert}
+              setAction={setAction}
+              setModalVisible={setModalVisible}
+              setSelectedIngredient={setSelectedIngredient}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={globalStyles.centeredContainer}>
+              <MaterialCommunityIcons name="cart-off" size={30} />
+              <Text style={globalStyles.bodyText}>
+                No se encontraron ingredientes, intente más tarde.
+              </Text>
+            </View>
+          }
+        />
+      )}
     </ScrollView>
   );
 });
 
-const CategoriesScreen = memo(() => {
+const CategoriesScreen = memo(function CategoriesScreen() {
   const { categories, loading, refreshing, setRefreshing, getCategories } = use(CategoriesContext);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>({} as Category);
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
+      contentContainerStyle={globalStyles.scrollViewContent}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -448,45 +460,44 @@ const CategoriesScreen = memo(() => {
         />
       }
     >
-      <View style={styles.container}>
-        <AdminHeader showSearchBar={false} />
-        <CategoryModal
-          category={selectedCategory}
-          isVisible={modalVisible}
-          setIsVisible={setModalVisible}
-        />
+      <AdminHeader />
 
-        {loading ? (
-          <Loading />
-        ) : (
-          <FlatList
-            data={categories}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            keyExtractor={({ _id }) => _id}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <CategoryCard data={item}>
-                <Pressable
-                  onPress={() => {
-                    setSelectedCategory(item);
-                    setModalVisible(true);
-                  }}
-                  style={[styles.actionButton, styles.secondaryButton, { margin: 'auto' }]}
-                >
-                  <MaterialCommunityIcons name="pencil" size={20} color="white" />
-                </Pressable>
-              </CategoryCard>
-            )}
-          />
-        )}
-      </View>
+      <CategoryModal
+        category={selectedCategory}
+        isVisible={modalVisible}
+        setIsVisible={setModalVisible}
+      />
+
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={categories}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          keyExtractor={({ _id }) => _id}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <CategoryCard data={item}>
+              <Pressable
+                onPress={() => {
+                  setSelectedCategory(item);
+                  setModalVisible(true);
+                }}
+                style={[styles.actionButton, styles.secondaryButton, styles.centeredButton]}
+              >
+                <MaterialCommunityIcons name="pencil" size={20} color="white" />
+              </Pressable>
+            </CategoryCard>
+          )}
+        />
+      )}
     </ScrollView>
   );
 });
 
 export default function AdminInventory() {
-  const [screen, setScreen] = useState<'productos' | 'ingredientes' | 'categorias'>('ingredientes');
+  const [screen, setScreen] = useState<'productos' | 'ingredientes' | 'categorias'>('productos');
 
   return (
     <>
@@ -511,7 +522,7 @@ export default function AdminInventory() {
       )}
 
       <View style={styles.buttonsContainer}>
-        <Text style={styles.inventoryText}>
+        <Text style={globalStyles.subtitle}>
           Administración de inventario, seleccione alguna opción
         </Text>
         <View style={styles.buttonsInventoryContainer}>
@@ -520,27 +531,21 @@ export default function AdminInventory() {
             icon="candle"
             onPress={() => setScreen('productos')}
             buttonStyle={styles.paddingButtons}
-            textStyle={{ fontSize: 12 }}
+            textStyle={styles.headerButtonText}
           />
           <Button
             label="Ingredientes"
             icon="leaf"
             onPress={() => setScreen('ingredientes')}
-            buttonStyle={{
-              ...styles.paddingButtons,
-              ...styles.secondaryButton,
-            }}
-            textStyle={{ fontSize: 12 }}
+            buttonStyle={[styles.paddingButtons, styles.secondaryButton]}
+            textStyle={styles.headerButtonText}
           />
           <Button
             label="Categorias"
             icon="tag"
             onPress={() => setScreen('categorias')}
-            buttonStyle={{
-              ...styles.paddingButtons,
-              ...styles.tertiaryButton,
-            }}
-            textStyle={{ fontSize: 12 }}
+            buttonStyle={[styles.paddingButtons, styles.tertiaryButton]}
+            textStyle={styles.headerButtonText}
           />
         </View>
       </View>
@@ -549,38 +554,14 @@ export default function AdminInventory() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: { flexGrow: 1 },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+  stickyHeader: {
     rowGap: 10,
-  },
-  addButton: {
-    backgroundColor: PRIMARY_COLOR,
-    borderRadius: 10,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    borderColor: PRIMARY_COLOR_DARK,
-    padding: 7,
-    flexDirection: 'row',
-    columnGap: 5,
-  },
-  addButtonText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 12,
+    backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
+    paddingBottom: 10,
+    paddingHorizontal: 15,
   },
   columnWrapper: { columnGap: 10 },
-  listContent: { rowGap: 10 },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    rowGap: 5,
-  },
-  emptyText: { fontFamily: BODY_FONT },
+  listContent: { rowGap: 10, paddingHorizontal: 15, borderRadius: 10 },
   actionRow: { flexDirection: 'row', columnGap: 5 },
   actionButton: {
     borderRadius: 5,
@@ -600,18 +581,12 @@ const styles = StyleSheet.create({
     backgroundColor: TERTIARY_COLOR,
     borderColor: TERTIARY_COLOR_DARK,
   },
-
   buttonsContainer: {
     backgroundColor: 'white',
     paddingTop: 5,
     rowGap: 5,
     borderTopWidth: 2,
     borderTopColor: GRAY_COLOR_LIGHT,
-  },
-  inventoryText: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: GRAY_COLOR,
   },
   buttonsInventoryContainer: {
     flexDirection: 'row',
@@ -623,5 +598,15 @@ const styles = StyleSheet.create({
   paddingButtons: {
     paddingVertical: 5,
     paddingHorizontal: 10,
+  },
+  headerButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  headerButtonText: {
+    fontSize: 12,
+  },
+  centeredButton: {
+    margin: 'auto',
   },
 });

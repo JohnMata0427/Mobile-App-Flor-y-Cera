@@ -3,42 +3,35 @@ import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Promotion } from '@/interfaces/Promotion';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { BaseCard } from './BaseCard';
 
 interface PromotionCardProps {
   data: Promotion;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
-  const { imagen, nombre, createdAt } = data;
+  const { imagen, nombre, updatedAt } = data;
 
   return (
-    <View style={styles.promotionCard}>
+    <BaseCard>
       <Image source={{ uri: imagen }} resizeMode="cover" style={styles.promotionImage} />
       <View style={styles.promotionInfo}>
         <Text style={styles.promotionName}>{nombre}</Text>
         <View style={styles.dateRow}>
           <MaterialCommunityIcons name="calendar-clock" size={14} color={GRAY_COLOR_DARK} />
-          <Text style={styles.dateText}>Promoción creada el {toLocaleDate(createdAt)}</Text>
+          <Text style={styles.dateText}>Promoción actualizada el {toLocaleDate(updatedAt)}</Text>
         </View>
 
         {children}
       </View>
-    </View>
+    </BaseCard>
   );
 });
 
 const styles = StyleSheet.create({
-  promotionCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    justifyContent: 'space-between',
-  },
   promotionImage: {
     width: '100%',
     aspectRatio: 16 / 9,

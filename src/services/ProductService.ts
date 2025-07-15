@@ -1,50 +1,23 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/productos';
+import { requestAPI } from '@/utils/requestAPI';
 
-export const getProductsRequest = async (page: number, limit: number) => {
-  const response = await fetch(`${BACKEND_URL}?page=${page}&limit=${limit}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+const PRODUCTS_ENDPOINT = '/productos';
 
-  return await response.json();
-};
+export const getProductsRequest = (page = 1, limit = 10) =>
+  requestAPI(`${PRODUCTS_ENDPOINT}?page=${page}&limit=${limit}`);
 
-export const createProductRequest = async (body: FormData, token: string) => {
-  const response = await fetch(BACKEND_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-    body,
-  });
+export const getProductByIdRequest = (id: string) => requestAPI(`${PRODUCTS_ENDPOINT}/${id}`);
 
-  return await response.json();
-};
+export const getProductsByNameRequest = (name: string) =>
+  requestAPI(`${PRODUCTS_ENDPOINT}?nombre=${encodeURIComponent(name)}`);
 
-export const updateProductRequest = async (id: string, body: FormData, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-    body,
-  });
+export const createProductRequest = (body: FormData) =>
+  requestAPI(PRODUCTS_ENDPOINT, { method: 'POST', body });
 
-  return await response.json();
-};
+export const updateProductRequest = (id: string, body: FormData) =>
+  requestAPI(`${PRODUCTS_ENDPOINT}/${id}`, { method: 'PUT', body });
 
-export const deleteProductRequest = async (id: string, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const deleteProductRequest = (id: string) =>
+  requestAPI(`${PRODUCTS_ENDPOINT}/${id}`, { method: 'DELETE' });
 
-  return await response.json();
-};
+export const getIntelligenceArtificialRecomendation = (id_categoria: string) =>
+  requestAPI(`${PRODUCTS_ENDPOINT}/recomendacion`, { method: 'POST', body: { id_categoria } });

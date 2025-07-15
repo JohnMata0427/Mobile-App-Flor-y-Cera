@@ -1,3 +1,4 @@
+import { useEntityManagement } from '@/hooks/useEntityManagement';
 import type { Product, ProductFilter } from '@/interfaces/Product';
 import {
   createProductRequest,
@@ -5,8 +6,7 @@ import {
   getProductsRequest,
   updateProductRequest,
 } from '@/services/ProductService';
-import { useAuthStore } from '@/store/useAuthStore';
-import { createContext, useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
+import { createContext, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 interface Response {
   msg: string;
@@ -30,108 +30,85 @@ interface ProductsContextProps {
   deleteProduct: (productId: string) => Promise<Response>;
 }
 
-export const ProductsContext = createContext<ProductsContextProps>({
-  searchedProducts: [],
-  loading: false,
-  refreshing: false,
-  page: 1,
-  totalPages: 0,
-  filter: { key: 'tipo', value: '' },
-  setRefreshing: () => {},
-  setPage: () => {},
-  setLimit: () => {},
-  setFilter: () => {},
-  setSearch: () => {},
-  getProducts: async () => {},
-  createProduct: async (_: FormData) => ({ msg: '' }),
-  updateProduct: async (_: string, __: FormData) => ({ msg: '' }),
-  deleteProduct: async (_: string) => ({ msg: '' }),
-});
+export const ProductsContext = createContext<ProductsContextProps>({} as ProductsContextProps);
 
-export const ProductsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { token } = useAuthStore();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(500);
-  const [refreshing, setRefreshing] = useState(false);
-  const [filter, setFilter] = useState<ProductFilter>({ key: 'tipo', value: '' });
-  const [search, setSearch] = useState<string>('');
+const filterFunction = (products: Product[], filter: ProductFilter) => {
+  const { key, value } = filter;
+  if (value) {
+    return products?.filter(({ id_categoria, tipo }) => {
+      if (key === 'id_categoria') {
+        return (typeof id_categoria === 'string' ? id_categoria : id_categoria._id) === value;
+      }
+      return tipo === value;
+    });
+  }
+  return products;
+};
 
-  const filteredProducts = useMemo<Product[]>(() => {
-    const { key, value } = filter;
-    if (value) {
-      return products.filter(({ id_categoria, tipo }) => {
-        if (key === 'id_categoria') {
-          return id_categoria?._id === value
-        }
-        return tipo === value;
-      });
-    }
+const searchFunction = (products: Product[], search: string) => {
+  if (search.trim()) {
+    const searchLower = search.toLowerCase().trim();
+    return products?.filter(({ nombre }) => nombre.toLowerCase().includes(searchLower)) || [];
+  }
+  return products;
+};
 
-    return products;
-  }, [products, filter]);
+export const ProductsProvider = ({ children }: { children: ReactNode }) => {
+  const fetchEntities = async (page: number, limit: number) => {
+    const { productos, totalPaginas } = await getProductsRequest(page, limit);
+    return { data: productos, totalPages: totalPaginas };
+  };
 
-  const searchedProducts = useMemo<Product[]>(() => {
-    if (search) {
-      return filteredProducts.filter(({ nombre }) =>
-        nombre.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-
-    return filteredProducts;
-  }, [filteredProducts, search]);
-
-  const getProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      setProducts([]);
-      const { productos, totalPaginas } = await getProductsRequest(page, limit);
-      setTotalPages(totalPaginas);
-      setProducts(productos);
-    } catch {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [page, limit]);
+  const {
+    setEntities: setProducts,
+    loading,
+    refreshing,
+    page,
+    totalPages,
+    filter,
+    searchedEntities: searchedProducts,
+    setRefreshing,
+    setPage,
+    setLimit,
+    setFilter,
+    setSearch,
+    getEntities: getProducts,
+  } = useEntityManagement<Product>({
+    fetchEntities,
+    filterFunction,
+    searchFunction,
+    initialFilter: { key: 'tipo', value: '' },
+  });
 
   const createProduct = async (product: FormData) => {
     try {
-      const { producto, msg } = await createProductRequest(product, token);
-
+      const { producto, msg } = await createProductRequest(product);
       if (producto?._id) setProducts(prev => [...prev, producto]);
-      
       return { msg };
     } catch {
-      return { msg: 'Ocurrio un error al crear el producto' };
+      return { msg: 'Ocurrió un error al crear el producto' };
     }
-  }
+  };
 
   const updateProduct = async (id: string, product: FormData) => {
     try {
-      const { producto, msg } = await updateProductRequest(id, product, token);
-      producto?._id && setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
+      const { producto, msg } = await updateProductRequest(id, product);
+      if (producto?._id) setProducts(prev => prev.map(p => (p._id === id ? producto : p)));
       return { msg };
     } catch {
-      return { msg: 'Ocurrio un error al actualizar el producto' };
+      return { msg: 'Ocurrió un error al actualizar el producto' };
     }
   };
 
   const deleteProduct = async (id: string) => {
     try {
-      await deleteProductRequest(id, token);
+      await deleteProductRequest(id);
       setProducts(prev => prev.filter(({ _id }) => _id !== id));
       return { msg: 'Producto eliminado exitosamente' };
     } catch {
-      return { msg: 'Ocurrio un error al eliminar el producto' };
+      return { msg: 'Ocurrió un error al eliminar el producto' };
     }
   };
-
-  useEffect(() => {
-    getProducts();
-  }, [page, limit]);
 
   const contextValue = useMemo(
     () => ({
@@ -159,9 +136,11 @@ export const ProductsProvider = ({ children }: { children: React.ReactNode }) =>
       totalPages,
       filter,
       getProducts,
-      createProduct,
-      updateProduct,
-      deleteProduct,
+      setRefreshing,
+      setPage,
+      setLimit,
+      setFilter,
+      setSearch,
     ],
   );
 

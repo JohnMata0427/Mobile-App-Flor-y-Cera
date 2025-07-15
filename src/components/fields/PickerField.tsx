@@ -1,11 +1,10 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
-import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
 import React, { memo, type Dispatch, type SetStateAction } from 'react';
-import { Controller } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { BaseField } from './BaseField';
 
 interface OptionValue {
   nombre: string;
@@ -13,8 +12,8 @@ interface OptionValue {
 }
 
 interface OptionsPicker {
-  label: string;
-  value: OptionValue | string;
+  optionLabel: string;
+  optionValue: OptionValue | string;
 }
 
 interface PickerFieldProps {
@@ -24,83 +23,80 @@ interface PickerFieldProps {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   options: OptionsPicker[];
-  onSelect?: Dispatch<SetStateAction<OptionValue>> | Dispatch<SetStateAction<string>>;
+  onSelect?: Dispatch<SetStateAction<string>>;
+  changeSelect?: Dispatch<SetStateAction<string>>;
   prompt: string;
   error: string;
 }
 
 export const PickerField = memo(
-  ({ control, name, rules, icon, label, options, onSelect, prompt, error }: PickerFieldProps) => {
+  ({
+    control,
+    name,
+    rules,
+    icon,
+    label,
+    options,
+    onSelect,
+    prompt,
+    error,
+    changeSelect,
+  }: PickerFieldProps) => {
     return (
-      <View style={styles.pickerContainer}>
-        <Text style={globalStyles.labelText}>
-          {label}
-          <Text style={globalStyles.requiredMark}> *</Text>
-        </Text>
-        <Controller
-          control={control}
-          name={name}
-          rules={rules}
-          render={({ field: { onChange, onBlur, value } }) => {
-            const color = value ? GRAY_COLOR_DARK : error ? 'red' : GRAY_COLOR;
-            const iconColor = error ? 'red' : GRAY_COLOR_DARK;
+      <BaseField control={control} name={name} rules={rules} label={label} error={error}>
+        {({ onChange, onBlur, value }) => {
+          const color = value ? GRAY_COLOR_DARK : error ? 'red' : GRAY_COLOR;
+          const iconColor = error ? 'red' : GRAY_COLOR_DARK;
 
-            return (
-              <View style={styles.pickerSelect}>
-                <Picker
-                  style={{ color, marginLeft: 17 }}
-                  selectedValue={value}
-                  onValueChange={itemValue => {
-                    onChange(typeof itemValue === 'string' ? itemValue : itemValue._id);
-                    onSelect && onSelect(itemValue);
-                  }}
-                  mode="dropdown"
-                  prompt={prompt}
-                  dropdownIconColor={iconColor}
-                  dropdownIconRippleColor={iconColor}
-                  onBlur={onBlur}
-                >
-                  <Picker.Item
-                    value=""
-                    label={prompt}
-                    style={styles.defaultPickerItem}
-                    enabled={false}
-                  />
-                  {options.map(({ label, value }) => (
-                    <Picker.Item
-                      key={typeof value === 'string' ? value : value._id}
-                      value={value}
-                      label={label}
-                      style={styles.pickerItem}
-                    />
-                  ))}
-                </Picker>
-                <MaterialCommunityIcons
-                  style={styles.icon}
-                  name={icon}
-                  color={iconColor}
-                  size={16}
+          return (
+            <View style={styles.pickerSelectContainer}>
+              <Picker
+                style={[{ color }, styles.pickerSelect]}
+                selectedValue={value}
+                onValueChange={itemValue => {
+                  onChange(itemValue);
+                  onSelect && onSelect(itemValue);
+                  changeSelect && changeSelect(itemValue);
+                }}
+                mode="dropdown"
+                prompt={prompt}
+                dropdownIconColor={iconColor}
+                dropdownIconRippleColor={iconColor}
+                onBlur={onBlur}
+              >
+                <Picker.Item
+                  value=""
+                  label={prompt}
+                  style={styles.defaultPickerItem}
+                  enabled={false}
                 />
-              </View>
-            );
-          }}
-        />
-        {error && <Text style={globalStyles.errorText}>{error}</Text>}
-      </View>
+                {options.map(({ optionLabel, optionValue }) => (
+                  <Picker.Item
+                    key={optionLabel}
+                    value={typeof optionValue === 'string' ? optionValue : optionValue._id}
+                    label={optionLabel}
+                    style={styles.pickerItem}
+                  />
+                ))}
+              </Picker>
+              <MaterialCommunityIcons style={styles.icon} name={icon} color={iconColor} size={16} />
+            </View>
+          );
+        }}
+      </BaseField>
     );
   },
 );
 
 const styles = StyleSheet.create({
-  pickerContainer: {
-    rowGap: 3,
-    flex: 1,
-  },
-  pickerSelect: {
+  pickerSelectContainer: {
     backgroundColor: GRAY_COLOR_LIGHT,
     fontFamily: BODY_FONT,
     fontSize: 12,
     borderRadius: 10,
+  },
+  pickerSelect: {
+    marginLeft: 17,
   },
   defaultPickerItem: {
     color: GRAY_COLOR,

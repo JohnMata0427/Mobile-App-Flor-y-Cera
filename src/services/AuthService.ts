@@ -1,25 +1,47 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+import type { Client } from '@/interfaces/Client';
+import { requestAPI } from '@/utils/requestAPI';
 
-export const loginRequest = async (credentials: { email: string; password: string }) => {
-  const response = await fetch(`${BACKEND_URL}/login?environment=mobile`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
+export const loginRequest = (body: { email: string; password: string }) =>
+  requestAPI('/login?environment=mobile', { method: 'POST', body });
 
-  return await response.json();
+export const registerClientRequest = (body: Partial<Client>) =>
+  requestAPI('/registro', { method: 'POST', body });
+
+export const forgotPasswordRequest = async (email: string) => {
+  try {
+    return await requestAPI('/recuperarContraseniaAdmin', {
+      method: 'POST',
+      body: { email },
+    });
+  } catch (error) {
+    return requestAPI('/recuperar-contrasenia', {
+      method: 'POST',
+      body: { email },
+    });
+  }
 };
 
-export const registerClientRequest = async (credentials: any) => {
-  const response = await fetch(`${BACKEND_URL}/registro`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
-
-  return await response.json();
+export const resetPasswordRequest = async (
+  codigoRecuperacion: string,
+  body: {
+    email: string;
+    nuevaPassword: string;
+  },
+) => {
+  try {
+    return await requestAPI(`/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`, {
+      method: 'POST',
+      body,
+    });
+  } catch (error) {
+    return requestAPI(`/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {
+      method: 'POST',
+      body,
+    });
+  }
 };
+
+export const getClientProfileRequest = () => requestAPI('/perfil');
+
+export const updateClientProfileRequest = (body: FormData) =>
+  requestAPI('/perfil', { method: 'PUT', body });

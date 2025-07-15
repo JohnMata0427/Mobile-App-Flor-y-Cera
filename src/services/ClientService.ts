@@ -1,37 +1,12 @@
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/admin/clientes';
+import { requestAPI } from '@/utils/requestAPI';
 
-export const getClientsRequest = async (page: number, limit: number, token: string) => {
-  const response = await fetch(`${BACKEND_URL}?page=${page}&limit=${limit}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+const CLIENTS_ENDPOINT = '/admin/clientes';
 
-  return await response.json();
-};
+export const getClientsRequest = (page: number, limit: number) =>
+  requestAPI(`${CLIENTS_ENDPOINT}?page=${page}&limit=${limit}`);
 
-export const activateClientAccountRequest = async (id: string, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/activar/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const activateClientAccountRequest = (id: string) =>
+  requestAPI(`${CLIENTS_ENDPOINT}/activar/${id}`, { method: 'PATCH' });
 
-  return await response.json();
-};
-
-export const deleteClientAccountRequest = async (id: string, token: string) => {
-  const response = await fetch(`${BACKEND_URL}/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return await response.json();
-};
+export const deleteClientAccountRequest = (id: string) =>
+  requestAPI(`${CLIENTS_ENDPOINT}/${id}`, { method: 'DELETE' });

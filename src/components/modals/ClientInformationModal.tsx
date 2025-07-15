@@ -14,6 +14,8 @@ interface ClientInformationModalProps {
 
 export const ClientInformationModal = memo(
   ({ isVisible, onClose, client }: ClientInformationModalProps) => {
+    if (!isVisible) return null;
+
     const {
       nombre,
       apellido,
@@ -28,10 +30,11 @@ export const ClientInformationModal = memo(
       createdAt,
       updatedAt,
     } = client;
-    const defaultImage =
-      genero === 'Masculino'
-        ? require('@/assets/male-user-default.jpg')
-        : require('@/assets/female-user-default.jpg');
+
+    const isMale = genero.toLowerCase() === 'masculino';
+    const defaultImage = isMale
+      ? require('@/assets/male-user-default.jpg')
+      : require('@/assets/female-user-default.jpg');
 
     return (
       <Modal
@@ -62,7 +65,11 @@ export const ClientInformationModal = memo(
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="gender-male-female" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name={isMale ? 'gender-male' : 'gender-female'}
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Género:</Text> {genero}
               </Text>
@@ -74,7 +81,11 @@ export const ClientInformationModal = memo(
               </Text>
             </View>
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="identifier" size={16} />
+              <MaterialCommunityIcons
+                color={GRAY_COLOR_DARK}
+                name="badge-account-horizontal"
+                size={16}
+              />
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Cédula:</Text> {cedula ?? 'No registrada'}
               </Text>

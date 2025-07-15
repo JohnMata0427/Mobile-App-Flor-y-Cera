@@ -20,6 +20,6 @@ export interface Product {
 }
 
 export interface ProductFilter {
-	key: keyof Product;
-	value: string;
+  key: keyof Product;
+  value: string;
 }

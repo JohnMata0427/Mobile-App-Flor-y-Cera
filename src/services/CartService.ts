@@ -1,119 +1,35 @@
-import type { Cart } from '@/interfaces/Cart';
+import type { CartItemPayload } from '@/interfaces/Cart';
+import { requestAPI } from '@/utils/requestAPI';
 
-const BACKEND_URL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/carritos`;
+const CARTS_ENDPOINT = '/carritos';
 
-interface CartResponse {
-  ok: boolean;
-  msg: string;
-  carrito: Cart;
-}
+export const getClientCartRequest = () => requestAPI(CARTS_ENDPOINT);
 
-export const getClientCartRequest = async (token: string): Promise<CartResponse> => {
-  const response = await fetch(BACKEND_URL, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const { ok } = response;
-  const { msg, carrito } = await response.json();
-
-  return { ok, msg, carrito };
-};
-
-export const addProductToCartRequest = async (
-  token: string,
-  product: {
-    producto_id: string;
-    cantidad: number;
-    tipo_producto?: string;
-  },
-): Promise<CartResponse> => {
-  const response = await fetch(`${BACKEND_URL}/agregar`, {
+export const addProductToCartRequest = (body: CartItemPayload) =>
+  requestAPI(`${CARTS_ENDPOINT}/agregar`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ ...product, tipo_producto: 'normal' }),
+    body,
   });
 
-  const { ok } = response;
-  const { msg, carrito } = await response.json();
-
-  return { ok, msg, carrito };
-};
-
-export const modifyProductQuantityRequest = async (
-  token: string,
-  product: {
-    producto_id: string;
-    cantidad: number;
-    tipo_producto?: string;
-  },
-): Promise<CartResponse> => {
-  const response = await fetch(`${BACKEND_URL}/modificar-cantidad`, {
+export const modifyProductQuantityRequest = (body: CartItemPayload) =>
+  requestAPI(`${CARTS_ENDPOINT}/modificar-cantidad`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ ...product, tipo_producto: 'normal' }),
+    body,
   });
 
-  const { ok } = response;
-  const { msg, carrito } = await response.json();
-
-  return { ok, msg, carrito };
-};
-
-export const removeProductFromCartRequest = async (
-  token: string,
-  producto_id: string,
-): Promise<CartResponse> => {
-  const response = await fetch(`${BACKEND_URL}/eliminar`, {
+export const removeProductFromCartRequest = (body: Omit<CartItemPayload, 'cantidad'>) =>
+  requestAPI(`${CARTS_ENDPOINT}/eliminar`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ producto_id, tipo_producto: 'normal' }),
+    body,
   });
 
-  const { ok } = response;
-  const { msg, carrito } = await response.json();
-
-  return { ok, msg, carrito };
-};
-
-export const checkoutCartRequest = async (token: string, paymentMethodId: string): Promise<any> => {
-  const response = await fetch(`${BACKEND_URL}/pagar`, {
+export const checkoutCartRequest = (paymentMethodId: string) =>
+  requestAPI(`${CARTS_ENDPOINT}/pagar`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ paymentMethodId }),
+    body: { paymentMethodId },
   });
-  const { ok } = response;
-  const { msg, venta } = await response.json();
 
-  return { ok, msg, venta };
-};
-
-export const clearCartRequest = async (token: string): Promise<CartResponse> => {
-  const response = await fetch(`${BACKEND_URL}/limpiar`, {
+export const clearCartRequest = () =>
+  requestAPI(`${CARTS_ENDPOINT}`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
   });
-
-  const { ok } = response;
-  const { msg, carrito } = await response.json();
-
-  return { ok, msg, carrito };
-};

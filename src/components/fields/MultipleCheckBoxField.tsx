@@ -1,15 +1,14 @@
 import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import { BODY_FONT } from '@/constants/Fonts';
-import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo } from 'react';
-import { Controller } from 'react-hook-form';
+import { memo, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { BaseField } from './BaseField';
 
 interface MultipleCheckBoxFieldProps {
   control: any;
   name: string;
-  rules: any;
+  rules?: any;
   label: string;
   error: string;
   options: { optionLabel: string; optionValue: string }[];
@@ -20,7 +19,7 @@ interface CheckBoxProps {
   label: string;
   value: boolean;
   disabled?: boolean;
-  onPress: React.Dispatch<React.SetStateAction<boolean>>;
+  onPress: Dispatch<SetStateAction<boolean>>;
 }
 
 export const MultipleCheckBoxField = memo(
@@ -34,36 +33,34 @@ export const MultipleCheckBoxField = memo(
     maxSelected = 2,
   }: MultipleCheckBoxFieldProps) => {
     return (
-      <View style={styles.container}>
-        <Text style={globalStyles.labelText}>
-          {label}
-          <Text style={globalStyles.requiredMark}> *</Text>
-        </Text>
-        <Controller
-          control={control}
-          name={name}
-          rules={rules}
-          render={({ field: { onChange, value } }) => (
-            <View style={styles.checkboxContainer}>
-              {options.map(({ optionLabel, optionValue }) => (
-                <CheckBox
-                  key={optionValue}
-                  label={optionLabel}
-                  value={value.includes(optionValue)}
-                  onPress={pressed => {
+      <BaseField control={control} name={name} rules={rules} label={label} error={error}>
+        {({ onChange, value }) => (
+          <View style={styles.checkboxContainer}>
+            {options.map(({ optionLabel, optionValue }) => (
+              <CheckBox
+                key={optionValue}
+                label={optionLabel}
+                value={value.includes(optionValue)}
+                onPress={pressed => {
+                  if (maxSelected > 1) {
                     if (pressed && value.length < maxSelected) {
                       onChange([...value, optionValue]);
                     } else {
                       onChange(value.filter((v: any) => v !== optionValue));
                     }
-                  }}
-                />
-              ))}
-            </View>
-          )}
-        />
-        {error && <Text style={globalStyles.errorText}>{error}</Text>}
-      </View>
+                  } else {
+                    if (pressed) {
+                      onChange(optionValue);
+                    } else {
+                      onChange('');
+                    }
+                  }
+                }}
+              />
+            ))}
+          </View>
+        )}
+      </BaseField>
     );
   },
 );
@@ -89,9 +86,6 @@ const CheckBox = memo(({ label, value, disabled = false, onPress }: CheckBoxProp
 ));
 
 const styles = StyleSheet.create({
-  container: {
-    rowGap: 3,
-  },
   checkboxContainer: {
     rowGap: 3,
     width: '60%',

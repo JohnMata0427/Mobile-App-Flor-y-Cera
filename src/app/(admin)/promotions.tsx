@@ -1,22 +1,24 @@
 import { AdminHeader } from '@/components/AdminHeader';
-import { Loading } from '@/components/Loading';
+import { AdminSearch } from '@/components/AdminSearch';
+import { Button } from '@/components/Button';
 import { PromotionCard } from '@/components/cards/PromotionCard';
+import { Loading } from '@/components/Loading';
 import { PromotionModal } from '@/components/modals/PromotionModal';
 import {
   PRIMARY_COLOR,
-  PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_EXTRA_LIGHT,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import { PromotionsContext, PromotionsProvider } from '@/contexts/PromotionsContext';
+import { globalStyles } from '@/globalStyles';
 import { Promotion } from '@/interfaces/Promotion';
+import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useCallback, useState } from 'react';
 import {
-  Alert,
   FlatList,
   Pressable,
   RefreshControl,
@@ -28,18 +30,53 @@ import {
 
 type Action = 'Agregar' | 'Actualizar';
 
-const Promotions = memo(() => {
+const RenderItem = memo(
+  ({
+    item,
+    showDeleteAlert,
+    setAction,
+    setModalVisible,
+    setSelectedPromotion,
+  }: {
+    item: Promotion;
+    showDeleteAlert: (_id: string) => void;
+    setAction: (action: Action) => void;
+    setModalVisible: (visible: boolean) => void;
+    setSelectedPromotion: (promotion: Promotion) => void;
+  }) => {
+    const { _id } = item;
+
+    return (
+      <PromotionCard data={item}>
+        <View style={styles.actionRow}>
+          <Pressable
+            onPress={() => {
+              setAction('Actualizar');
+              setModalVisible(true);
+              setSelectedPromotion(item);
+            }}
+            style={styles.actionButton}
+          >
+            <MaterialCommunityIcons name="pencil" size={20} color="white" />
+          </Pressable>
+          <Pressable style={styles.deleteButton} onPress={() => showDeleteAlert(_id)}>
+            <MaterialCommunityIcons name="trash-can" size={20} color="white" />
+          </Pressable>
+        </View>
+      </PromotionCard>
+    );
+  },
+);
+
+const Promotions = memo(function Promotions() {
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState<Action>('Agregar');
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion>();
   const {
     searchedPromotions,
     loading,
-    page,
-    totalPages,
     refreshing,
     setRefreshing,
-    setPage,
     setSearch,
     getPromotions,
     deletePromotion,
@@ -47,28 +84,20 @@ const Promotions = memo(() => {
 
   const showDeleteAlert = useCallback(
     (_id: string) => {
-      Alert.alert(
-        'Eliminar promoción',
-        '¿Estás seguro de que deseas eliminar esta promoción? Esta acción no se puede deshacer.',
-        [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: () => deletePromotion(_id),
-          },
-        ],
-      );
+      showConfirmationAlert({
+        message:
+          '¿Estás seguro de que deseas eliminar esta promoción? Esta acción no se puede deshacer.',
+        onConfirm: () => deletePromotion(_id),
+        confirmButtonText: 'Eliminar',
+      });
     },
     [deletePromotion],
   );
 
   return (
     <ScrollView
-      contentContainerStyle={styles.scrollViewContent}
+      contentContainerStyle={globalStyles.scrollViewContent}
+      stickyHeaderIndices={[1]}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -80,69 +109,58 @@ const Promotions = memo(() => {
         />
       }
     >
-      <View style={styles.container}>
-        <AdminHeader setSearch={setSearch} placeholder="Buscar por nombre de la promoción...">
-          <Pressable
-            style={styles.addButton}
-            onPress={() => {
-              setAction('Agregar');
-              setModalVisible(true);
-              setSelectedPromotion(undefined);
-            }}
-          >
-            <MaterialCommunityIcons name="plus" size={14} color="white" />
-            <Text style={styles.addButtonText}>Nueva promoción</Text>
-          </Pressable>
-        </AdminHeader>
-        <PromotionModal
-          data={selectedPromotion}
-          action={action}
-          isVisible={modalVisible}
-          setIsVisible={setModalVisible}
+      <AdminHeader>
+        <Button
+          label="Nueva promoción"
+          icon="plus"
+          onPress={() => {
+            setAction('Agregar');
+            setModalVisible(true);
+            setSelectedPromotion(undefined);
+          }}
+          buttonStyle={styles.headerButton}
+          textStyle={styles.headerButtonText}
         />
-        {loading ? (
-          <Loading />
-        ) : (
-          <FlatList
-            data={searchedPromotions}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
-            keyExtractor={({ _id }) => _id}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              const { _id } = item;
+      </AdminHeader>
 
-              return (
-                <PromotionCard data={item}>
-                  <View style={styles.actionRow}>
-                    <Pressable
-                      onPress={() => {
-                        setAction('Actualizar');
-                        setModalVisible(true);
-                        setSelectedPromotion(item);
-                      }}
-                      style={styles.actionButton}
-                    >
-                      <MaterialCommunityIcons name="pencil" size={20} color="white" />
-                    </Pressable>
-                    <Pressable style={styles.deleteButton} onPress={() => showDeleteAlert(_id)}>
-                      <MaterialCommunityIcons name="trash-can" size={20} color="white" />
-                    </Pressable>
-                  </View>
-                </PromotionCard>
-              );
-            }}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <MaterialCommunityIcons name="ticket-percent-outline" size={30} />
-                <Text style={styles.emptyText}>
-                  No se encontraron promociones, intente más tarde.
-                </Text>
-              </View>
-            }
-          />
-        )}
+      <View style={styles.stickyHeader}>
+        <AdminSearch setSearch={setSearch} placeholder="Buscar promoción por nombre..." />
       </View>
+
+      <PromotionModal
+        data={selectedPromotion}
+        action={action}
+        isVisible={modalVisible}
+        setIsVisible={setModalVisible}
+      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={searchedPromotions}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          keyExtractor={({ _id }) => _id}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <RenderItem
+              item={item}
+              showDeleteAlert={showDeleteAlert}
+              setAction={setAction}
+              setModalVisible={setModalVisible}
+              setSelectedPromotion={setSelectedPromotion}
+            />
+          )}
+          ListEmptyComponent={
+            <View style={globalStyles.centeredContainer}>
+              <MaterialCommunityIcons name="ticket-percent-outline" size={30} />
+              <Text style={globalStyles.bodyText}>
+                No se encontraron promociones, intente más tarde.
+              </Text>
+            </View>
+          }
+        />
+      )}
     </ScrollView>
   );
 });
@@ -156,33 +174,14 @@ export default function AdminPromotions() {
 }
 
 const styles = StyleSheet.create({
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
+  stickyHeader: {
+    backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
     paddingBottom: 10,
-    rowGap: 10,
-  },
-  addButton: {
-    backgroundColor: PRIMARY_COLOR,
-    borderRadius: 10,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    borderColor: PRIMARY_COLOR_DARK,
-    padding: 7,
-    flexDirection: 'row',
-    columnGap: 5,
-  },
-  addButtonText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 12,
+    paddingHorizontal: 15,
   },
   listContent: {
     rowGap: 10,
+    paddingHorizontal: 15,
   },
   actionRow: {
     flexDirection: 'row',
@@ -205,18 +204,11 @@ const styles = StyleSheet.create({
     borderRightWidth: 2,
     borderColor: TERTIARY_COLOR_DARK,
   },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  headerButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    rowGap: 5,
-  },
-  emptyText: {
-    fontFamily: BODY_FONT,
-    textAlign: 'center',
+  headerButtonText: {
+    fontSize: 12,
   },
 });
