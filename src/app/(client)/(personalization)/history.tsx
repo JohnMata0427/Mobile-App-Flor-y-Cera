@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { CartMessageModal } from '@/components/modals/CartMessageModal';
 import { PersonalizedProductDetails } from '@/components/modals/PersonalizedProductDetails';
 import {
   GRAY_COLOR_DARK,
@@ -22,6 +23,7 @@ import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import { memo, use, useState } from 'react';
+import { Alert } from 'react-native';
 import {
   FlatList,
   Image,
@@ -51,9 +53,10 @@ const RenderItem = memo(
     deletePersonalizedProduct: (id: string) => void;
   }) => {
     const { imagen, tipo_producto, aroma, updatedAt, precio, id_categoria } = item;
-
     const nombre_categoria = categories.find(category => category._id === id_categoria)?.nombre;
-
+    
+    const [showModal, setShowModal] = useState(false);
+    
     return (
       <View style={styles.itemContainer}>
         <View style={styles.itemHeader}>
@@ -92,6 +95,10 @@ const RenderItem = memo(
             icon="cart-plus"
             onPress={() => {
               addProductToCart(item, 1, tipo_producto);
+              setShowModal(true);
+              setTimeout(() => {
+                setShowModal(false);
+              }, 1500);
             }}
             buttonStyle={styles.addButton}
             textStyle={styles.buttonText}
@@ -101,12 +108,24 @@ const RenderItem = memo(
             label="Eliminar"
             icon="trash-can-outline"
             onPress={() => {
-              deletePersonalizedProduct(item._id);
+              Alert.alert('Mensaje del sistema', '¿Está seguro que desea eliminar este producto personalizado?', [
+                {
+                  text: 'Cancelar',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Eliminar',
+                  onPress: () => deletePersonalizedProduct(item._id),
+                },
+              ]);
             }}
             buttonStyle={styles.deleteButton}
             textStyle={styles.buttonText}
           />
         </View>
+        <CartMessageModal 
+          message="¡Producto añadido al carrito!" visible={showModal}
+        />
       </View>
     );
   },

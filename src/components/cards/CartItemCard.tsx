@@ -13,7 +13,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, use, useEffect, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface CartItemCardProps {
   data: CartItem;
@@ -70,7 +70,25 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
                 ? 'Producto personalizado'
                 : 'Recomendación de IA'}
           </Text>
-          <Pressable onPress={() => removeProductFromCart(_id, tipo_producto)} hitSlop={10}>
+          <Pressable
+            onPress={() => {
+              Alert.alert(
+                'Mensaje del sistema',
+                'Está seguro que desea eliminar este producto del carrito?',
+                [
+                  {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Eliminar',
+                    onPress: () => removeProductFromCart(_id, tipo_producto),
+                  },
+                ],
+              );
+            }}
+            hitSlop={10}
+          >
             <MaterialCommunityIcons name="trash-can-outline" size={20} color="gray" />
           </Pressable>
         </View>
@@ -95,7 +113,8 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
           )}
         </View>
         <Text style={styles.benefitsText}>
-          {beneficios.join(', ') || `Producto con forma ${molde} de color ${color} y aroma ${aroma} con esencias ${esencias.join(', ')}`}
+          {beneficios.join(', ') ||
+            `Producto con forma ${molde} de color ${color} y aroma ${aroma} con esencias ${esencias.join(', ')}`}
         </Text>
 
         <View style={styles.cardEnds}>

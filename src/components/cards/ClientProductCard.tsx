@@ -12,8 +12,9 @@ import type { Product } from '@/interfaces/Product';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
 import { router } from 'expo-router';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View, type DimensionValue } from 'react-native';
+import { CartMessageModal } from '../modals/CartMessageModal';
 
 interface ClientProductCardProps {
   data: Product;
@@ -25,6 +26,15 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
 
   const { imagen, nombre, precio, aroma, tipo, id_categoria, descripcion } = data;
   const [int, decimal] = precio.toFixed(2).split('.');
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
+
+  const handleAddToCart = () => {
+    addProductToCart(data, 1, 'normal');
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false)
+    }, 1500)
+  };
 
   return (
     <View style={[styles.productCard, { width }]}>
@@ -60,7 +70,7 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
             <Button
               label="¡Lo quiero!"
               icon="cart-plus"
-              onPress={() => addProductToCart(data, 1, 'normal')}
+              onPress={handleAddToCart}
               buttonStyle={styles.button}
               textStyle={styles.buttonText}
             />
@@ -68,6 +78,8 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
           </View>
         </View>
       </View>
+
+      <CartMessageModal message="¡Producto añadido al carrito!" visible={modalVisible} />
     </View>
   );
 });

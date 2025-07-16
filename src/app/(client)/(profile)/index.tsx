@@ -60,7 +60,7 @@ const ClientProfile = memo(() => {
             <Image
               source={imagen ? { uri: imagen } : defaultImage}
               style={styles.profileImage}
-              loadingIndicatorSource={require('@/assets/images/icon.png')}
+              loadingIndicatorSource={require('@/assets/logo.png')}
               resizeMode="contain"
             />
             <Text style={globalStyles.title}>

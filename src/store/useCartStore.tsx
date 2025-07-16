@@ -19,7 +19,7 @@ interface CartState {
   products: CartItem[];
   totalProducts: number;
   totalPrice: number;
-  actionInCart: string;
+  actionInCart: 'add' | 'modify' | 'remove' | '';
   getClientCart: () => Promise<void>;
   addProductToCart: (
     product: Product | PersonalizedProduct,
@@ -79,7 +79,7 @@ export const useCartStore = create<CartState>(set => ({
           return {
             products: updatedProducts,
             totalPrice: total,
-            actionInCart: '¡Producto añadido al carrito!',
+            actionInCart: 'add',
           };
         } else {
           return {
@@ -97,14 +97,10 @@ export const useCartStore = create<CartState>(set => ({
             ],
             totalProducts: totalProducts + 1,
             totalPrice: total,
-            actionInCart: '¡Producto añadido al carrito!',
+            actionInCart: 'add',
           };
         }
       });
-
-      setTimeout(() => {
-        set({ actionInCart: '' });
-      }, 2000);
     }
   },
   modifyProductQuantity: async (product, quantity, productType) => {
@@ -131,13 +127,9 @@ export const useCartStore = create<CartState>(set => ({
         return {
           products: updatedProducts,
           totalPrice: total,
-          actionInCart: '¡Cantidad modificada en el carrito!',
+          actionInCart: 'modify',
         };
       });
-
-      setTimeout(() => {
-        set({ actionInCart: '' });
-      }, 2000);
     }
   },
   removeProductFromCart: async (productId, productType) => {
@@ -155,12 +147,8 @@ export const useCartStore = create<CartState>(set => ({
         ),
         totalProducts: totalProducts - 1,
         totalPrice: total,
-        actionInCart: '¡Producto eliminado del carrito!',
+        actionInCart: 'remove',
       }));
-
-      setTimeout(() => {
-        set({ actionInCart: '' });
-      }, 2000);
     }
   },
   checkout: async paymentMethodId => {

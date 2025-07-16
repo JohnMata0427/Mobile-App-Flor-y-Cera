@@ -25,7 +25,7 @@ export const AdminProductCard = memo(
         source={{ uri: imagen }}
         resizeMode="cover"
         style={styles.productImage}
-        loadingIndicatorSource={require('@/assets/images/icon.png')}
+        loadingIndicatorSource={require('@/assets/logo.png')}
       />
       <View style={styles.productInfo}>
         <Text style={globalStyles.labelText} numberOfLines={2}>

@@ -1,6 +1,15 @@
 import type { Client } from '@/interfaces/Client';
 import { getClientProfileRequest, updateClientProfileRequest } from '@/services/AuthService';
-import { createContext, useCallback, useEffect, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from 'react';
 
 interface ProfileContextProps {
   client: Client;
@@ -8,8 +17,8 @@ interface ProfileContextProps {
   refreshing: boolean;
   setRefreshing: Dispatch<SetStateAction<boolean>>;
   getProfile: () => Promise<void>;
-  updateProfile: (client: FormData) => Promise<{ msg: string }>;
-  modifyNotificationPushToken: (token: string | null) => void
+  updateProfile: (client: FormData) => Promise<{ ok: boolean; msg: string }>;
+  modifyNotificationPushToken: (token: string | null) => void;
 }
 
 export const ProfileContext = createContext<ProfileContextProps>({} as ProfileContextProps);
@@ -23,6 +32,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       const { cliente } = await getClientProfileRequest();
+
+      cliente.fecha_nacimiento = cliente?.fecha_nacimiento?.split('T')[0] ?? undefined;
+
       setClient(cliente);
     } catch {
     } finally {
@@ -33,17 +45,20 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = async (formData: FormData) => {
     try {
-      const { cliente, msg } = await updateClientProfileRequest(formData);
+      const { ok, cliente, msg } = await updateClientProfileRequest(formData);
+
+      cliente.fecha_nacimiento = cliente?.fecha_nacimiento?.split('T')[0] ?? undefined;
+
       setClient(cliente);
 
-      return { msg };
+      return { ok, msg };
     } catch {
-      return { msg: 'Error al actualizar el perfil' };
+      return { ok: false, msg: 'Error al actualizar el perfil' };
     }
   };
 
   const modifyNotificationPushToken = useCallback((token: string | null) => {
-    setClient((prev) => ({ ...prev, notificationPushToken: token }));
+    setClient(prev => ({ ...prev, notificationPushToken: token }));
   }, []);
 
   useEffect(() => {
@@ -51,7 +66,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const contextValue = useMemo(
-    () => ({ client, loading, refreshing, setRefreshing, getProfile, updateProfile, modifyNotificationPushToken }),
+    () => ({
+      client,
+      loading,
+      refreshing,
+      setRefreshing,
+      getProfile,
+      updateProfile,
+      modifyNotificationPushToken,
+    }),
     [client, loading, refreshing, updateProfile],
   );
 

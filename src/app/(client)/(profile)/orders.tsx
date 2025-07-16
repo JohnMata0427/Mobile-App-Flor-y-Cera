@@ -1,3 +1,4 @@
+import { InvoiceAccordion } from '@/components/cards/InvoiceAccordion';
 import { Loading } from '@/components/Loading';
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_DARK, SECONDARY_COLOR } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
@@ -85,49 +86,5 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     rowGap: 10,
-  },
-  invoiceCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    paddingBottom: 10,
-  },
-  invoiceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: SECONDARY_COLOR,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  productRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: GRAY_COLOR_LIGHT,
-  },
-  productInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  productImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-  },
-  productDescription: {
-    color: 'gray',
-    textOverflow: 'ellipsis',
-    maxWidth: 170,
-    fontSize: 10,
-  },
-  productDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
   },
 });

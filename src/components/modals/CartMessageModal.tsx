@@ -1,28 +1,30 @@
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Modal, Text, View } from 'react-native';
 
 interface CartMessageModalProps {
   message: string;
+  visible: boolean;
 }
 
-export const CartMessageModal = ({ message }: CartMessageModalProps) => (
-  <Modal visible={!!message} animationType="fade" transparent style={{ flexGrow: 1 }}>
-    <View style={styles.container}>
-      <Text style={styles.title}>{message}</Text>
+export const CartMessageModal = ({ message, visible }: CartMessageModalProps) => (
+  <Modal animationType="fade" visible={visible} transparent>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'black',
+        margin: 'auto',
+        maxHeight: '10%',
+        borderRadius: 10,
+        rowGap: 5,
+        opacity: 0.9,
+        width: '60%',
+        zIndex: 999,
+      }}
+    >
+      <MaterialCommunityIcons name="cart-check" size={25} color="white" />
+      <Text style={{ color: 'white', fontWeight: 'bold' }}>{message}</Text>
     </View>
   </Modal>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 'auto',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    padding: 10,
-    borderRadius: 10,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: 'white',
-  },
-});

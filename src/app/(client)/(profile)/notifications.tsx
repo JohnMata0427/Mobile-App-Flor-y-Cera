@@ -1,12 +1,14 @@
 import { Button } from '@/components/Button';
-import { PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR } from '@/constants/Colors';
+import { GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK, SECONDARY_COLOR, SECONDARY_COLOR_DARK, TERTIARY_COLOR } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { globalStyles } from '@/globalStyles';
+import type { Notification } from '@/interfaces/Notification';
 import { getNotificationsClient, updateNotificationPushToken } from '@/services/NotificationService';
 import { registerForPushNotificationsAsync } from '@/utils/notifications';
+import { Image } from 'expo-image';
 import { getPermissionsAsync, PermissionStatus } from 'expo-notifications';
 import { memo, use, useEffect, useState } from 'react';
-import { Alert, Linking, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, Linking, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Notifications = memo(() => {
@@ -15,18 +17,17 @@ const Notifications = memo(() => {
   const [isPermissionsGranted, setIsPermissionsGranted] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
-  const checkPermissions = async () => {
+  const getDataAndConfig = async () => {
     const { status } = await getPermissionsAsync();
     setIsPermissionsGranted(status === PermissionStatus.GRANTED && !!client?.notificationPushToken);
+    const { notificaciones } = await getNotificationsClient();
+    setNotifications(notificaciones);
   };
 
   useEffect(() => {
-    (async () => {
-      await checkPermissions();
-      const response = await getNotificationsClient();
-      console.log(response);
-    })();
+    getDataAndConfig()
   }, []);
 
   const handleToggleNotifications = async () => {
@@ -90,7 +91,7 @@ const Notifications = memo(() => {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={checkPermissions}
+          onRefresh={getDataAndConfig}
           colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
         />
       }
@@ -98,12 +99,14 @@ const Notifications = memo(() => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Notificaciones</Text>
         <Button
-          label={isPermissionsGranted ? 'Deshabilitar' : 'Habilitar'}
-          icon={isPermissionsGranted ? 'bell-off' : 'bell'}
+          label={isPermissionsGranted ? 'Habilitadas' : 'Deshabilitadas'}
+          icon={isPermissionsGranted ? 'bell' : 'bell-off'}
           onPress={handleToggleNotifications}
           buttonStyle={{
             paddingHorizontal: 10,
             paddingVertical: 5,
+            backgroundColor: isPermissionsGranted ? PRIMARY_COLOR : GRAY_COLOR_DARK,
+            borderColor: isPermissionsGranted ? PRIMARY_COLOR_DARK : 'black',
           }}
           textStyle={{
             fontSize: 12,
@@ -111,6 +114,23 @@ const Notifications = memo(() => {
           disabled={loading}
         />
       </View>
+      <FlatList 
+        data={notifications}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={{ marginVertical: 10, padding: 10, backgroundColor: '#fff', borderRadius: 5 }}>
+            <Text style={{ fontWeight: 'bold' }}>{item.titulo}</Text>
+            <Text>{item.mensaje}</Text>
+            {item.imagen ? (
+              <Image
+                source={{ uri: item.imagen }}
+                style={{ width: '100%', height: 150, borderRadius: 5, marginTop: 10 }}
+                contentFit="cover"
+              />
+            ) : null}
+          </View>
+        )}
+      />
     </ScrollView>
   );
 });

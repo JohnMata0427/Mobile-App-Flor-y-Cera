@@ -207,7 +207,7 @@ const ProductPersonalization = memo(() => {
 
     if (ok) {
       setImagePreview(destPath);
-      setMessage(msg);
+      setMessage('¡Producto personalizado creado exitosamente!');
       setFinishPersonalization(true);
     } else {
       Alert.alert('Mensaje del sistema', msg);
@@ -231,9 +231,8 @@ const ProductPersonalization = memo(() => {
       setSelectedColor(producto_personalizado.color);
       setSelectedMold(producto_personalizado.molde);
       setSelectedEssences(producto_personalizado.esencias);
-    }, 7000);
-
-    setLoadingRecommendation(false);
+      setLoadingRecommendation(false);
+    }, 10000);
   };
 
   useEffect(() => {
@@ -274,7 +273,7 @@ const ProductPersonalization = memo(() => {
               Aquí podrás crear tu propio producto personalizado
             </Text>
           </View>
-          <Image source={require('@/assets/images/icon.png')} style={styles.headerIcon} />
+          <Image source={require('@/assets/logo.png')} style={styles.headerIcon} />
         </View>
       </View>
       <ScrollView
@@ -481,6 +480,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: 'white',
+    fontSize: 20,
   },
   headerSubtitle: {
     color: 'white',
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
   ingredientsContainer: {
     rowGap: 10,
     padding: 10,
-    backgroundColor: PRIMARY_COLOR,
+    backgroundColor: GRAY_COLOR_DARK,
     borderRadius: 10,
   },
   filterContainer: {

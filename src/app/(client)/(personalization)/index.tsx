@@ -64,18 +64,21 @@ export const Personalization = memo(() => {
       <FloatingItem image={require('@/assets/game/flower-2.png')} />
       <FloatingItem image={require('@/assets/game/flower-3.png')} />
 
-      <Pressable style={styles.soapSection}>
-        <Button
-          label="Personalizar Jabones"
-          icon="chart-bubble"
-          onPress={() => {
-            router.push({
-              pathname: '/(client)/(personalization)/[category]',
-              params: { category: jabonesId },
-            });
-          }}
-          buttonStyle={styles.soapButton}
-        />
+      <Pressable
+        style={styles.soapSection}
+        onPress={() => {
+          router.push({
+            pathname: '/(client)/(personalization)/[category]',
+            params: { category: jabonesId },
+          });
+        }}
+      >
+        <Button label="Personalizar Jabones" icon="chart-bubble" buttonStyle={styles.soapButton} onPress={() => {
+          router.push({
+            pathname: '/(client)/(personalization)/[category]',
+            params: { category: jabonesId },
+          });
+        }}/>
         <Image
           source={require('@/assets/personalized-soap.png')}
           resizeMode="contain"
@@ -87,7 +90,12 @@ export const Personalization = memo(() => {
         resizeMode="contain"
         style={styles.banner}
       />
-      <Pressable style={styles.candleSection}>
+      <Pressable style={styles.candleSection} onPress={() => {
+            router.push({
+              pathname: '/(client)/(personalization)/[category]',
+              params: { category: velasId },
+            });
+          }}>
         <Image
           source={require('@/assets/personalized-candle.png')}
           resizeMode="contain"

@@ -6,6 +6,7 @@ import {
 } from '@/constants/Colors';
 import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Invoice } from '@/interfaces/Invoice';
+import { capitalizeWord } from '@/utils/textTransform';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import { memo } from 'react';
 import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -21,7 +22,7 @@ export const InvoiceDetailsModal = memo(
     if (!isVisible) return null;
 
     const { _id, cliente, fecha_venta, updatedAt, productos, estado, total } = invoice;
-    const { nombre, apellido, email } = cliente ?? {};
+    const { nombre, apellido, email, cedula, direccion, telefono } = cliente ?? {};
 
     const subtotalWithoutTax = total / 1.15;
 
@@ -45,15 +46,27 @@ export const InvoiceDetailsModal = memo(
                 {nombre} {apellido}
               </Text>
               <Text style={styles.detailText}>
+                <Text style={styles.detailTextBold}>Cédula: </Text>
+                {cedula}
+              </Text>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailTextBold}>Dirección: </Text>
+                {direccion}
+              </Text>
+              <Text style={styles.detailText}>
+                <Text style={styles.detailTextBold}>Teléfono: </Text>
+                {telefono}
+              </Text>
+              <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Email: </Text>
                 {email}
               </Text>
               <Text style={styles.detailText}>
                 <Text style={styles.detailTextBold}>Fecha de Venta: </Text>
-                {toLocaleDate(fecha_venta)}
+                {toLocaleDate(fecha_venta ?? Date.now())}
               </Text>
             </View>
-            <Image source={require('@/assets/images/icon.png')} style={styles.image} />
+            <Image source={require('@/assets/logo.png')} style={styles.image} />
           </View>
           <View style={styles.table}>
             <View style={styles.tableHeader}>
@@ -108,11 +121,11 @@ export const InvoiceDetailsModal = memo(
           <View style={styles.footer}>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Estado de entrega: </Text>
-              {estado?.charAt(0).toUpperCase() + estado?.slice(1)}
+              {capitalizeWord(estado)}
             </Text>
             <Text style={styles.detailText}>
               <Text style={styles.tableHeaderText}>Actualizado: </Text>
-              {toLocaleDate(updatedAt)}
+              {toLocaleDate(updatedAt ?? Date.now())}
             </Text>
           </View>
           <Pressable style={styles.closeButton} onPress={onClose}>

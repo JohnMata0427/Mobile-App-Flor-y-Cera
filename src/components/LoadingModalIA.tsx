@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   },
   loadingTitleText: {
     color: 'skyblue',
+    fontSize: 18,
   },
   loadingGif: { width: 100, height: 100 },
   loadingText: {

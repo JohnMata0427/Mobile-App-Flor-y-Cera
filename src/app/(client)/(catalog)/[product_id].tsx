@@ -1,6 +1,7 @@
 import { Button } from '@/components/Button';
 import { ClientProductCard } from '@/components/cards/ClientProductCard';
 import { Loading } from '@/components/Loading';
+import { CartMessageModal } from '@/components/modals/CartMessageModal';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR_DARK,
@@ -36,6 +37,7 @@ export const ProductDetails = memo(() => {
   const [loading, setLoading] = useState<boolean>(true);
   const [product, setProduct] = useState<Product>({} as Product);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -52,79 +54,88 @@ export const ProductDetails = memo(() => {
 
   useEffect(() => {
     if (searchedProducts.length > 0) {
-      const without = searchedProducts.filter(p => p._id !== product_id);
+      const without = searchedProducts.filter((p) => p._id !== product_id);
       const related = without.sort(() => 0.5 - Math.random()).slice(0, 4);
       setRelatedProducts(related);
     }
   }, [searchedProducts]);
 
+  const handleAddToCart = () => {
+    addProductToCart(product, 1, 'normal');
+    setIsModalVisible(true);
+    setTimeout(() => {
+      setIsModalVisible(false);
+    }, 1500);
+  };
+
   if (loading) return <Loading />;
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={async () => {
-            setRefreshing(true);
-            await getProducts();
-          }}
-          colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
-        />
-      }
-    >
-      <Image source={{ uri: product?.imagen }} style={styles.productImage} resizeMode="cover" />
+    <>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await getProducts();
+            }}
+            colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
+          />
+        }
+      >
+        <Image source={{ uri: product?.imagen }} style={styles.productImage} resizeMode="cover" />
 
-      <Pressable style={styles.backButton} onPress={() => router.push('/(client)/(catalog)')}>
-        <MaterialCommunityIcons name="arrow-left" size={20} color={GRAY_COLOR_DARK} />
-      </Pressable>
+        <Pressable style={styles.backButton} onPress={() => router.push('/(client)/(catalog)')}>
+          <MaterialCommunityIcons name="arrow-left" size={20} color={GRAY_COLOR_DARK} />
+        </Pressable>
 
-      <View style={styles.productInfo}>
-        <Text style={[globalStyles.title, { textAlign: 'left' }]}>{product?.nombre}</Text>
+        <View style={styles.productInfo}>
+          <Text style={[globalStyles.title, { textAlign: 'left' }]}>{product?.nombre}</Text>
 
-        <View style={styles.badgesContainer}>
-          <Text style={[styles.badge, styles.categoryBadge]}>{product?.id_categoria?.nombre}</Text>
-          <Text style={[styles.badge, styles.aromaBadge]}>
-            {capitalizeWord(product?.aroma ?? '')}
-          </Text>
-          <Text style={[styles.badge, styles.typeBadge]}>
-            {capitalizeWord(product?.tipo ?? '')}
-          </Text>
-        </View>
-
-        <Text style={globalStyles.bodyText}>{product?.descripcion}</Text>
-
-        <View style={styles.benefitsSection}>
-          <Text style={globalStyles.labelText}>Beneficios del producto</Text>
-          {product?.beneficios.map((benefit, index) => (
-            <Text key={index}>
-              ✅ <Text style={globalStyles.bodyText}>{capitalizeWord(benefit)}</Text>
+          <View style={styles.badgesContainer}>
+            <Text style={[styles.badge, styles.categoryBadge]}>
+              {product?.id_categoria?.nombre}
             </Text>
-          ))}
+            <Text style={[styles.badge, styles.aromaBadge]}>
+              {capitalizeWord(product?.aroma ?? '')}
+            </Text>
+            <Text style={[styles.badge, styles.typeBadge]}>
+              {capitalizeWord(product?.tipo ?? '')}
+            </Text>
+          </View>
+
+          <Text style={globalStyles.bodyText}>{product?.descripcion}</Text>
+
+          <View style={styles.benefitsSection}>
+            <Text style={globalStyles.labelText}>Beneficios del producto</Text>
+            {product?.beneficios.map((benefit, index) => (
+              <Text key={index}>
+                ✅ <Text style={globalStyles.bodyText}>{capitalizeWord(benefit)}</Text>
+              </Text>
+            ))}
+          </View>
+
+          <Text style={styles.priceText}>$ {product?.precio.toFixed(2)}</Text>
+
+          <Button label="Añadir al carrito" icon="cart-plus" onPress={handleAddToCart} />
         </View>
 
-        <Text style={styles.priceText}>$ {product?.precio.toFixed(2)}</Text>
-
-        <Button
-          label="Añadir al carrito"
-          icon="cart-plus"
-          onPress={() => addProductToCart(product, 1, 'normal')}
+        <FlatList
+          data={relatedProducts}
+          keyExtractor={({ _id }) => _id}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.flatListContainer}
+          legacyImplementation={false}
+          numColumns={2}
+          renderItem={({ item }) => <ClientProductCard data={item} width="48%" />}
         />
-      </View>
-
-      <FlatList
-        data={relatedProducts}
-        keyExtractor={({ _id }) => _id}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={false}
-        columnWrapperStyle={styles.columnWrapper}
-        contentContainerStyle={styles.flatListContainer}
-        legacyImplementation={false}
-        numColumns={2}
-        renderItem={({ item }) => <ClientProductCard data={item} width="48%" />}
-      />
-    </ScrollView>
+      </ScrollView>
+      <CartMessageModal message="¡Producto añadido al carrito!" visible={isModalVisible} />
+    </>
   );
 });
 

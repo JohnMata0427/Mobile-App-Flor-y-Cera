@@ -14,12 +14,12 @@ import {
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
-import { CardForm, createPaymentMethod, StripeProvider } from '@stripe/stripe-react-native';
+import { CardField, CardForm, createPaymentMethod, StripeProvider } from '@stripe/stripe-react-native';
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Constants from 'expo-constants';
 
 const defaultValues = {
   telefono: '',
@@ -42,21 +42,26 @@ const UpdateProfile = memo(function UpdateProfile() {
     reset,
     clearErrors,
   } = useForm({ defaultValues });
+  const [editable, setEditable] = useState<boolean>(false);
 
   const onSubmit = async (form: any) => {
     const formData = toFormData(form);
 
-    const { msg } = await updateProfile(formData);
+    const { ok, msg } = await updateProfile(formData);
 
     Alert.alert('Mensaje del sistema', msg);
+
+    if (ok) setEditable(true)
   };
 
   const [cardDetails, setCardDetails] = useState<any>(null);
   const [invoice, setInvoice] = useState<any>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false)
 
   const handlePayment = async () => {
     if (cardDetails) {
+      setLoadingPayment(true);
       const { paymentMethod } = await createPaymentMethod({
         paymentMethodType: 'Card',
         paymentMethodData: cardDetails,
@@ -71,6 +76,7 @@ const UpdateProfile = memo(function UpdateProfile() {
         });
         setDetailsVisible(true);
       }
+      setLoadingPayment(false);
     }
   };
 
@@ -99,7 +105,9 @@ const UpdateProfile = memo(function UpdateProfile() {
         ) : (
           <>
             <View style={styles.cardContainer}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}>
+              <Text
+                style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}
+              >
                 Datos de envío
               </Text>
 
@@ -118,8 +126,9 @@ const UpdateProfile = memo(function UpdateProfile() {
                 placeholder="Ej: 1234567890"
                 error={errors.cedula?.message as string}
                 autoComplete="cc-number"
-                keyboardType='numeric'
+                keyboardType="numeric"
                 textContentType="telephoneNumber"
+                editable={editable}
               />
 
               <InputField
@@ -140,6 +149,7 @@ const UpdateProfile = memo(function UpdateProfile() {
                 autoCapitalize="none"
                 textContentType="telephoneNumber"
                 keyboardType="phone-pad"
+                editable={editable}
               />
 
               <InputField
@@ -160,32 +170,48 @@ const UpdateProfile = memo(function UpdateProfile() {
                 autoComplete="street-address"
                 autoCapitalize="words"
                 textContentType="fullStreetAddress"
+                editable={editable}
               />
 
               <Button
-                label="Actualizar datos de envío"
+                label={editable ? 'Actualizar datos de envío' : 'Modificar datos de envio'}
                 icon="truck-delivery"
-                onPress={handleSubmit(onSubmit)}
+                onPress={() => {
+                  if (editable) {
+                    handleSubmit(onSubmit)();
+                  } else {
+                    setEditable(true);
+                  }
+                }}
                 buttonStyle={styles.submitButton}
               />
             </View>
             <View style={[styles.cardContainer, styles.billingContainer]}>
               <Text>Datos de facturación</Text>
 
-              <CardForm
-                onFormComplete={cardDetails => setCardDetails(cardDetails)}
-                style={{ height: 200 }}
+              <CardField 
+                postalCodeEnabled={false}
+                style={{ width: '100%', height: 50, marginVertical: 20 }}
                 cardStyle={{
                   textColor: GRAY_COLOR_DARK,
                   placeholderColor: GRAY_COLOR,
                 }}
+                onCardChange={cardDetails => setCardDetails(cardDetails)}
               />
 
               <Button
                 label="Completar compra"
                 icon="cash-check"
                 onPress={handlePayment}
-                buttonStyle={styles.submitButton}
+                buttonStyle={
+                  editable
+                    ? {
+                        backgroundColor: GRAY_COLOR_DARK,
+                        borderColor: 'black',
+                      }
+                    : styles.submitButton
+                }
+                disabled={loadingPayment}
               />
             </View>
           </>

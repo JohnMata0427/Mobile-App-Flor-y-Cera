@@ -160,7 +160,9 @@ const Home = memo(() => {
           </View>
 
           <View style={[styles.faqItem, styles.faqItemSecondary]}>
-            <Text style={[globalStyles.labelText, styles.faqTitle]}>🛍️ ¿Cómo puedo personalizar un producto?</Text>
+            <Text style={[globalStyles.labelText, styles.faqTitle]}>
+              🛍️ ¿Cómo puedo personalizar un producto?
+            </Text>
             <Text style={globalStyles.bodyText}>
               Para personalizar un producto, simplemente selecciona los ingredientes y aromas que
               más te gusten. La IA te ayudará a encontrar la combinación perfecta para ti.
@@ -179,7 +181,9 @@ const Home = memo(() => {
           </View>
 
           <View style={[styles.faqItem, styles.faqItemSecondary]}>
-            <Text style={[globalStyles.labelText, styles.faqTitle]}>💳 ¿Qué métodos de pago son aceptados?</Text>
+            <Text style={[globalStyles.labelText, styles.faqTitle]}>
+              💳 ¿Qué métodos de pago son aceptados?
+            </Text>
             <Text style={globalStyles.bodyText}>
               Por el momento, solo estamos aceptando pagos con tarjeta de crédito y débito. Pronto
               habilitaremos otras opciones de pago.
@@ -195,8 +199,6 @@ const Home = memo(() => {
           </View>
         </View>
       </View>
-
-      <CartMessageModal message={actionInCart} />
     </ScrollView>
   );
 });

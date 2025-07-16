@@ -19,7 +19,7 @@ export const AdminIngredientCard = memo(
         source={{ uri: imagen }}
         resizeMode="contain"
         style={styles.ingredientImage}
-        loadingIndicatorSource={require('@/assets/images/icon.png')}
+        loadingIndicatorSource={require('@/assets/logo.png')}
       />
       <View style={styles.ingredientInfo}>
         <Text style={globalStyles.labelText}>{nombre}</Text>

@@ -5,7 +5,7 @@ import type { Product } from './Product';
 export interface Invoice {
   _id: string;
   cliente_id?: string; // <-- Client Response
-  cliente: Pick<Client, '_id' | 'apellido' | 'email' | 'nombre'>;
+  cliente: Client;
   total: number;
   estado: 'pendiente' | 'finalizado';
   productos: ProductInfo[];

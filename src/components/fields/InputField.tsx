@@ -22,6 +22,7 @@ interface InputFieldProps {
   numberOfLines?: number;
   secureTextEntry?: boolean;
   passwordIcon?: ReactNode;
+  editable?: boolean
 }
 
 export const InputField = memo(
@@ -41,6 +42,7 @@ export const InputField = memo(
     numberOfLines,
     secureTextEntry,
     passwordIcon,
+    editable
   }: InputFieldProps) => {
     const color = error ? 'red' : GRAY_COLOR_DARK;
 
@@ -64,6 +66,7 @@ export const InputField = memo(
               textAlignVertical="top"
               secureTextEntry={secureTextEntry}
               selectionColor={PRIMARY_COLOR}
+              editable={editable}
             />
             <MaterialCommunityIcons style={styles.icon} name={icon} color={color} size={16} />
             {passwordIcon}
