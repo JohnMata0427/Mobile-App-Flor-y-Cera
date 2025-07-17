@@ -47,7 +47,7 @@ export const InputField = memo(
     testID,
   }: InputFieldProps) => {
     const color = error ? 'red' : GRAY_COLOR_DARK;
-
+    
     return (
       <BaseField control={control} name={name} rules={rules} label={label} error={error}>
         {({ onChange, onBlur, value }) => (

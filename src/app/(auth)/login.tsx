@@ -77,6 +77,7 @@ export default function Login() {
               autoCapitalize="none"
               textContentType="emailAddress"
               keyboardType="email-address"
+              testID="input-field-email"
             />
 
             <InputField
@@ -102,6 +103,7 @@ export default function Login() {
                   />
                 </Pressable>
               }
+              testID="input-field-password"
             />
 
             <Link href="/forgot-password">

@@ -1,5 +1,5 @@
 import LoginScreen from '@/app/(auth)/login';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const wrapAllProviders = (children: React.ReactNode) => {
@@ -9,7 +9,7 @@ const wrapAllProviders = (children: React.ReactNode) => {
 describe('Pantalla de autenticación', () => {
   let screen: ReturnType<typeof render>;
 
-  beforeAll(() => {
+  beforeEach(() => {
     screen = render(<LoginScreen />, {
       wrapper: wrapAllProviders,
     });
@@ -27,10 +27,8 @@ describe('Pantalla de autenticación', () => {
 
     const loginButton = await findByTestId('button-login');
 
-    await waitFor(() => {
-      emailInput.props.onChangeText('test@example.com');
-      passwordInput.props.onChangeText('password');
-      loginButton.props.onPress();
-    });
+    fireEvent.changeText(emailInput, 'test@example.com');
+    fireEvent.changeText(passwordInput, 'password');
+    fireEvent.press(loginButton);
   });
 });
