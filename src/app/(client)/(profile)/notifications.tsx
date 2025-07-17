@@ -1,9 +1,20 @@
 import { Button } from '@/components/Button';
-import { GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK, SECONDARY_COLOR, SECONDARY_COLOR_DARK, TERTIARY_COLOR } from '@/constants/Colors';
+import {
+  GRAY_COLOR,
+  GRAY_COLOR_DARK,
+  PRIMARY_COLOR,
+  PRIMARY_COLOR_DARK,
+  SECONDARY_COLOR,
+  TERTIARY_COLOR,
+  GRAY_COLOR_LIGHT
+} from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { globalStyles } from '@/globalStyles';
 import type { Notification } from '@/interfaces/Notification';
-import { getNotificationsClient, updateNotificationPushToken } from '@/services/NotificationService';
+import {
+  getNotificationsClient,
+  updateNotificationPushToken,
+} from '@/services/NotificationService';
 import { registerForPushNotificationsAsync } from '@/utils/notifications';
 import { Image } from 'expo-image';
 import { getPermissionsAsync, PermissionStatus } from 'expo-notifications';
@@ -17,7 +28,7 @@ const Notifications = memo(() => {
   const [isPermissionsGranted, setIsPermissionsGranted] = useState<boolean>(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const getDataAndConfig = async () => {
     const { status } = await getPermissionsAsync();
@@ -27,7 +38,7 @@ const Notifications = memo(() => {
   };
 
   useEffect(() => {
-    getDataAndConfig()
+    getDataAndConfig();
   }, []);
 
   const handleToggleNotifications = async () => {
@@ -114,20 +125,29 @@ const Notifications = memo(() => {
           disabled={loading}
         />
       </View>
-      <FlatList 
+      <FlatList
         data={notifications}
-        keyExtractor={(item) => item._id}
+        keyExtractor={item => item._id}
         renderItem={({ item }) => (
-          <View style={{ marginVertical: 10, padding: 10, backgroundColor: '#fff', borderRadius: 5 }}>
+          <View
+            style={{
+              marginVertical: 10,
+              padding: 10,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              rowGap: 5,
+              borderWidth: 1,
+              borderColor: GRAY_COLOR_LIGHT
+            }}
+          >
             <Text style={{ fontWeight: 'bold' }}>{item.titulo}</Text>
-            <Text>{item.mensaje}</Text>
-            {item.imagen ? (
+            <Text style={{ color: GRAY_COLOR, fontSize: 12, marginBottom: 5 }}>{item.mensaje}</Text>
+
               <Image
                 source={{ uri: item.imagen }}
-                style={{ width: '100%', height: 150, borderRadius: 5, marginTop: 10 }}
-                contentFit="cover"
+                style={{ width: '100%', height: 100, borderRadius: 10 }}
+                contentFit="contain"
               />
-            ) : null}
           </View>
         )}
       />

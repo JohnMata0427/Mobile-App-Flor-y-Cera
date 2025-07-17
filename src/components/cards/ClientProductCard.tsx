@@ -31,9 +31,11 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
   const handleAddToCart = () => {
     addProductToCart(data, 1, 'normal');
     setModalVisible(true);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setModalVisible(false)
     }, 1500)
+
+    return () => clearTimeout(timeout);
   };
 
   return (

@@ -38,7 +38,7 @@ export default function WelcomeSecondScreen() {
         para sorprenderte.
       </Text>
       <Image
-        source={require('@/assets/splashs/third.jpg')}
+        source={require('@/assets/splashs/third.png')}
         style={welcomeStyles.splashImage}
         contentFit="cover"
       />
@@ -52,7 +52,7 @@ export default function WelcomeSecondScreen() {
         />
         <Button
           label="Comenzar"
-          icon="check"
+          icon="check-bold"
           onPress={async () => {
             await setItemAsync('welcomeCompleted', 'true');
             router.replace('/(auth)/login');

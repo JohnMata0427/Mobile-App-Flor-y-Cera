@@ -13,7 +13,8 @@ import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContex
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import { globalStyles } from '@/globalStyles';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { memo, use, useState } from 'react';
+import { router } from 'expo-router';
+import { memo, use } from 'react';
 import {
   FlatList,
   Pressable,
@@ -36,7 +37,6 @@ const RenderItem = memo(({ item, setFilter, filter }: any) => (
 ));
 
 const Catalog = memo(() => {
-  const [initSearch, setInitSearch] = useState<boolean>(false);
   const { top } = useSafeAreaInsets();
   const { categories } = use(CategoriesContext);
   const { searchedProducts, filter, loading, refreshing, setRefreshing, getProducts, setFilter } =
@@ -44,9 +44,12 @@ const Catalog = memo(() => {
 
   return (
     <>
-      <View style={[styles.searchContainer, { paddingTop: top + 5 }]}>
-        <ClientSearchBar initSearch={initSearch} setInitSearch={setInitSearch} />
-      </View>
+      <Pressable
+        style={[styles.searchContainer, { paddingTop: top + 5 }]}
+        onPress={() => router.push('/(client)/(catalog)/search')}
+      >
+        <ClientSearchBar />
+      </Pressable>
 
       {loading ? (
         <Loading />
@@ -69,10 +72,10 @@ const Catalog = memo(() => {
               <MaterialCommunityIcons name="star-shooting" size={18} color={GRAY_COLOR_DARK} />
               <Text style={globalStyles.labelText}>Explora nuestros productos</Text>
             </View>
-            {/* <Pressable onPress={() => {}} style={styles.filterButton}>
+            <Pressable onPress={() => {}} style={styles.filterButton}>
               <MaterialCommunityIcons name="filter" size={20} color={GRAY_COLOR_DARK} />
               <MaterialCommunityIcons name="sort" size={20} color={GRAY_COLOR_DARK} />
-            </Pressable> */}
+            </Pressable>
           </View>
 
           <View>
@@ -147,9 +150,6 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_COLOR,
     paddingHorizontal: 10,
     paddingBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     columnGap: 10,
   },
   headerContainer: {

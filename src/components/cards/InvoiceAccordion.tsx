@@ -1,7 +1,8 @@
-import { GRAY_COLOR_LIGHT, SECONDARY_COLOR } from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_LIGHT, PRIMARY_COLOR_LIGHT, SECONDARY_COLOR } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Invoice } from '@/interfaces/Invoice';
 import { toLocaleDate } from '@/utils/toLocaleDate';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image } from 'expo-image';
 import { memo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -15,14 +16,26 @@ export const InvoiceAccordion = memo(({ invoice }: InvoiceAccordionProps) => {
 
   return (
     <View style={styles.invoiceCard}>
-      <Pressable style={styles.invoiceHeader} onPress={() => setOpened(!opened)}>
+      <Pressable style={[styles.invoiceHeader, {
+        backgroundColor: invoice.estado === 'finalizado' ? PRIMARY_COLOR_LIGHT : GRAY_COLOR_LIGHT,
+      }]} onPress={() => setOpened(!opened)}>
         <View>
           <Text style={globalStyles.labelText}>
             Pedido: {invoice._id.slice(invoice._id.length - 8, invoice._id.length)}
           </Text>
           <Text style={globalStyles.bodyText}>Fecha: {toLocaleDate(invoice.fecha_venta)}</Text>
         </View>
-        <Text style={globalStyles.labelText}>$ {invoice.total.toFixed(2)}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+          <MaterialCommunityIcons name={
+            invoice.estado === 'finalizado' ? 'wallet-giftcard' : 'clock-outline'
+          } size={16} color="black" />
+          <Text style={[globalStyles.labelText, { fontWeight: 'bold' }]}>$ {invoice.total.toFixed(2)}</Text>
+          <MaterialCommunityIcons
+            name={opened ? 'chevron-up' : 'chevron-down'}
+            size={16}
+            color="black"
+          />
+        </View>
       </Pressable>
 
       {opened && (
@@ -65,15 +78,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     overflow: 'hidden',
-    paddingBottom: 10,
+    borderWidth: 2,
+    borderColor: GRAY_COLOR_LIGHT,
   },
   invoiceHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: SECONDARY_COLOR,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   productRow: {
     flexDirection: 'row',

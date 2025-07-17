@@ -19,6 +19,7 @@ interface ButtonProps {
   iconSize?: number;
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  testID?: string;
 }
 
 export const Button = memo(
@@ -30,11 +31,13 @@ export const Button = memo(
     icon,
     iconSize = 16,
     textStyle = {},
+    testID
   }: ButtonProps) => (
     <Pressable
       style={[globalStyles.button, globalStyles.buttonPrimary, styles.button, buttonStyle]}
       onPress={onPress}
       disabled={disabled}
+      testID={testID}
     >
       {disabled ? (
         <ActivityIndicator size={17} color="white" />

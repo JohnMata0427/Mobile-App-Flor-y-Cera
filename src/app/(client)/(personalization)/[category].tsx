@@ -218,7 +218,7 @@ const ProductPersonalization = memo(() => {
   const handleSubmitRecommendation = async () => {
     setLoadingRecommendation(true);
 
-    setTimeout(async () => {
+    const timeout = setTimeout(async () => {
       const { producto_personalizado } = await getIntelligenceArtificialRecomendation(
         form.id_categoria,
       );
@@ -233,6 +233,8 @@ const ProductPersonalization = memo(() => {
       setSelectedEssences(producto_personalizado.esencias);
       setLoadingRecommendation(false);
     }, 10000);
+
+    return () => clearTimeout(timeout);
   };
 
   useEffect(() => {
@@ -588,8 +590,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   selectedFilter: {
-    backgroundColor: GRAY_COLOR_DARK,
-    borderColor: 'black',
+    backgroundColor: PRIMARY_COLOR,
+    borderColor: PRIMARY_COLOR_DARK,
     color: 'white',
   },
   ingredientsList: {

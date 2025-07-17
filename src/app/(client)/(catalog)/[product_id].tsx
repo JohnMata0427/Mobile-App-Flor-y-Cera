@@ -63,9 +63,11 @@ export const ProductDetails = memo(() => {
   const handleAddToCart = () => {
     addProductToCart(product, 1, 'normal');
     setIsModalVisible(true);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setIsModalVisible(false);
     }, 1500);
+
+    return () => clearTimeout(timeout);
   };
 
   if (loading) return <Loading />;

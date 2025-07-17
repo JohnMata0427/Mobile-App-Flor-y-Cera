@@ -87,14 +87,13 @@ export const globalStyles = StyleSheet.create({
     fontSize: 12,
   },
   link: {
-    fontFamily: BOLD_BODY_FONT,
     color: SECONDARY_COLOR_DARK,
+    fontWeight: 'bold',
   },
   errorText: {
     fontFamily: BOLD_BODY_FONT,
     color: 'red',
     fontSize: 12,
-    textAlign: 'center',
   },
   labelText: {
     fontFamily: BOLD_BODY_FONT,

@@ -117,6 +117,7 @@ export default function Login() {
                 icon="login"
                 disabled={loading}
                 onPress={handleSubmit(onSubmit)}
+                testID="button-login"
               />
 
               {/* <Text style={styles.anotherMethodText}>O puedes iniciar sesión con</Text>

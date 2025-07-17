@@ -1,6 +1,5 @@
 import { ClientProductCard } from '@/components/cards/ClientProductCard';
 import { ClientSearchBar } from '@/components/ClientSearchBar';
-import { CartMessageModal } from '@/components/modals/CartMessageModal';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR_DARK,
@@ -15,12 +14,13 @@ import { globalStyles } from '@/globalStyles';
 import { useCartStore } from '@/store/useCartStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BlurView } from 'expo-blur';
-import { Link } from 'expo-router';
-import { memo, use, useEffect, useState } from 'react';
+import { Link, router } from 'expo-router';
+import { memo, use, useEffect } from 'react';
 import {
   Dimensions,
   FlatList,
   Image,
+  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -34,11 +34,9 @@ const { width } = Dimensions.get('window');
 
 const Home = memo(() => {
   const { searchedProducts, refreshing, setRefreshing, getProducts } = use(ProductsContext);
-  const { actionInCart, getClientCart } = useCartStore();
+  const { getClientCart } = useCartStore();
   const { promotions, getPromotions } = use(PromotionsContext);
   const progress = useSharedValue<number>(0);
-
-  const [initSearch, setInitSearch] = useState<boolean>(false);
 
   useEffect(() => {
     getClientCart();
@@ -48,7 +46,6 @@ const Home = memo(() => {
     <ScrollView
       contentContainerStyle={styles.scrollContainer}
       stickyHeaderIndices={[0]}
-      onScrollBeginDrag={() => setInitSearch(false)}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -61,26 +58,28 @@ const Home = memo(() => {
         />
       }
     >
-      <View style={styles.searchBarContainer}>
-        <BlurView
-          intensity={20}
-          tint="dark"
-          experimentalBlurMethod="dimezisBlurView"
-          style={styles.blurView}
-        >
-          <ClientSearchBar initSearch={initSearch} setInitSearch={setInitSearch} />
+      <Pressable
+        style={styles.searchBarContainer}
+        onPress={() => router.push('/(client)/(catalog)/search')}
+      >
+        <BlurView intensity={20} experimentalBlurMethod="dimezisBlurView" style={styles.blurView}>
+          <ClientSearchBar />
         </BlurView>
-      </View>
+      </Pressable>
 
       <Carousel
         width={width}
-        height={200}
+        height={252}
         data={promotions}
         onProgressChange={progress}
         autoPlay
         autoPlayInterval={5000}
         renderItem={({ item: { imagen } }) => (
-          <Image source={{ uri: imagen }} style={styles.promotionImage} resizeMode="contain" />
+          <Image
+            source={require('@/assets/prom-banner-1.png')}
+            style={styles.promotionImage}
+            resizeMode="contain"
+          />
         )}
       />
 
@@ -219,7 +218,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   promotionImage: {
-    height: 275,
+    width: '100%',
+    height: 252,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
   },

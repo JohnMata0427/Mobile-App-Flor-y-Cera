@@ -8,13 +8,15 @@ import {
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
+  RED_COLOR,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
+import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
-import { CardField, CardForm, createPaymentMethod, StripeProvider } from '@stripe/stripe-react-native';
+import { CardForm, createPaymentMethod, StripeProvider } from '@stripe/stripe-react-native';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
@@ -51,13 +53,13 @@ const UpdateProfile = memo(function UpdateProfile() {
 
     Alert.alert('Mensaje del sistema', msg);
 
-    if (ok) setEditable(true)
+    if (ok) setEditable(true);
   };
 
   const [cardDetails, setCardDetails] = useState<any>(null);
   const [invoice, setInvoice] = useState<any>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
-  const [loadingPayment, setLoadingPayment] = useState(false)
+  const [loadingPayment, setLoadingPayment] = useState(false);
 
   const handlePayment = async () => {
     if (cardDetails) {
@@ -187,16 +189,23 @@ const UpdateProfile = memo(function UpdateProfile() {
               />
             </View>
             <View style={[styles.cardContainer, styles.billingContainer]}>
-              <Text>Datos de facturación</Text>
+              <Text
+                style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}
+              >
+                Datos de facturación
+              </Text>
 
-              <CardField 
-                postalCodeEnabled={false}
-                style={{ width: '100%', height: 50, marginVertical: 20 }}
+              <CardForm
+                style={{ width: '100%', height: 250, marginVertical: 20 }}
                 cardStyle={{
                   textColor: GRAY_COLOR_DARK,
                   placeholderColor: GRAY_COLOR,
+                  backgroundColor: GRAY_COLOR_LIGHT,
+                  borderRadius: 10,
+                  cursorColor: PRIMARY_COLOR,
+                  textErrorColor: 'red'
                 }}
-                onCardChange={cardDetails => setCardDetails(cardDetails)}
+                onFormComplete={cardDetails => setCardDetails(cardDetails)}
               />
 
               <Button

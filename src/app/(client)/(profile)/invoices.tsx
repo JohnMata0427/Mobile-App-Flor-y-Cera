@@ -59,7 +59,7 @@ export default function ClientInvoicesPage() {
         ) : (
           <FlatList
             data={invoices}
-            keyExtractor={({ _id }) => _id}
+            keyExtractor={({ _id }) => `${_id}-${Math.random()}`}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={

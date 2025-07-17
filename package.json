@@ -7,7 +7,7 @@
     "lint": "expo lint",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "test": "jest --watchAll"
+    "test": "jest --watch --coverage=false --changedSince=origin/main"
   },
   "jest": {
     "preset": "jest-expo",

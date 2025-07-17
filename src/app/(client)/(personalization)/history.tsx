@@ -96,9 +96,11 @@ const RenderItem = memo(
             onPress={() => {
               addProductToCart(item, 1, tipo_producto);
               setShowModal(true);
-              setTimeout(() => {
+              const timeout = setTimeout(() => {
                 setShowModal(false);
               }, 1500);
+              
+              return () => clearTimeout(timeout);
             }}
             buttonStyle={styles.addButton}
             textStyle={styles.buttonText}
