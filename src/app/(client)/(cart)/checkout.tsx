@@ -27,9 +27,7 @@ const defaultValues = {
   direccion: '',
 };
 
-const { STRIPE_API_KEY = '' } = Constants.expoConfig?.extra ?? {};
-
-const PUBLIC_STRIPE_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY ?? STRIPE_API_KEY;
+const { STRIPE_API_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY } = Constants.expoConfig?.extra ?? {};
 
 const UpdateProfile = memo(function UpdateProfile() {
   const { updateProfile, client, loading, refreshing, setRefreshing, getProfile } =
@@ -86,7 +84,7 @@ const UpdateProfile = memo(function UpdateProfile() {
   }, [client]);
 
   return (
-    <StripeProvider publishableKey={PUBLIC_STRIPE_KEY}>
+    <StripeProvider publishableKey={STRIPE_API_KEY}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={

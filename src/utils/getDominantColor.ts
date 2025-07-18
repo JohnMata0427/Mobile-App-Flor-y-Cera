@@ -1,16 +1,14 @@
 import { requestAPI } from './requestAPI';
 import Constants from 'expo-constants';
 
-const { COLOR_EXTRACTOR = '' } = Constants.expoConfig?.extra ?? {};
-
-const API_COLOR = process.env.EXPO_PUBLIC_API_COLOR_EXTRACTOR ?? COLOR_EXTRACTOR;
+const { COLOR_EXTRACTOR = process.env.EXPO_PUBLIC_API_COLOR_EXTRACTOR } = Constants.expoConfig?.extra ?? {};
 
 export const getDominantColor = async (imageUrl: string) => {
   try {
     const { color } = await requestAPI('/color-dominante', {
       method: 'POST',
       body: { imageUrl },
-    }, API_COLOR);
+    }, COLOR_EXTRACTOR);
 
     return color;
   } catch (error) {

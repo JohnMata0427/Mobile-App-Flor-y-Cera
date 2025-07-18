@@ -1,9 +1,7 @@
-import { getItemAsync } from 'expo-secure-store';
 import Constants from 'expo-constants';
+import { getItemAsync } from 'expo-secure-store';
 
-const { BACKEND_URL = '' } = Constants.expoConfig?.extra ?? {};
-
-const BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? BACKEND_URL;
+const { BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL } = Constants.expoConfig?.extra ?? {};
 
 interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -14,7 +12,7 @@ interface RequestOptions {
 export const requestAPI = async (
   endpoint: string,
   options: RequestOptions = {},
-  temporal?: string,
+  anotherUrl?: string,
 ) => {
   const token = await getItemAsync('token');
   const { method = 'GET', body } = options;
@@ -39,7 +37,7 @@ export const requestAPI = async (
   }
 
   try {
-    const response = await fetch(`${temporal ?? BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${anotherUrl ?? BACKEND_URL}${endpoint}`, config);
     const { ok } = response;
     const data = await response.json();
     return { ok, ...data };
