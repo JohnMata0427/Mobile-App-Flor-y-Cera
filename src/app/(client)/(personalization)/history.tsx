@@ -1,10 +1,12 @@
 import { Button } from '@/components/Button';
+import { Loading } from '@/components/Loading';
 import { CartMessageModal } from '@/components/modals/CartMessageModal';
 import { PersonalizedProductDetails } from '@/components/modals/PersonalizedProductDetails';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_LIGHT,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
@@ -23,8 +25,8 @@ import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import { memo, use, useState } from 'react';
-import { Alert } from 'react-native';
 import {
+  Alert,
   FlatList,
   Image,
   Pressable,
@@ -54,9 +56,9 @@ const RenderItem = memo(
   }) => {
     const { imagen, tipo_producto, aroma, updatedAt, precio, id_categoria } = item;
     const nombre_categoria = categories.find(category => category._id === id_categoria)?.nombre;
-    
+
     const [showModal, setShowModal] = useState(false);
-    
+
     return (
       <View style={styles.itemContainer}>
         <View style={styles.itemHeader}>
@@ -80,7 +82,7 @@ const RenderItem = memo(
         </View>
         <View style={styles.actionsRow}>
           <Button
-            label="Ver detalles"
+            label="Detalles"
             icon="information-outline"
             onPress={() => {
               setSelectedPersonalizedProduct(item);
@@ -91,7 +93,7 @@ const RenderItem = memo(
           />
 
           <Button
-            label="Añadir al carrito"
+            label="¡Lo quiero!"
             icon="cart-plus"
             onPress={() => {
               addProductToCart(item, 1, tipo_producto);
@@ -99,7 +101,7 @@ const RenderItem = memo(
               const timeout = setTimeout(() => {
                 setShowModal(false);
               }, 1500);
-              
+
               return () => clearTimeout(timeout);
             }}
             buttonStyle={styles.addButton}
@@ -110,24 +112,26 @@ const RenderItem = memo(
             label="Eliminar"
             icon="trash-can-outline"
             onPress={() => {
-              Alert.alert('Mensaje del sistema', '¿Está seguro que desea eliminar este producto personalizado?', [
-                {
-                  text: 'Cancelar',
-                  style: 'cancel',
-                },
-                {
-                  text: 'Eliminar',
-                  onPress: () => deletePersonalizedProduct(item._id),
-                },
-              ]);
+              Alert.alert(
+                'Mensaje del sistema',
+                '¿Está seguro que desea eliminar este producto personalizado?',
+                [
+                  {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Eliminar',
+                    onPress: () => deletePersonalizedProduct(item._id),
+                  },
+                ],
+              );
             }}
             buttonStyle={styles.deleteButton}
             textStyle={styles.buttonText}
           />
         </View>
-        <CartMessageModal 
-          message="¡Producto añadido al carrito!" visible={showModal}
-        />
+        <CartMessageModal message="¡Producto añadido al carrito!" visible={showModal} />
       </View>
     );
   },
@@ -141,6 +145,7 @@ const PersonalizationScreen = memo(() => {
     setRefreshing,
     refreshing,
     deletePersonalizedProduct,
+    loading,
   } = use(PersonalizedProductsContext);
   const { categories } = use(CategoriesContext);
   const { addProductToCart } = useCartStore();
@@ -186,28 +191,32 @@ const PersonalizationScreen = memo(() => {
         setModalVisible={setModalVisible}
       />
 
-      <FlatList
-        data={searchedPersonalizedProducts}
-        keyExtractor={item => item._id}
-        scrollEnabled={false}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => (
-          <RenderItem
-            item={item}
-            categories={categories}
-            setSelectedPersonalizedProduct={setSelectedPersonalizedProduct}
-            setModalVisible={setModalVisible}
-            addProductToCart={addProductToCart as any}
-            deletePersonalizedProduct={deletePersonalizedProduct}
-          />
-        )}
-        ListEmptyComponent={() => (
-          <Text style={[globalStyles.bodyText, styles.emptyText]}>
-            No hay productos personalizados
-          </Text>
-        )}
-      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={searchedPersonalizedProducts}
+          keyExtractor={item => item._id}
+          scrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.flatListContainer}
+          renderItem={({ item }) => (
+            <RenderItem
+              item={item}
+              categories={categories}
+              setSelectedPersonalizedProduct={setSelectedPersonalizedProduct}
+              setModalVisible={setModalVisible}
+              addProductToCart={addProductToCart as any}
+              deletePersonalizedProduct={deletePersonalizedProduct}
+            />
+          )}
+          ListEmptyComponent={() => (
+            <Text style={[globalStyles.bodyText, styles.emptyText]}>
+              No hay productos personalizados
+            </Text>
+          )}
+        />
+      )}
     </ScrollView>
   );
 });
@@ -234,6 +243,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     rowGap: 10,
+    elevation: 4,
+    shadowColor: PRIMARY_COLOR_LIGHT,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -274,7 +285,8 @@ const styles = StyleSheet.create({
   },
   actionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    columnGap: 10,
   },
   detailsButton: {
     paddingVertical: 5,

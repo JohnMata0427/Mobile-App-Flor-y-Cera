@@ -181,7 +181,7 @@ export default function Login() {
               }}
               icon="key"
               label="Contraseña"
-              placeholder="••••••••••"
+              placeholder="**************"
               error={errors.password?.message as string}
               autoComplete="new-password"
               textContentType="newPassword"
@@ -208,7 +208,7 @@ export default function Login() {
               }}
               icon="key"
               label="Confirmar contraseña"
-              placeholder="••••••••••"
+              placeholder="**************"
               error={errors.confirmPassword?.message as string}
               autoComplete="new-password"
               textContentType="newPassword"
@@ -258,7 +258,7 @@ export default function Login() {
             </View> */}
 
             <Link href="/(auth)/login">
-              <Text style={[globalStyles.bodyText, styles.registerText]}>
+              <Text style={[globalStyles.bodyText, styles.registerText, { fontSize: 14 }]}>
                 ¿Ya tienes una cuenta?
                 <Text style={globalStyles.link}> Inicia sesión</Text>
               </Text>

@@ -1,23 +1,8 @@
-import {
-  PRIMARY_COLOR,
-  PRIMARY_COLOR_DARK,
-  SECONDARY_COLOR,
-  SECONDARY_COLOR_DARK,
-} from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { BlurView } from 'expo-blur';
 import { memo, type ReactNode } from 'react';
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  type DimensionValue,
-} from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, View, type DimensionValue } from 'react-native';
+import { Button } from '../Button';
 
 interface BaseModalProps {
   isVisible: boolean;
@@ -40,7 +25,7 @@ export const BaseModal = memo(
     title,
     subtitle,
     children,
-    maxHeight = '90%',
+    maxHeight = '80%',
     actionButtonLabel,
     onActionButtonPress,
     isActionButtonLoading,
@@ -54,14 +39,10 @@ export const BaseModal = memo(
         animationType="slide"
         visible={isVisible}
         onRequestClose={onClose}
-        transparent
+        backdropColor={'rgba(0, 0, 0, 0.01)'}
+        statusBarTranslucent
+        navigationBarTranslucent
       >
-        <BlurView
-          intensity={10}
-          style={StyleSheet.absoluteFill}
-          tint="dark"
-          experimentalBlurMethod="dimezisBlurView"
-        />
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           style={[styles.modalContainer, { maxHeight }]}
@@ -76,28 +57,20 @@ export const BaseModal = memo(
             )}
             {children}
             <View style={styles.actionRow}>
-              <Pressable style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-                <MaterialCommunityIcons name="close-thick" size={14} color="white" />
-              </Pressable>
+              <Button
+                label="Cancelar"
+                onPress={onClose}
+                icon="close-thick"
+                buttonStyle={styles.cancelButton}
+              />
               {!hideActionButton && actionButtonLabel && onActionButtonPress && (
-                <Pressable
-                  style={[
-                    styles.submitButton,
-                    isActionButtonDisabled && styles.submitButtonDisabled,
-                  ]}
+                <Button
+                  label={actionButtonLabel}
                   onPress={onActionButtonPress}
-                  disabled={isActionButtonDisabled}
-                >
-                  {isActionButtonLoading ? (
-                    <ActivityIndicator size={14} color="white" />
-                  ) : (
-                    <>
-                      <Text style={styles.submitButtonText}>{actionButtonLabel}</Text>
-                      <MaterialCommunityIcons name="content-save" size={14} color="white" />
-                    </>
-                  )}
-                </Pressable>
+                  icon="content-save"
+                  disabled={isActionButtonDisabled || isActionButtonLoading}
+                  buttonStyle={{ flex: 1 }}
+                />
               )}
             </View>
           </View>
@@ -124,8 +97,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   titleText: {
-    fontFamily: BOLD_BODY_FONT,
-    fontSize: 18,
+    fontWeight: 'bold',
+    fontSize: 20,
     textAlign: 'center',
   },
   subtitleContainer: {
@@ -135,7 +108,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subtitleText: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
     textAlign: 'center',
     color: PRIMARY_COLOR,
@@ -143,48 +115,12 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     marginTop: 10,
-    columnGap: 5,
+    columnGap: 10,
     justifyContent: 'center',
-  },
-  submitButton: {
-    backgroundColor: PRIMARY_COLOR,
-    padding: 10,
-    borderRadius: 10,
-    flexDirection: 'row',
-    columnGap: 5,
-    width: '40%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: PRIMARY_COLOR_DARK,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#ccc',
-    borderColor: '#999',
-  },
-  submitButtonText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
-    fontSize: 12,
   },
   cancelButton: {
-    padding: 10,
-    borderRadius: 10,
-    flexDirection: 'row',
-    columnGap: 5,
-    width: '40%',
     backgroundColor: SECONDARY_COLOR,
     borderColor: SECONDARY_COLOR_DARK,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontFamily: BOLD_BODY_FONT,
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 12,
+    flex: 1,
   },
 });

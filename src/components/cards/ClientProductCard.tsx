@@ -3,11 +3,10 @@ import {
   GRAY_COLOR,
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
-  PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_LIGHT,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Product } from '@/interfaces/Product';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
@@ -26,14 +25,14 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
 
   const { imagen, nombre, precio, aroma, tipo, id_categoria, descripcion } = data;
   const [int, decimal] = precio.toFixed(2).split('.');
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const handleAddToCart = () => {
     addProductToCart(data, 1, 'normal');
     setModalVisible(true);
     const timeout = setTimeout(() => {
-      setModalVisible(false)
-    }, 1500)
+      setModalVisible(false);
+    }, 1500);
 
     return () => clearTimeout(timeout);
   };
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'space-between',
     elevation: 4,
-    shadowColor: PRIMARY_COLOR,
+    shadowColor: PRIMARY_COLOR_LIGHT,
   },
   productImage: {
     aspectRatio: 1 / 1,
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   productName: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     color: GRAY_COLOR_DARK,
   },
   badgesContainer: {
@@ -117,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   badge: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     fontSize: 10,
     paddingVertical: 1,
     paddingHorizontal: 5,

@@ -557,6 +557,7 @@ const styles = StyleSheet.create({
   stickyHeader: {
     rowGap: 10,
     backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
+    paddingTop: 5,
     paddingBottom: 10,
     paddingHorizontal: 15,
   },

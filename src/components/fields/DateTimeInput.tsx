@@ -1,11 +1,10 @@
 import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
+import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { BaseField } from './BaseField';
-import { toLocaleDate } from '@/utils/toLocaleDate';
 
 interface DateTimeInputProps {
   control: any;
@@ -55,7 +54,6 @@ export const DateTimeInput = memo(
 const styles = StyleSheet.create({
   textInput: {
     backgroundColor: GRAY_COLOR_LIGHT,
-    fontFamily: BODY_FONT,
     borderRadius: 10,
     paddingVertical: 10,
     paddingRight: 10,

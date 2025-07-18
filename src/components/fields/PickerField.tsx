@@ -1,5 +1,4 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Picker } from '@react-native-picker/picker';
 import React, { memo, type Dispatch, type SetStateAction } from 'react';
@@ -91,7 +90,6 @@ export const PickerField = memo(
 const styles = StyleSheet.create({
   pickerSelectContainer: {
     backgroundColor: GRAY_COLOR_LIGHT,
-    fontFamily: BODY_FONT,
     fontSize: 12,
     borderRadius: 10,
   },
@@ -100,12 +98,10 @@ const styles = StyleSheet.create({
   },
   defaultPickerItem: {
     color: GRAY_COLOR,
-    fontFamily: BODY_FONT,
     fontSize: 12,
   },
   pickerItem: {
     color: GRAY_COLOR_DARK,
-    fontFamily: BODY_FONT,
     fontSize: 12,
   },
   icon: {

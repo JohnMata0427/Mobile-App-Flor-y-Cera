@@ -2,44 +2,51 @@ import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
   name: 'Flor & Cera',
-  slug: 'flor-and-cera-app',
+  slug: 'flor-y-cera-app',
   description:
     'Flor & Cera es una aplicación que permite a los usuarios comprar productos artesanales como jabones y velas, así como también personalizar sus propios productos con la asistencia de inteligencia artificial.',
   owner: 'johnmata0427',
   githubUrl: 'https://github.com/JohnMata0427/Mobile-App-Flor-y-Cera',
   version: '1.1.0',
   orientation: 'portrait',
-  backgroundColor: '#ffffff',
   primaryColor: '#9F93E7',
   icon: './assets/images/icon.png',
   scheme: 'mobileappflorycera',
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
+  platforms: ['ios', 'android'],
+  androidStatusBar: {
+    translucent: true,
+    barStyle: 'dark-content',
+  },
+  currentFullName: 'John Mata',
+  originalFullName: 'John Mata',
   developmentClient: {
     silentLaunch: true,
   },
   androidNavigationBar: {
-    backgroundColor: '#ffffff',
     barStyle: 'dark-content',
   },
   notification: {
     icon: './assets/images/icon.png',
     color: '#000000',
+    androidCollapsedTitle: 'Notificaciones de Flor & Cera',
+    androidMode: 'collapse',
   },
   splash: {
     backgroundColor: '#ffffff',
     image: './assets/images/icon.png',
+    resizeMode: 'contain',
   },
   ios: {
     supportsTablet: true,
   },
   android: {
     package: 'com.florcera.app',
-    backgroundColor: '#ffffff',
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.florcera.app',
     icon: './assets/images/icon.png',
     adaptiveIcon: {
       foregroundImage: './assets/images/icon.png',
-      backgroundColor: '#ffffff',
     },
     softwareKeyboardLayoutMode: 'pan',
     permissions: [
@@ -64,8 +71,6 @@ const config: ExpoConfig = {
         image: './assets/images/icon.png',
         imageWidth: 200,
         resizeMode: 'contain',
-        backgroundColor: '#ffffff',
-        statusBarStyle: 'dark',
       },
     ],
     [
@@ -78,7 +83,6 @@ const config: ExpoConfig = {
     [
       '@stripe/stripe-react-native',
       {
-        merchantIdentifier: '',
         enableGooglePay: true,
       },
     ],

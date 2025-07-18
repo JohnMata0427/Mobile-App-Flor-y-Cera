@@ -8,7 +8,7 @@ import {
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
 } from './constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT, HEADING_FONT } from './constants/Fonts';
+import { HEADING_FONT } from './constants/Fonts';
 
 export const welcomeStyles = StyleSheet.create({
   container: {
@@ -27,7 +27,6 @@ export const welcomeStyles = StyleSheet.create({
     borderColor: GRAY_COLOR_LIGHT,
   },
   subtitle: {
-    fontFamily: BODY_FONT,
     color: GRAY_COLOR,
     textAlign: 'center',
     marginHorizontal: 20,
@@ -76,13 +75,11 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'center',
   },
   subtitle: {
-    fontFamily: BODY_FONT,
     color: GRAY_COLOR,
     textAlign: 'center',
     fontSize: 12,
   },
   bodyText: {
-    fontFamily: BODY_FONT,
     color: GRAY_COLOR_DARK,
     fontSize: 12,
   },
@@ -91,13 +88,14 @@ export const globalStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   errorText: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'semibold',
     color: 'red',
     fontSize: 12,
   },
   labelText: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     color: GRAY_COLOR_DARK,
+    fontSize: 12,
   },
 
   // Button
@@ -128,7 +126,6 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,
-    fontFamily: BODY_FONT,
     fontSize: 14,
     color: GRAY_COLOR_DARK,
     borderWidth: 1,

@@ -36,7 +36,6 @@ export const requestAPI = async (
     } else {
       config.body = JSON.stringify(body);
     }
-    console.log(body)
   }
 
   try {

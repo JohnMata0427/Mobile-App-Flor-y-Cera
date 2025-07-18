@@ -6,7 +6,6 @@ import {
   RED_COLOR_DARK,
   RED_COLOR_LIGHT,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -42,7 +41,7 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
         </View>
         <View style={styles.detailsContainer}>
           <View style={styles.detailRow}>
-            <Text style={[styles.detailText, { fontFamily: BOLD_BODY_FONT }]}>
+            <Text style={[styles.detailText, { fontWeight: 'bold' }]}>
               {nombre} {apellido}
             </Text>
             <MaterialCommunityIcons
@@ -71,7 +70,11 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
 });
 
 const styles = StyleSheet.create({
-  card: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  card: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   clientInfoRow: {
     flex: 1,
     flexDirection: 'row',
@@ -86,11 +89,10 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 50,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: GRAY_COLOR_LIGHT,
   },
   stateBadge: {
-    fontFamily: BODY_FONT,
     fontSize: 10,
     textAlign: 'center',
     paddingVertical: 1,
@@ -105,15 +107,15 @@ const styles = StyleSheet.create({
     color: RED_COLOR_DARK,
   },
   detailsContainer: {
-    rowGap: 2,
+    rowGap: 3,
   },
   detailRow: {
     flexDirection: 'row',
-    columnGap: 2,
+    columnGap: 3,
     alignItems: 'center',
   },
   detailText: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
+    color: GRAY_COLOR_DARK,
   },
 });

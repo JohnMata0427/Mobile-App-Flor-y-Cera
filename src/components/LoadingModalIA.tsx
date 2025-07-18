@@ -39,7 +39,7 @@ export const LoadingModalIA = memo(({ modalVisible }: LoadingModalIAProps) => {
   if (!modalVisible) return null;
 
   return (
-    <Modal animationType="fade" visible={modalVisible} transparent>
+    <Modal animationType="fade" visible={modalVisible} transparent statusBarTranslucent navigationBarTranslucent>
       <BlurView
         intensity={10}
         style={StyleSheet.absoluteFill}

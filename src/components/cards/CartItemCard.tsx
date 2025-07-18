@@ -3,9 +3,9 @@ import {
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR_DARK,
+  PRIMARY_COLOR_LIGHT,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { CategoriesContext } from '@/contexts/CategoryContext';
 import type { CartItem } from '@/interfaces/Cart';
 import type { Ingredient } from '@/interfaces/Ingredient';
@@ -157,6 +157,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     columnGap: 10,
+    elevation: 4,
+    shadowColor: PRIMARY_COLOR_LIGHT,
   },
   cardImage: {
     borderColor: GRAY_COLOR_LIGHT,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
 
   badgesContainer: { flexDirection: 'row', columnGap: 2, flexWrap: 'wrap' },
   badge: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     fontSize: 10,
     paddingVertical: 1,
     paddingHorizontal: 5,
@@ -218,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_COLOR_DARK,
   },
 
-  benefitsText: { color: GRAY_COLOR, fontFamily: BOLD_BODY_FONT, fontSize: 12 },
+  benefitsText: { color: GRAY_COLOR, fontSize: 12 },
 
   quantityContainer: {
     flexDirection: 'row',

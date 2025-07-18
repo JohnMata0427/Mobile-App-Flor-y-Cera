@@ -4,7 +4,6 @@ import {
   PRIMARY_COLOR_EXTRA_LIGHT,
   PRIMARY_COLOR_LIGHT,
 } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Tab } from '@/constants/Tabs';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
   },
   tabBarBadgeStyle: {
     backgroundColor: PRIMARY_COLOR_DARK,
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     fontSize: 10,
     paddingTop: 2,
   },

@@ -69,14 +69,14 @@ const Home = memo(() => {
 
       <Carousel
         width={width}
-        height={252}
+        height={200}
         data={promotions}
         onProgressChange={progress}
         autoPlay
         autoPlayInterval={5000}
         renderItem={({ item: { imagen } }) => (
           <Image
-            source={require('@/assets/prom-banner-1.png')}
+            source={{ uri: imagen }}
             style={styles.promotionImage}
             resizeMode="contain"
           />
@@ -219,7 +219,8 @@ const styles = StyleSheet.create({
   },
   promotionImage: {
     width: '100%',
-    height: 252,
+    height: '100%',
+    marginTop: 35,
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
   },

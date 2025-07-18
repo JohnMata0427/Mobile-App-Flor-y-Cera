@@ -1,5 +1,4 @@
 import { GRAY_COLOR_DARK } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Promotion } from '@/interfaces/Promotion';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   promotionName: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     fontSize: 15,
     textTransform: 'capitalize',
     textAlign: 'center',
@@ -54,7 +53,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dateText: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
     color: GRAY_COLOR_DARK,
   },

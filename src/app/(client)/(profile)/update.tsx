@@ -62,7 +62,6 @@ const UpdateProfile = memo(function UpdateProfile() {
 
   const onSubmit = async (form: any) => {
     setLoadingForm(true);
-    console.log('Form Data:', form, selectedImage);
     const formData = toFormData(form, selectedImage);
 
     const { msg } = await updateProfile(formData);
@@ -261,8 +260,8 @@ const UpdateProfile = memo(function UpdateProfile() {
             />
 
             <Button
-              label="Actualizar perfil"
-              icon="account-edit"
+              label="Guardar cambios"
+              icon="content-save"
               onPress={handleSubmit(onSubmit)}
               buttonStyle={styles.submitButton}
               disabled={loadingForm}

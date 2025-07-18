@@ -22,7 +22,8 @@
       "distribution": "store",
       "channel": "stable",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "image": "latest"
       },
       "environment": "production"
     }

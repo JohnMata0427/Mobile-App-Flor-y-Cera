@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: TERTIARY_COLOR_DARK,
   },
 });

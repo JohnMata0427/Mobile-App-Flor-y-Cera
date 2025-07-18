@@ -327,7 +327,7 @@ const ProductPersonalization = memo(() => {
                   <Text style={globalStyles.bodyText}>{capitalizeWord(selectedMold.nombre)}</Text>
                 </>
               ) : (
-                <Text style={globalStyles.bodyText}>Arrastra un molde y un color aquí</Text>
+                <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra un molde y un color aquí</Text>
               )}
             </DraxView>
             <View style={styles.sideDroppers}>
@@ -349,7 +349,7 @@ const ProductPersonalization = memo(() => {
                     </Text>
                   </>
                 ) : (
-                  <Text style={globalStyles.bodyText}>Arrastra un aroma aquí</Text>
+                  <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra un aroma aquí</Text>
                 )}
               </DraxView>
               <DraxView
@@ -383,7 +383,7 @@ const ProductPersonalization = memo(() => {
                     )}
                   />
                 ) : (
-                  <Text style={globalStyles.bodyText}>Arrastra dos esencias aquí</Text>
+                  <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra dos esencias aquí</Text>
                 )}
               </DraxView>
             </View>

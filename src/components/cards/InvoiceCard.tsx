@@ -4,7 +4,6 @@ import {
   GREEN_COLOR_DARK,
   GREEN_COLOR_LIGHT,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Invoice } from '@/interfaces/Invoice';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -42,7 +41,7 @@ export const InvoiceCard = memo(({ data, isPending, children }: InvoiceCardProps
           <Text style={styles.detailText}>{toLocaleDate(fecha_venta)}</Text>
         </View>
         <View style={styles.detailRow}>
-          <MaterialCommunityIcons name="format-list-bulleted" size={14} color={GRAY_COLOR_DARK} />
+          <MaterialCommunityIcons name="shopping-outline" size={14} color={GRAY_COLOR_DARK} />
           <Text style={styles.detailText}>
             {length + (length > 1 ? ' productos' : ' producto')}
           </Text>
@@ -83,10 +82,10 @@ const styles = StyleSheet.create({
   card: { flexDirection: 'row', justifyContent: 'space-between' },
   invoiceInfo: {
     width: '60%',
-    rowGap: 2,
+    rowGap: 3,
   },
   customerName: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
   },
   detailRow: {
     flexDirection: 'row',
@@ -94,7 +93,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailText: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
   },
   statusBadge: {
@@ -103,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: GRAY_COLOR_LIGHT,
-    padding: 2,
+    paddingVertical: 3,
     borderRadius: 5,
   },
 });

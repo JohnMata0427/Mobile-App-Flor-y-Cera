@@ -1,4 +1,4 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
+import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Category } from '@/interfaces/Category';
 import type { Product } from '@/interfaces/Product';
@@ -25,7 +25,6 @@ export const AdminProductCard = memo(
         source={{ uri: imagen }}
         resizeMode="cover"
         style={styles.productImage}
-        loadingIndicatorSource={require('@/assets/logo.png')}
       />
       <View style={styles.productInfo}>
         <Text style={globalStyles.labelText} numberOfLines={2}>
@@ -54,12 +53,11 @@ const styles = StyleSheet.create({
     aspectRatio: 1 / 1,
     borderRadius: 10,
     backgroundColor: GRAY_COLOR_LIGHT,
+    borderColor: GRAY_COLOR_LIGHT,
+    borderWidth: 2,
   },
   productInfo: {
     rowGap: 2,
-    paddingTop: 5,
-    borderTopColor: GRAY_COLOR_LIGHT,
-    borderTopWidth: 1,
   },
   priceStockRow: {
     flexDirection: 'row',

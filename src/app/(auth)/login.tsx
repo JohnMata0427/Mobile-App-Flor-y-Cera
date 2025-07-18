@@ -77,6 +77,7 @@ export default function Login() {
               autoCapitalize="none"
               textContentType="emailAddress"
               keyboardType="email-address"
+              fontSize={14}
               testID="input-field-email"
             />
 
@@ -88,7 +89,7 @@ export default function Login() {
               }}
               icon="key"
               label="Contraseña"
-              placeholder="••••••••••••••••••••"
+              placeholder="**************"
               error={errors.password?.message as string}
               autoComplete="password"
               autoCapitalize="none"
@@ -103,6 +104,7 @@ export default function Login() {
                   />
                 </Pressable>
               }
+              fontSize={14}
               testID="input-field-password"
             />
 
@@ -149,7 +151,7 @@ export default function Login() {
               </View> */}
 
               <Link href="/(auth)/register">
-                <Text style={[globalStyles.bodyText, styles.registerText]}>
+                <Text style={[globalStyles.bodyText, styles.registerText, { fontSize: 14 }]}>
                   ¿No tienes cuenta?
                   <Text style={globalStyles.link}> Crea una cuenta</Text>
                 </Text>

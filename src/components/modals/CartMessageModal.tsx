@@ -7,7 +7,7 @@ interface CartMessageModalProps {
 }
 
 export const CartMessageModal = ({ message, visible }: CartMessageModalProps) => (
-  <Modal animationType="fade" visible={visible} transparent>
+  <Modal animationType="fade" visible={visible} transparent statusBarTranslucent navigationBarTranslucent>
     <View
       style={{
         flex: 1,

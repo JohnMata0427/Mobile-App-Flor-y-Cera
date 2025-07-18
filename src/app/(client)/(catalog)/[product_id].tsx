@@ -9,7 +9,6 @@ import {
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import { globalStyles } from '@/globalStyles';
 import type { Product } from '@/interfaces/Product';
@@ -54,7 +53,7 @@ export const ProductDetails = memo(() => {
 
   useEffect(() => {
     if (searchedProducts.length > 0) {
-      const without = searchedProducts.filter((p) => p._id !== product_id);
+      const without = searchedProducts.filter(p => p._id !== product_id);
       const related = without.sort(() => 0.5 - Math.random()).slice(0, 4);
       setRelatedProducts(related);
     }
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   badge: {
-    fontFamily: BODY_FONT,
+    fontWeight: 'bold',
     paddingVertical: 2,
     paddingHorizontal: 8,
     borderRadius: 5,

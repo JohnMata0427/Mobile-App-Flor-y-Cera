@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 
 const screenOptions: NativeStackNavigationOptions = {
   headerShown: false,
-  statusBarStyle: 'dark',
 };
 
 export default function AuthLayout() {

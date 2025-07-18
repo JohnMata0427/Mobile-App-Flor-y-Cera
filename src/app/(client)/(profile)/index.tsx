@@ -3,6 +3,7 @@ import { Loading } from '@/components/Loading';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
+  PRIMARY_COLOR_LIGHT,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
@@ -60,7 +61,6 @@ const ClientProfile = memo(() => {
             <Image
               source={imagen ? { uri: imagen } : defaultImage}
               style={styles.profileImage}
-              loadingIndicatorSource={require('@/assets/logo.png')}
               resizeMode="contain"
             />
             <Text style={globalStyles.title}>
@@ -178,6 +178,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 10,
+    elevation: 2
+    ,
+    shadowColor: PRIMARY_COLOR_LIGHT,
   },
   menuItemLeft: {
     flexDirection: 'row',

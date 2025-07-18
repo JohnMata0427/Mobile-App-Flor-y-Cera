@@ -255,7 +255,6 @@ const styles = StyleSheet.create({
     rowGap: 5,
   },
   chartTitle: {
-    textTransform: 'uppercase',
     fontWeight: 'bold',
     textAlign: 'center',
   },

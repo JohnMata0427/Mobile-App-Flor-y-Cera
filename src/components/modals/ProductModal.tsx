@@ -364,11 +364,12 @@ export const ProductModal = memo(
             validate: {
               minLength: (value: any[]) => value.length > 1 || 'Este campo es obligatorio',
             },
+            required: 'Este campo es obligatorio',
           }}
           label="Ingredientes (se requiere 2)"
           error={errors.ingredientes?.message as string}
           options={essences.map(({ _id, nombre }) => ({
-            optionLabel: nombre,
+            optionLabel: capitalizeWord(nombre),
             optionValue: _id,
           }))}
         />

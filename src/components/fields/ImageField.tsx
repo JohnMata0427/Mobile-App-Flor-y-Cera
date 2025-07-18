@@ -1,5 +1,4 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
 import type { FieldValues, RegisterOptions } from 'react-hook-form';
@@ -88,11 +87,10 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   imageTextBold: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     fontSize: 12,
   },
   placeholerText: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
     textAlign: 'center',
     color: GRAY_COLOR,

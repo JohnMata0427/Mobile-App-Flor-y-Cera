@@ -1,10 +1,10 @@
-import { GRAY_COLOR_DARK, PRIMARY_COLOR, PRIMARY_COLOR_DARK } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
+import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Modal, StyleSheet, Text, View } from 'react-native';
+import { Button } from '../Button';
 
 interface ClientInformationModalProps {
   isVisible: boolean;
@@ -39,9 +39,11 @@ export const ClientInformationModal = memo(
     return (
       <Modal
         visible={isVisible}
-        backdropColor={'rgba(0, 0, 0, 0.1)'}
+        backdropColor={'rgba(0, 0, 0, 0.01)'}
         animationType="slide"
         onRequestClose={onClose}
+        statusBarTranslucent
+        navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
           <Image
@@ -53,14 +55,14 @@ export const ClientInformationModal = memo(
             <Text style={styles.titleText}>Información del Cliente</Text>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="account" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Nombre: </Text>
                 {nombre} {apellido}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="email" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Correo electrónico:</Text> {email}
               </Text>
             </View>
@@ -70,13 +72,13 @@ export const ClientInformationModal = memo(
                 name={isMale ? 'gender-male' : 'gender-female'}
                 size={16}
               />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Género:</Text> {genero}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="lock-open" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Estado:</Text> {estado}
               </Text>
             </View>
@@ -86,46 +88,50 @@ export const ClientInformationModal = memo(
                 name="badge-account-horizontal"
                 size={16}
               />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Cédula:</Text> {cedula ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="map-marker" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Dirección:</Text> {direccion ?? 'No registrada'}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="phone" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Teléfono:</Text> {telefono ?? 'No registrado'}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="calendar" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Fecha de nacimiento:</Text>{' '}
                 {toLocaleDate(fecha_nacimiento)}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="calendar-check" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Fecha de creación:</Text>{' '}
                 {toLocaleDate(createdAt)}
               </Text>
             </View>
             <View style={styles.detailRow}>
               <MaterialCommunityIcons color={GRAY_COLOR_DARK} name="update" size={16} />
-              <Text style={styles.detailText}>
+              <Text>
                 <Text style={styles.detailTextBold}>Última actualización:</Text>{' '}
                 {toLocaleDate(updatedAt)}
               </Text>
             </View>
-            <Pressable style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>Cerrar</Text>
-            </Pressable>
+
+            <Button
+              label="Cerrar"
+              icon="close-thick"
+              onPress={onClose}
+              buttonStyle={styles.closeButton}
+            />
           </View>
         </View>
       </Modal>
@@ -158,7 +164,6 @@ const styles = StyleSheet.create({
     rowGap: 4,
   },
   titleText: {
-    fontFamily: BOLD_BODY_FONT,
     fontWeight: 'bold',
     fontSize: 18,
     textAlign: 'center',
@@ -169,25 +174,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: 8,
   },
-  detailText: {
-    fontFamily: BODY_FONT,
-  },
   detailTextBold: {
-    fontFamily: BOLD_BODY_FONT,
+    fontWeight: 'bold',
     color: PRIMARY_COLOR_DARK,
   },
   closeButton: {
     marginTop: 20,
-    backgroundColor: PRIMARY_COLOR,
-    borderColor: PRIMARY_COLOR_DARK,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontFamily: BOLD_BODY_FONT,
   },
 });

@@ -8,11 +8,9 @@ import {
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
-  RED_COLOR,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
-import { BOLD_BODY_FONT } from '@/constants/Fonts';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
@@ -53,7 +51,7 @@ const UpdateProfile = memo(function UpdateProfile() {
 
     Alert.alert('Mensaje del sistema', msg);
 
-    if (ok) setEditable(true);
+    if (ok) setEditable(false);
   };
 
   const [cardDetails, setCardDetails] = useState<any>(null);
@@ -185,26 +183,26 @@ const UpdateProfile = memo(function UpdateProfile() {
                     setEditable(true);
                   }
                 }}
-                buttonStyle={styles.submitButton}
+                buttonStyle={{ marginTop: 10, marginBottom: 5 }}
               />
             </View>
             <View style={[styles.cardContainer, styles.billingContainer]}>
-              <Text
-                style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}
-              >
+              <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
                 Datos de facturación
               </Text>
 
               <CardForm
-                style={{ width: '100%', height: 250, marginVertical: 20 }}
+                style={{ width: '100%', height: 180, marginVertical: 10 }}
                 cardStyle={{
                   textColor: GRAY_COLOR_DARK,
                   placeholderColor: GRAY_COLOR,
                   backgroundColor: GRAY_COLOR_LIGHT,
                   borderRadius: 10,
                   cursorColor: PRIMARY_COLOR,
-                  textErrorColor: 'red'
+                  textErrorColor: 'red',
+                  fontSize: 12,
                 }}
+                defaultValues={{ countryCode: 'EC' }}
                 onFormComplete={cardDetails => setCardDetails(cardDetails)}
               />
 
@@ -217,8 +215,9 @@ const UpdateProfile = memo(function UpdateProfile() {
                     ? {
                         backgroundColor: GRAY_COLOR_DARK,
                         borderColor: 'black',
+                        marginBottom: 5,
                       }
-                    : styles.submitButton
+                    : { marginBottom: 5 }
                 }
                 disabled={loadingPayment}
               />
@@ -257,9 +256,6 @@ const styles = StyleSheet.create({
   },
   billingContainer: {
     marginTop: 20,
-  },
-  submitButton: {
-    marginTop: 10,
   },
 });
 

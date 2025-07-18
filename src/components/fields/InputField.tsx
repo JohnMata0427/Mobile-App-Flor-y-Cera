@@ -1,5 +1,4 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type ReactNode } from 'react';
 import type { TextInputProps } from 'react-native';
@@ -23,6 +22,7 @@ interface InputFieldProps {
   secureTextEntry?: boolean;
   passwordIcon?: ReactNode;
   editable?: boolean;
+  fontSize?: number;
   testID?: string;
 }
 
@@ -44,16 +44,17 @@ export const InputField = memo(
     secureTextEntry,
     passwordIcon,
     editable,
+    fontSize = 12,
     testID,
   }: InputFieldProps) => {
     const color = error ? 'red' : GRAY_COLOR_DARK;
-    
+
     return (
       <BaseField control={control} name={name} rules={rules} label={label} error={error}>
         {({ onChange, onBlur, value }) => (
           <View>
             <TextInput
-              style={[styles.textInput, { color }]}
+              style={[styles.textInput, { color, fontSize }]}
               placeholder={placeholder}
               placeholderTextColor={error ? 'red' : GRAY_COLOR}
               onChangeText={onChange}
@@ -83,11 +84,11 @@ export const InputField = memo(
 const styles = StyleSheet.create({
   textInput: {
     backgroundColor: GRAY_COLOR_LIGHT,
-    fontFamily: BODY_FONT,
     borderRadius: 10,
     paddingVertical: 10,
     paddingRight: 10,
     paddingLeft: 30,
+    fontSize: 12,
   },
   icon: {
     position: 'absolute',

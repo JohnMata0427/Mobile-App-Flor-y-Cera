@@ -4,7 +4,6 @@ import {
   PRIMARY_COLOR_DARK,
   SECONDARY_COLOR_DARK,
 } from '@/constants/Colors';
-import { BODY_FONT, BOLD_BODY_FONT } from '@/constants/Fonts';
 import type { Invoice } from '@/interfaces/Invoice';
 import { capitalizeWord } from '@/utils/textTransform';
 import { toLocaleDate } from '@/utils/toLocaleDate';
@@ -32,6 +31,7 @@ export const InvoiceDetailsModal = memo(
         backdropColor={'rgba(0, 0, 0, 0.1)'}
         animationType="slide"
         onRequestClose={onClose}
+        statusBarTranslucent navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
           <Text style={styles.titleText}>Detalles de la Factura</Text>
@@ -167,11 +167,9 @@ const styles = StyleSheet.create({
     rowGap: 2,
   },
   detailText: {
-    fontFamily: BODY_FONT,
     fontSize: 11,
   },
   detailTextBold: {
-    fontFamily: BOLD_BODY_FONT,
     color: SECONDARY_COLOR_DARK,
   },
   image: {
@@ -188,6 +186,7 @@ const styles = StyleSheet.create({
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: GRAY_COLOR_LIGHT,
+    padding: 5,
   },
   tableDescriptionColumn: {
     flex: 2,
@@ -196,23 +195,20 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontWeight: 'bold',
     fontSize: 11,
-    padding: 2,
-    flex: 1,
+    paddingHorizontal: 4,
   },
   tableBody: {
     flexDirection: 'row',
+    paddingHorizontal: 5,
   },
   tableBodyText: {
-    fontFamily: BODY_FONT,
     fontSize: 11,
-    paddingHorizontal: 2,
-    paddingVertical: 5,
-    flex: 1,
+    padding: 4,
   },
   tableFooter: {
     alignSelf: 'flex-end',
-    marginTop: 15,
-    marginRight: 25,
+    marginTop: 10,
+    marginRight: 10,
     rowGap: 2,
   },
   footer: { marginTop: 20, rowGap: 2 },

@@ -1,11 +1,11 @@
 import { Button } from '@/components/Button';
 import {
-  GRAY_COLOR,
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   PRIMARY_COLOR_LIGHT,
   SECONDARY_COLOR,
+  SECONDARY_COLOR_DARK,
   TERTIARY_COLOR_LIGHT,
 } from '@/constants/Colors';
 import type { Ingredient } from '@/interfaces/Ingredient';
@@ -55,6 +55,8 @@ export const PersonalizedProductDetails = memo(
         animationType="slide"
         backdropColor="rgba(0, 0, 0, 0.1)"
         onRequestClose={() => setModalVisible(false)}
+        statusBarTranslucent
+        navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
           <Text style={styles.title}>
@@ -70,30 +72,38 @@ export const PersonalizedProductDetails = memo(
           />
 
           <View style={[styles.ingredientRow, { backgroundColor: PRIMARY_COLOR }]}>
-            <Text>Aroma: {capitalizeWord(aroma.nombre)}</Text>
-            <MaterialCommunityIcons name="arrow-right" size={16} color="white" />
-            <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(aroma.precio)}</Text>
+            <Text style={styles.ingredientPrice}>Aroma: {capitalizeWord(aroma.nombre)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 10 }}>
+              <MaterialCommunityIcons name="forward" size={16} color="white" />
+              <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(aroma.precio)}</Text>
+            </View>
           </View>
 
           <View style={[styles.ingredientRow, { backgroundColor: SECONDARY_COLOR }]}>
-            <Text>Colorante: {capitalizeWord(color.nombre)}</Text>
-            <MaterialCommunityIcons name="arrow-right" size={16} color="white" />
-            <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(color.precio)}</Text>
+            <Text style={styles.ingredientPrice}>Colorante: {capitalizeWord(color.nombre)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 10 }}>
+              <MaterialCommunityIcons name="forward" size={16} color="white" />
+              <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(color.precio)}</Text>
+            </View>
           </View>
 
           <View style={[styles.ingredientRow, { backgroundColor: 'skyblue' }]}>
-            <Text>Molde: {capitalizeWord(mold.nombre)}</Text>
-            <MaterialCommunityIcons name="arrow-right" size={16} color="white" />
-            <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(mold.precio)}</Text>
+            <Text style={styles.ingredientPrice}>Molde: {capitalizeWord(mold.nombre)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 10 }}>
+              <MaterialCommunityIcons name="forward" size={16} color="white" />
+              <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(mold.precio)}</Text>
+            </View>
           </View>
 
           <View style={styles.essencesContainer}>
-            <Text>Esencias:</Text>
+            <Text style={styles.ingredientPrice}>Esencias:</Text>
             {essences?.map(essence => (
               <View key={essence._id} style={styles.essenceRow}>
-                <Text>{capitalizeWord(essence.nombre)}</Text>
-                <MaterialCommunityIcons name="arrow-right" size={16} color="white" />
-                <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(essence.precio)}</Text>
+                <Text style={styles.ingredientPrice}>{capitalizeWord(essence.nombre)}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 10 }}>
+                  <MaterialCommunityIcons name="forward" size={16} color="white" />
+                  <Text style={styles.ingredientPrice}>$ {getPriceWithoutIVA(essence.precio)}</Text>
+                </View>
               </View>
             ))}
           </View>
@@ -114,7 +124,7 @@ export const PersonalizedProductDetails = memo(
           </View>
           <View style={styles.buttonContainer}>
             <Button
-              label="Editar producto"
+              label="Editar"
               icon="pencil"
               onPress={() =>
                 router.push({
@@ -131,7 +141,7 @@ export const PersonalizedProductDetails = memo(
             />
             <Button
               label="Cancelar"
-              icon="close"
+              icon="close-thick"
               onPress={() => setModalVisible(false)}
               buttonStyle={styles.cancelButton}
             />
@@ -174,6 +184,7 @@ const styles = StyleSheet.create({
   },
   ingredientPrice: {
     color: 'white',
+    fontWeight: 'bold',
   },
   essencesContainer: {
     width: '80%',
@@ -218,7 +229,7 @@ const styles = StyleSheet.create({
     columnGap: 10,
   },
   cancelButton: {
-    backgroundColor: GRAY_COLOR,
-    borderColor: GRAY_COLOR_DARK,
+    backgroundColor: SECONDARY_COLOR,
+    borderColor: SECONDARY_COLOR_DARK,
   },
 });

@@ -1,5 +1,4 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_DARK } from '@/constants/Colors';
-import { BODY_FONT } from '@/constants/Fonts';
+import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -66,16 +65,7 @@ export const MultipleCheckBoxField = memo(
 );
 
 const CheckBox = memo(({ label, value, disabled = false, onPress }: CheckBoxProps) => (
-  <Pressable
-    style={[
-      styles.checkbox,
-      {
-        backgroundColor: value ? GRAY_COLOR_LIGHT : 'white',
-      },
-    ]}
-    disabled={disabled}
-    onPress={() => onPress(!value)}
-  >
+  <Pressable style={styles.checkbox} disabled={disabled} onPress={() => onPress(!value)}>
     <MaterialCommunityIcons
       name={value ? 'check-circle' : 'circle-outline'}
       size={20}
@@ -88,7 +78,6 @@ const CheckBox = memo(({ label, value, disabled = false, onPress }: CheckBoxProp
 const styles = StyleSheet.create({
   checkboxContainer: {
     rowGap: 3,
-    width: '60%',
   },
   checkbox: {
     flexDirection: 'row',
@@ -98,7 +87,6 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   textInput: {
-    fontFamily: BODY_FONT,
     fontSize: 12,
   },
 });

@@ -176,6 +176,7 @@ export default function AdminPromotions() {
 const styles = StyleSheet.create({
   stickyHeader: {
     backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
+    paddingTop: 5,
     paddingBottom: 10,
     paddingHorizontal: 15,
   },

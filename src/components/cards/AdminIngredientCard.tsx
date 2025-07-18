@@ -1,10 +1,11 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
+import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR, PRIMARY_COLOR_EXTRA_LIGHT, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Ingredient } from '@/interfaces/Ingredient';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
+import { capitalizeWord } from '@/utils/textTransform';
 
 interface AdminIngredientCardProps {
   data: Ingredient;
@@ -19,10 +20,9 @@ export const AdminIngredientCard = memo(
         source={{ uri: imagen }}
         resizeMode="contain"
         style={styles.ingredientImage}
-        loadingIndicatorSource={require('@/assets/logo.png')}
       />
       <View style={styles.ingredientInfo}>
-        <Text style={globalStyles.labelText}>{nombre}</Text>
+        <Text style={globalStyles.labelText}>{capitalizeWord(nombre)}</Text>
         <View style={styles.priceStockRow}>
           <Text style={globalStyles.bodyText}>${precio} USD</Text>
           <Text style={styles.categoryBadge}>{category}</Text>
@@ -47,13 +47,11 @@ const styles = StyleSheet.create({
   ingredientImage: {
     aspectRatio: 1 / 1,
     borderRadius: 10,
-    backgroundColor: GRAY_COLOR_LIGHT,
+    backgroundColor: PRIMARY_COLOR_EXTRA_LIGHT,
+    padding: 10,
   },
   ingredientInfo: {
     rowGap: 2,
-    paddingTop: 5,
-    borderTopColor: GRAY_COLOR_LIGHT,
-    borderTopWidth: 1,
   },
   priceStockRow: {
     flexDirection: 'row',

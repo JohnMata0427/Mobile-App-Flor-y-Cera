@@ -21,6 +21,7 @@ export const FinishPersonalizationModal = memo(
         animationType="fade"
         backdropColor="rgba(0, 0, 0, 0.1)"
         onRequestClose={() => setModalVisible(false)}
+        statusBarTranslucent navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Mensaje del juego</Text>
