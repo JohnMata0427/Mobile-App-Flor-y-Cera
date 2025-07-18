@@ -1,4 +1,5 @@
 {
+  "projectId": "da873e00-ecc2-497c-883d-ab85516b71e0",
   "cli": {
     "version": ">= 16.13.1",
     "appVersionSource": "remote"
@@ -27,8 +28,5 @@
       },
       "environment": "production"
     }
-  },
-  "submit": {
-    "production": {}
   }
 }

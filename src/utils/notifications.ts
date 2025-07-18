@@ -44,7 +44,7 @@ export async function registerForPushNotificationsAsync() {
     }
 
     if (existingStatus === 'granted') {
-      const { projectId } = Constants?.expoConfig?.extra?.eas ?? Constants?.easConfig;
+      const { projectId } = Constants.expoConfig?.extra?.eas ?? Constants?.easConfig;
 
       if (projectId) {
         const { data } = await getExpoPushTokenAsync({ projectId });
