@@ -23,10 +23,12 @@ export const removeProductFromCartRequest = (body: Omit<CartItemPayload, 'cantid
     body,
   });
 
-export const checkoutCartRequest = (paymentMethodId: string) =>
-  requestAPI(`${CARTS_ENDPOINT}/pagar`, {
+export const getPaymentIntentRequest = () => requestAPI(`${CARTS_ENDPOINT}/iniciar-pago`);
+
+export const checkoutCartRequest = (paymentIntentId: string) =>
+  requestAPI(`${CARTS_ENDPOINT}/finalizar-pago`, {
     method: 'POST',
-    body: { paymentMethodId },
+    body: { paymentIntentId },
   });
 
 export const clearCartRequest = () =>

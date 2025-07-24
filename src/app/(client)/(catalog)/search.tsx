@@ -54,7 +54,7 @@ export default function ClientSearchBar() {
             borderWidth: 1,
             borderRadius: 20,
             borderColor: GRAY_COLOR_LIGHT,
-            flex: 1
+            flex: 1,
           }}
         >
           <TextInput
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderBottomWidth: 1.5,
-    borderColor: GRAY_COLOR_LIGHT
+    borderColor: GRAY_COLOR_LIGHT,
   },
   renderItemImage: {
     width: 25,

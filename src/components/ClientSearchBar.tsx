@@ -1,13 +1,11 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR } from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export const ClientSearchBar = memo(() => (
   <View style={styles.searchInput}>
-    <Text style={{ fontSize: 12, color: GRAY_COLOR }}>
-      Jabón de miel natural...
-    </Text>
+    <Text style={{ fontSize: 12, color: GRAY_COLOR }}>Jabón de miel natural...</Text>
     <Pressable style={styles.searchIcon}>
       <MaterialCommunityIcons name="magnify" size={20} color="white" />
     </Pressable>

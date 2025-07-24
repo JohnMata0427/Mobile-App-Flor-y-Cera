@@ -1,4 +1,4 @@
-import { GRAY_COLOR, GRAY_COLOR_LIGHT, PRIMARY_COLOR_LIGHT, SECONDARY_COLOR } from '@/constants/Colors';
+import { GRAY_COLOR_LIGHT, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Invoice } from '@/interfaces/Invoice';
 import { toLocaleDate } from '@/utils/toLocaleDate';
@@ -16,9 +16,16 @@ export const InvoiceAccordion = memo(({ invoice }: InvoiceAccordionProps) => {
 
   return (
     <View style={styles.invoiceCard}>
-      <Pressable style={[styles.invoiceHeader, {
-        backgroundColor: invoice.estado === 'finalizado' ? PRIMARY_COLOR_LIGHT : GRAY_COLOR_LIGHT,
-      }]} onPress={() => setOpened(!opened)}>
+      <Pressable
+        style={[
+          styles.invoiceHeader,
+          {
+            backgroundColor:
+              invoice.estado === 'finalizado' ? PRIMARY_COLOR_LIGHT : GRAY_COLOR_LIGHT,
+          },
+        ]}
+        onPress={() => setOpened(!opened)}
+      >
         <View>
           <Text style={globalStyles.labelText}>
             Pedido: {invoice._id.slice(invoice._id.length - 8, invoice._id.length)}
@@ -26,10 +33,14 @@ export const InvoiceAccordion = memo(({ invoice }: InvoiceAccordionProps) => {
           <Text style={globalStyles.bodyText}>Fecha: {toLocaleDate(invoice.fecha_venta)}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <MaterialCommunityIcons name={
-            invoice.estado === 'finalizado' ? 'wallet-giftcard' : 'clock-outline'
-          } size={16} color="black" />
-          <Text style={[globalStyles.labelText, { fontWeight: 'bold' }]}>$ {invoice.total.toFixed(2)}</Text>
+          <MaterialCommunityIcons
+            name={invoice.estado === 'finalizado' ? 'wallet-giftcard' : 'clock-outline'}
+            size={16}
+            color="black"
+          />
+          <Text style={[globalStyles.labelText, { fontWeight: 'bold' }]}>
+            $ {invoice.total.toFixed(2)}
+          </Text>
           <MaterialCommunityIcons
             name={opened ? 'chevron-up' : 'chevron-down'}
             size={16}

@@ -8,30 +8,30 @@ import { Animated, Text, View } from 'react-native';
 
 export default function WelcomeSecondScreen() {
   const fadeAnim = new Animated.Value(0);
-    const slideAnim = new Animated.Value(20);
-  
-    useEffect(() => {
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }, []);
+  const slideAnim = new Animated.Value(20);
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 700,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   return (
-        <Animated.View
-          style={[
-            welcomeStyles.container,
-            { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
-          ]}
-        >
+    <Animated.View
+      style={[
+        welcomeStyles.container,
+        { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+      ]}
+    >
       <Text style={globalStyles.title}>Desde Flor & Cera, hasta la puerta de tu casa.</Text>
       <Text style={welcomeStyles.subtitle}>
         Cerramos el ciclo de la creación artesanal asegurando que tu pedido llegue perfecto y listo

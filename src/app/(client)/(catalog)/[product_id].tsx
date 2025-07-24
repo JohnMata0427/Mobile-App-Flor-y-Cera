@@ -6,7 +6,7 @@ import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR_DARK,
   PRIMARY_COLOR_EXTRA_LIGHT,
-  SECONDARY_COLOR_DARK,
+  REFRESH_COLORS,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
@@ -82,7 +82,7 @@ export const ProductDetails = memo(() => {
               setRefreshing(true);
               await getProducts();
             }}
-            colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
+            colors={REFRESH_COLORS}
           />
         }
       >

@@ -2,8 +2,8 @@ import { Button } from '@/components/Button';
 import { globalStyles, welcomeStyles } from '@/globalStyles';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { Text, View, Animated } from 'react-native';
 import { useEffect } from 'react';
+import { Animated, Text, View } from 'react-native';
 
 export default function WelcomeSecondScreen() {
   const fadeAnim = new Animated.Value(0);

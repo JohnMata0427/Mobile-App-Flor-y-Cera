@@ -1,11 +1,11 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR, PRIMARY_COLOR_EXTRA_LIGHT, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
+import { GRAY_COLOR_DARK, PRIMARY_COLOR_EXTRA_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Ingredient } from '@/interfaces/Ingredient';
+import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
-import { capitalizeWord } from '@/utils/textTransform';
 
 interface AdminIngredientCardProps {
   data: Ingredient;
@@ -16,11 +16,7 @@ interface AdminIngredientCardProps {
 export const AdminIngredientCard = memo(
   ({ data: { imagen, nombre, precio, stock }, category, children }: AdminIngredientCardProps) => (
     <BaseCard styles={styles.card}>
-      <Image
-        source={{ uri: imagen }}
-        resizeMode="contain"
-        style={styles.ingredientImage}
-      />
+      <Image source={{ uri: imagen }} resizeMode="contain" style={styles.ingredientImage} />
       <View style={styles.ingredientInfo}>
         <Text style={globalStyles.labelText}>{capitalizeWord(nombre)}</Text>
         <View style={styles.priceStockRow}>
@@ -29,9 +25,7 @@ export const AdminIngredientCard = memo(
         </View>
         <View style={styles.stockRow}>
           <MaterialCommunityIcons name="cart-outline" size={14} color="green" />
-          <Text style={globalStyles.bodyText}>
-            {stock} en stock
-          </Text>
+          <Text style={globalStyles.bodyText}>{stock} en stock</Text>
         </View>
         {children}
       </View>

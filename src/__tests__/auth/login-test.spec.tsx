@@ -1,5 +1,5 @@
 import LoginScreen from '@/app/(auth)/login';
-import { render, waitFor, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const wrapAllProviders = (children: React.ReactNode) => {

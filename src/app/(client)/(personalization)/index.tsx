@@ -73,12 +73,17 @@ export const Personalization = memo(() => {
           });
         }}
       >
-        <Button label="Personalizar Jabones" icon="chart-bubble" buttonStyle={styles.soapButton} onPress={() => {
-          router.push({
-            pathname: '/(client)/(personalization)/[category]',
-            params: { category: jabonesId },
-          });
-        }}/>
+        <Button
+          label="Personalizar Jabones"
+          icon="chart-bubble"
+          buttonStyle={styles.soapButton}
+          onPress={() => {
+            router.push({
+              pathname: '/(client)/(personalization)/[category]',
+              params: { category: jabonesId },
+            });
+          }}
+        />
         <Image
           source={require('@/assets/personalized-soap.png')}
           resizeMode="contain"
@@ -90,12 +95,15 @@ export const Personalization = memo(() => {
         resizeMode="contain"
         style={styles.banner}
       />
-      <Pressable style={styles.candleSection} onPress={() => {
-            router.push({
-              pathname: '/(client)/(personalization)/[category]',
-              params: { category: velasId },
-            });
-          }}>
+      <Pressable
+        style={styles.candleSection}
+        onPress={() => {
+          router.push({
+            pathname: '/(client)/(personalization)/[category]',
+            params: { category: velasId },
+          });
+        }}
+      >
         <Image
           source={require('@/assets/personalized-candle.png')}
           resizeMode="contain"

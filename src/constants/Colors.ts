@@ -22,3 +22,5 @@ export const RED_COLOR_LIGHT = '#FCDBDB';
 export const GRAY_COLOR = '#898989';
 export const GRAY_COLOR_DARK = '#2C2C2C';
 export const GRAY_COLOR_LIGHT = '#F3F3F3';
+
+export const REFRESH_COLORS = [PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR];

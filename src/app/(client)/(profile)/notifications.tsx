@@ -2,11 +2,10 @@ import { Button } from '@/components/Button';
 import {
   GRAY_COLOR,
   GRAY_COLOR_DARK,
+  GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
-  GRAY_COLOR_LIGHT
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { globalStyles } from '@/globalStyles';
@@ -103,7 +102,7 @@ const Notifications = memo(() => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={getDataAndConfig}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >
@@ -127,6 +126,7 @@ const Notifications = memo(() => {
       </View>
       <FlatList
         data={notifications}
+        scrollEnabled={false}
         keyExtractor={item => item._id}
         renderItem={({ item }) => (
           <View
@@ -137,17 +137,17 @@ const Notifications = memo(() => {
               borderRadius: 10,
               rowGap: 5,
               borderWidth: 1,
-              borderColor: GRAY_COLOR_LIGHT
+              borderColor: GRAY_COLOR_LIGHT,
             }}
           >
             <Text style={{ fontWeight: 'bold' }}>{item.titulo}</Text>
             <Text style={{ color: GRAY_COLOR, fontSize: 12, marginBottom: 5 }}>{item.mensaje}</Text>
 
-              <Image
-                source={{ uri: item.imagen }}
-                style={{ width: '100%', height: 100, borderRadius: 10 }}
-                contentFit="contain"
-              />
+            <Image
+              source={{ uri: item.imagen }}
+              style={{ width: '100%', height: 100, borderRadius: 10 }}
+              contentFit="contain"
+            />
           </View>
         )}
       />

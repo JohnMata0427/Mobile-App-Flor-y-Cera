@@ -3,7 +3,6 @@ import { requestAPI } from '@/utils/requestAPI';
 
 const INVOICES_ENDPOINT = '/ventas';
 
-
 export const getInvoicesRequest = (page: number, limit: number) =>
   requestAPI(`${INVOICES_ENDPOINT}?page=${page}&limit=${limit}`);
 

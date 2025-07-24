@@ -6,7 +6,10 @@ import { StyleSheet, Text, View } from 'react-native';
 interface BaseFieldProps {
   control: Control<FieldValues>;
   name: string;
-  rules?: Omit<RegisterOptions<FieldValues, string>, 'valueAsNumber' | 'valueAsDate' | 'setValueAs'>;
+  rules?: Omit<
+    RegisterOptions<FieldValues, string>,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >;
   label?: string;
   error?: string;
   children: (field: any) => ReactNode;

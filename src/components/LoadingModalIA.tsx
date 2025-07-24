@@ -39,7 +39,13 @@ export const LoadingModalIA = memo(({ modalVisible }: LoadingModalIAProps) => {
   if (!modalVisible) return null;
 
   return (
-    <Modal animationType="fade" visible={modalVisible} transparent statusBarTranslucent navigationBarTranslucent>
+    <Modal
+      animationType="fade"
+      visible={modalVisible}
+      transparent
+      statusBarTranslucent
+      navigationBarTranslucent
+    >
       <BlurView
         intensity={10}
         style={StyleSheet.absoluteFill}
@@ -47,7 +53,9 @@ export const LoadingModalIA = memo(({ modalVisible }: LoadingModalIAProps) => {
         experimentalBlurMethod="dimezisBlurView"
       />
       <View style={styles.loadingContainer}>
-        <Text style={[globalStyles.title, styles.loadingTitleText]}>Recomendación en camino...</Text>
+        <Text style={[globalStyles.title, styles.loadingTitleText]}>
+          Recomendación en camino...
+        </Text>
         <Image
           source={require('@/assets/game/loading-recommendation.gif')}
           style={styles.loadingGif}

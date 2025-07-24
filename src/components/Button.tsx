@@ -31,7 +31,7 @@ export const Button = memo(
     icon,
     iconSize = 16,
     textStyle = {},
-    testID
+    testID,
   }: ButtonProps) => (
     <Pressable
       style={[globalStyles.button, globalStyles.buttonPrimary, styles.button, buttonStyle]}

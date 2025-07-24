@@ -5,6 +5,7 @@ import {
   GRAY_COLOR,
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   TERTIARY_COLOR,
 } from '@/constants/Colors';
@@ -70,7 +71,7 @@ const Dashboard = memo(() => {
             setRefreshing(true);
             await getDashboardGraphicsData();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

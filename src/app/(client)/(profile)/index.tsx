@@ -4,8 +4,7 @@ import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR,
   PRIMARY_COLOR_LIGHT,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { globalStyles } from '@/globalStyles';
@@ -14,7 +13,7 @@ import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import { memo, use, useCallback } from 'react';
-import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ClientProfile = memo(() => {
@@ -46,7 +45,7 @@ const ClientProfile = memo(() => {
             setRefreshing(true);
             await getProfile();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >
@@ -130,6 +129,39 @@ const ClientProfile = memo(() => {
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
             </Pressable>
+
+            <Text style={globalStyles.labelText}>Información adicional</Text>
+
+            <Pressable
+              onPress={() => router.push('/(client)/(profile)/about-us')}
+              style={styles.menuItem}
+            >
+              <View style={styles.menuItemLeft}>
+                <MaterialCommunityIcons name="information-variant" size={20} color={GRAY_COLOR_DARK} />
+                <Text style={globalStyles.bodyText}>Sobre nosotros</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
+            </Pressable>
+            <Pressable
+              onPress={() => Linking.openURL('https://flor-y-cera.vercel.app/politica-privacidad')}
+              style={styles.menuItem}
+            >
+              <View style={styles.menuItemLeft}>
+                <MaterialCommunityIcons name="shield-star" size={20} color={GRAY_COLOR_DARK} />
+                <Text style={globalStyles.bodyText}>Política de privacidad</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
+            </Pressable>
+            <Pressable
+              onPress={() => Linking.openURL('mailto:jhonmata0427@gmail.com')}
+              style={styles.menuItem}
+            >
+              <View style={styles.menuItemLeft}>
+                <MaterialCommunityIcons name="email-mark-as-unread" size={20} color={GRAY_COLOR_DARK} />
+                <Text style={globalStyles.bodyText}>Contactanos</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
+            </Pressable>
           </View>
           <Button
             label="Cerrar sesión"
@@ -178,8 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 10,
-    elevation: 2
-    ,
+    elevation: 2,
     shadowColor: PRIMARY_COLOR_LIGHT,
   },
   menuItemLeft: {

@@ -33,7 +33,7 @@ interface CartState {
   ) => void;
   removeProductFromCart: (product_id: string, productType: ProductType) => Promise<void>;
   checkout: (
-    paymentMethodId: string,
+    paymentIntentId: string,
   ) => Promise<{ ok: boolean; venta: Invoice; msg: string; cliente: Client }>;
   clearCart: () => void;
 }
@@ -151,8 +151,8 @@ export const useCartStore = create<CartState>(set => ({
       }));
     }
   },
-  checkout: async paymentMethodId => {
-    const { ok, msg, venta, cliente } = await checkoutCartRequest(paymentMethodId);
+  checkout: async paymentIntentId => {
+    const { ok, msg, venta, cliente } = await checkoutCartRequest(paymentIntentId);
 
     if (ok) set({ products: [], totalProducts: 0, totalPrice: 0 });
 

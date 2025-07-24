@@ -12,8 +12,7 @@ import {
   PRIMARY_COLOR_EXTRA_LIGHT,
   RED_COLOR,
   RED_COLOR_DARK,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { ClientsContext, ClientsProvider } from '@/contexts/ClientsContext';
 import { globalStyles } from '@/globalStyles';
@@ -133,7 +132,7 @@ const Clients = memo(() => {
             setRefreshing(true);
             await getClients();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

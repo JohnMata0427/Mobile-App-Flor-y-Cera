@@ -6,8 +6,7 @@ import {
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContext';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
@@ -63,7 +62,7 @@ const Catalog = memo(() => {
                 setRefreshing(true);
                 await getProducts();
               }}
-              colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+              colors={REFRESH_COLORS}
             />
           }
         >

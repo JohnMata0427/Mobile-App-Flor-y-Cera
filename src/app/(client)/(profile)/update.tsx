@@ -4,13 +4,7 @@ import { ImageField } from '@/components/fields/ImageField';
 import { InputField } from '@/components/fields/InputField';
 import { PickerField } from '@/components/fields/PickerField';
 import { Loading } from '@/components/Loading';
-import {
-  GRAY_COLOR_LIGHT,
-  PRIMARY_COLOR,
-  PRIMARY_COLOR_EXTRA_LIGHT,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
-} from '@/constants/Colors';
+import { GRAY_COLOR_LIGHT, PRIMARY_COLOR_EXTRA_LIGHT, REFRESH_COLORS } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { toFormData } from '@/utils/toFormData';
 import { ImageBackground } from 'expo-image';
@@ -85,7 +79,7 @@ const UpdateProfile = memo(function UpdateProfile() {
             setRefreshing(true);
             await getProfile();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

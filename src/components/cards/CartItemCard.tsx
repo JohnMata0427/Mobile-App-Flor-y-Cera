@@ -12,8 +12,10 @@ import type { Ingredient } from '@/interfaces/Ingredient';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
-import { Alert, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface CartItemCardProps {
   data: CartItem;
@@ -60,7 +62,21 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
 
   return (
     <View style={styles.cartItemCard}>
-      <Image source={{ uri: imagen }} style={styles.cardImage} />
+      <Pressable
+        onPress={() =>
+          tipo_producto === 'normal'
+            ? router.push({
+                pathname: '/(client)/(catalog)/[product_id]',
+                params: { product_id: _id },
+              })
+            : router.push({
+                pathname: '/(client)/(personalization)/[category]',
+                params: { category: id_categoria, personalizedProductId: _id },
+              })
+        }
+      >
+        <Image source={{ uri: imagen }} style={styles.cardImage} />
+      </Pressable>
       <View style={styles.cardContainer}>
         <View style={styles.cardEnds}>
           <Text style={styles.cardTitle}>

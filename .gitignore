@@ -5,6 +5,7 @@ node_modules/
 
 # environment
 .env
+google-services.json
 
 # Expo
 .expo/

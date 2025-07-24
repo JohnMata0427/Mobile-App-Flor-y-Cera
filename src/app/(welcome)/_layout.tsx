@@ -2,10 +2,10 @@ import { type NativeStackNavigationOptions } from '@react-navigation/native-stac
 import { Stack } from 'expo-router';
 
 const screenOptions: NativeStackNavigationOptions = {
-	headerShown: false,
-	animation: 'none',
+  headerShown: false,
+  animation: 'none',
 };
 
 export default function WelcomeLayout() {
-	return <Stack screenOptions={screenOptions} />;
+  return <Stack screenOptions={screenOptions} />;
 }

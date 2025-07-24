@@ -3,9 +3,9 @@ import { ClientSearchBar } from '@/components/ClientSearchBar';
 import {
   GRAY_COLOR_DARK,
   PRIMARY_COLOR_DARK,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
-  TERTIARY_COLOR_DARK,
   TERTIARY_COLOR_LIGHT,
 } from '@/constants/Colors';
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
@@ -54,7 +54,7 @@ const Home = memo(() => {
             await getProducts();
             await getPromotions();
           }}
-          colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
+          colors={REFRESH_COLORS}
         />
       }
     >
@@ -75,11 +75,7 @@ const Home = memo(() => {
         autoPlay
         autoPlayInterval={5000}
         renderItem={({ item: { imagen } }) => (
-          <Image
-            source={{ uri: imagen }}
-            style={styles.promotionImage}
-            resizeMode="contain"
-          />
+          <Image source={{ uri: imagen }} style={styles.promotionImage} resizeMode="contain" />
         )}
       />
 

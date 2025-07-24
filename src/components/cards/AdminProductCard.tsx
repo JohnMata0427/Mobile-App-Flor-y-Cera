@@ -1,4 +1,4 @@
-import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_LIGHT } from '@/constants/Colors';
+import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Category } from '@/interfaces/Category';
 import type { Product } from '@/interfaces/Product';
@@ -21,11 +21,7 @@ export const AdminProductCard = memo(
     categories,
   }: AdminProductCardProps) => (
     <BaseCard styles={styles.card}>
-      <Image
-        source={{ uri: imagen }}
-        resizeMode="cover"
-        style={styles.productImage}
-      />
+      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.productImage} />
       <View style={styles.productInfo}>
         <Text style={globalStyles.labelText} numberOfLines={2}>
           {nombre}

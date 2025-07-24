@@ -15,15 +15,18 @@
     "preview": {
       "distribution": "internal",
       "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
       "environment": "preview"
     },
     "production": {
-      "autoIncrement": true,
       "distribution": "store",
       "channel": "stable",
       "android": {
         "buildType": "app-bundle",
-        "image": "latest"
+        "image": "latest",
+        "autoIncrement": "version"
       },
       "environment": "production"
     }

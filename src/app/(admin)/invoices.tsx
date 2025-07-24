@@ -13,8 +13,7 @@ import {
   PRIMARY_COLOR_EXTRA_LIGHT,
   RED_COLOR,
   RED_COLOR_DARK,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { InvoicesContext, InvoicesProvider } from '@/contexts/InvoicesContext';
 import { globalStyles } from '@/globalStyles';
@@ -136,7 +135,7 @@ const Invoices = memo(function Invoices() {
             setRefreshing(true);
             await getInvoices();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

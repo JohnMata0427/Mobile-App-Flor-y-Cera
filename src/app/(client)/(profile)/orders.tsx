@@ -1,12 +1,10 @@
 import { InvoiceAccordion } from '@/components/cards/InvoiceAccordion';
 import { Loading } from '@/components/Loading';
-import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR_DARK, SECONDARY_COLOR } from '@/constants/Colors';
+import { PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import type { Invoice } from '@/interfaces/Invoice';
 import { getClientInvoicesRequest } from '@/services/InvoiceService';
-import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -68,9 +66,7 @@ export default function ClientOrdersPage() {
               </View>
             }
             contentContainerStyle={styles.flatListContent}
-            renderItem={({ item }) => (
-              <InvoiceAccordion invoice={item} />
-            )}
+            renderItem={({ item }) => <InvoiceAccordion invoice={item} />}
           />
         )}
       </ScrollView>

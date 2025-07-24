@@ -1,12 +1,6 @@
 import { Button } from '@/components/Button';
 import { CartItemCard } from '@/components/cards/CartItemCard';
-import {
-  GRAY_COLOR_LIGHT,
-  PRIMARY_COLOR,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
-  TERTIARY_COLOR_DARK,
-} from '@/constants/Colors';
+import { GRAY_COLOR_LIGHT, REFRESH_COLORS, TERTIARY_COLOR, TERTIARY_COLOR_DARK } from '@/constants/Colors';
 import { CategoriesProvider } from '@/contexts/CategoryContext';
 import { globalStyles } from '@/globalStyles';
 import { useCartStore } from '@/store/useCartStore';
@@ -50,7 +44,7 @@ export default function CartScreen() {
         <View style={styles.cartInfo}>
           <MaterialCommunityIcons name="cart-variant" size={18} />
           <View>
-            <Text style={globalStyles.labelText}>Mi carrito ({totalProducts})</Text>
+            <Text style={[globalStyles.labelText, { textAlign: 'center' }]}>Mi carrito ({totalProducts})</Text>
             <Text style={globalStyles.subtitle}>Envíos a todo Ecuador</Text>
           </View>
         </View>
@@ -71,7 +65,7 @@ export default function CartScreen() {
           <RefreshControl
             refreshing={loading}
             onRefresh={async () => setRefreshing(!refreshing)}
-            colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+            colors={REFRESH_COLORS}
           />
         }
         data={products}

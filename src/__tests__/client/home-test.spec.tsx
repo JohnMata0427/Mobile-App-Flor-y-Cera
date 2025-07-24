@@ -3,5 +3,5 @@ describe('Pantalla de inicio', () => {
 
   test('Los nuevos productos se muestran correctamente', () => {});
 
-	test('Las preguntas frecuentes se muestran correctamente', () => {});
+  test('Las preguntas frecuentes se muestran correctamente', () => {});
 });

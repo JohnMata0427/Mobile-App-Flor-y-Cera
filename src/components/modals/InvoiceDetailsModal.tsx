@@ -31,7 +31,8 @@ export const InvoiceDetailsModal = memo(
         backdropColor={'rgba(0, 0, 0, 0.1)'}
         animationType="slide"
         onRequestClose={onClose}
-        statusBarTranslucent navigationBarTranslucent
+        statusBarTranslucent
+        navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
           <Text style={styles.titleText}>Detalles de la Factura</Text>

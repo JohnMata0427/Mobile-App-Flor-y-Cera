@@ -4,9 +4,7 @@ import { GRAY_COLOR_LIGHT, PRIMARY_COLOR_DARK, SECONDARY_COLOR } from '@/constan
 import { globalStyles } from '@/globalStyles';
 import type { Invoice } from '@/interfaces/Invoice';
 import { getClientInvoicesRequest } from '@/services/InvoiceService';
-import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -51,7 +49,9 @@ export default function ClientInvoicesPage() {
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
         </Pressable>
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>Tus Facturas de Pedidos Finalizados</Text>
+        <Text style={{ color: 'white', fontWeight: 'bold' }}>
+          Tus Facturas de Pedidos Finalizados
+        </Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {loading ? (
@@ -68,9 +68,7 @@ export default function ClientInvoicesPage() {
               </View>
             }
             contentContainerStyle={styles.flatListContent}
-            renderItem={({ item }) => (
-              <InvoiceAccordion invoice={item} />
-            )}
+            renderItem={({ item }) => <InvoiceAccordion invoice={item} />}
           />
         )}
       </ScrollView>

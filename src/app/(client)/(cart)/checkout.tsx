@@ -8,13 +8,20 @@ import {
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
-  SECONDARY_COLOR,
-  TERTIARY_COLOR,
+  REFRESH_COLORS,
 } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
+import { getPaymentIntentRequest } from '@/services/CartService';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
-import { CardForm, createPaymentMethod, StripeProvider } from '@stripe/stripe-react-native';
+import {
+  CardForm,
+  confirmPaymentSheetPayment,
+  createPaymentMethod,
+  initPaymentSheet,
+  presentPaymentSheet,
+  StripeProvider,
+} from '@stripe/stripe-react-native';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
@@ -27,7 +34,8 @@ const defaultValues = {
   direccion: '',
 };
 
-const { STRIPE_API_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY } = Constants.expoConfig?.extra ?? {};
+const { STRIPE_API_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY } =
+  Constants.expoConfig?.extra ?? {};
 
 const UpdateProfile = memo(function UpdateProfile() {
   const { updateProfile, client, loading, refreshing, setRefreshing, getProfile } =
@@ -81,6 +89,32 @@ const UpdateProfile = memo(function UpdateProfile() {
   useEffect(() => {
     reset(client);
     clearErrors();
+
+    (async () => {
+      const { customer, paymentIntent, ephemeralKey } = await getPaymentIntentRequest();
+
+      await initPaymentSheet({
+        merchantDisplayName: 'Flor & Cera',
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
+        paymentIntentClientSecret: paymentIntent,
+        allowsDelayedPaymentMethods: true,
+        removeSavedPaymentMethodMessage: '¿Desea eliminar este método de pago?',
+        customFlow: true,
+        appearance: {
+          colors: {
+            primary: PRIMARY_COLOR,
+            icon: GRAY_COLOR_DARK,
+          },
+          shapes: {
+            borderRadius: 10,
+          },
+          embeddedPaymentElement: {
+            row
+          },
+        }
+      });
+    })();
   }, [client]);
 
   return (
@@ -94,7 +128,7 @@ const UpdateProfile = memo(function UpdateProfile() {
               setRefreshing(true);
               await getProfile();
             }}
-            colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+            colors={REFRESH_COLORS}
           />
         }
       >
@@ -220,6 +254,32 @@ const UpdateProfile = memo(function UpdateProfile() {
                 disabled={loadingPayment}
               />
             </View>
+            <Button
+              label="Iniciar compra"
+              icon="cash-check"
+              onPress={async () => {
+                const { error } = await presentPaymentSheet();
+
+                if (!error) {
+                  const { error: confirmError } = await confirmPaymentSheetPayment();
+                  if (confirmError) {
+                    Alert.alert('Error al confirmar el pago', confirmError.message);
+                  } else {
+                    Alert.alert('Pago exitoso', 'Su pago ha sido procesado correctamente.');
+                  }
+                }
+              }}
+              buttonStyle={
+                editable
+                  ? {
+                      backgroundColor: GRAY_COLOR_DARK,
+                      borderColor: 'black',
+                      marginBottom: 5,
+                    }
+                  : { marginBottom: 5 }
+              }
+              disabled={loadingPayment}
+            />
           </>
         )}
         <InvoiceDetailsModal

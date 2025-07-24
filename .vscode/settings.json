@@ -1,5 +1,6 @@
 {
   "symbols.folders.associations": {
     "store": "folder-target"
-  }
+  },
+  "discord.enabled": true
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export type Filter<T> = {
   key: keyof T;
@@ -45,7 +45,7 @@ export const useEntityManagement = <T extends { _id: string }>({
       setLoading(false);
       setRefreshing(false);
     }
-  }
+  };
 
   useEffect(() => {
     getEntities();

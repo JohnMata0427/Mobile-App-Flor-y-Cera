@@ -7,6 +7,7 @@ import {
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   PRIMARY_COLOR_LIGHT,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
@@ -164,7 +165,7 @@ const PersonalizationScreen = memo(() => {
             setRefreshing(true);
             await getPersonalizedProducts();
           }}
-          colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_DARK, TERTIARY_COLOR_DARK]}
+          colors={REFRESH_COLORS}
         />
       }
     >

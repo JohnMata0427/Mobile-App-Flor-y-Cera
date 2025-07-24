@@ -1,5 +1,4 @@
 import { PRIMARY_COLOR_EXTRA_LIGHT } from '@/constants/Colors';
-import { HEADING_FONT } from '@/constants/Fonts';
 import { globalStyles } from '@/globalStyles';
 import { memo, type ReactNode } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';

@@ -14,6 +14,7 @@ import {
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   PRIMARY_COLOR_EXTRA_LIGHT,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
@@ -135,7 +136,7 @@ const ProductsScreen = memo(function ProductsScreen() {
               setRefreshing(true);
               await getProducts();
             }}
-            colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+            colors={REFRESH_COLORS}
           />
         }
       >
@@ -373,7 +374,7 @@ const IngredientsScreen = memo(function IngredientsScreen() {
             setRefreshing(true);
             await getIngredients();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >
@@ -456,7 +457,7 @@ const CategoriesScreen = memo(function CategoriesScreen() {
             setRefreshing(true);
             await getCategories();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

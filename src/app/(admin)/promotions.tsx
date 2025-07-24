@@ -5,8 +5,8 @@ import { PromotionCard } from '@/components/cards/PromotionCard';
 import { Loading } from '@/components/Loading';
 import { PromotionModal } from '@/components/modals/PromotionModal';
 import {
-  PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   TERTIARY_COLOR,
@@ -105,7 +105,7 @@ const Promotions = memo(function Promotions() {
             setRefreshing(true);
             await getPromotions();
           }}
-          colors={[PRIMARY_COLOR, SECONDARY_COLOR, TERTIARY_COLOR]}
+          colors={REFRESH_COLORS}
         />
       }
     >

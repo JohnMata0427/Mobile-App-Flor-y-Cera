@@ -27,7 +27,7 @@ export interface ProductInfo {
   categoria?: string;
   aroma?: string;
   ingredientes?: Pick<Ingredient, '_id' | 'nombre' | 'imagen'>[];
-  producto?: Product
+  producto?: Product;
 }
 
 export interface InvoiceFilter {

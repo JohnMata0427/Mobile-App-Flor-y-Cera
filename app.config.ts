@@ -52,6 +52,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'com.florcera.app',
+    googleServicesFile: './google-services.json',
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.florcera.app',
     icon: './assets/images/icon.png',
     adaptiveIcon: {
@@ -74,6 +75,7 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-secure-store',
+    'expo-notifications',
     [
       'expo-splash-screen',
       {

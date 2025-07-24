@@ -7,6 +7,7 @@ import {
   PRIMARY_COLOR,
   PRIMARY_COLOR_DARK,
   PRIMARY_COLOR_LIGHT,
+  REFRESH_COLORS,
   SECONDARY_COLOR,
   SECONDARY_COLOR_DARK,
   SECONDARY_COLOR_LIGHT,
@@ -284,7 +285,7 @@ const ProductPersonalization = memo(() => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={() => setRefreshing(!refreshing)}
-            colors={[PRIMARY_COLOR_DARK, SECONDARY_COLOR_LIGHT, TERTIARY_COLOR_LIGHT]}
+            colors={REFRESH_COLORS}
           />
         }
       >
@@ -321,13 +322,22 @@ const ProductPersonalization = memo(() => {
                 <>
                   <Image
                     source={{ uri: selectedMold.imagen }}
-                    style={[styles.dropperImage, { tintColor: tintedColor }]}
+                    style={[styles.dropperImage]}
                     resizeMode="contain"
                   />
-                  <Text style={globalStyles.bodyText}>{capitalizeWord(selectedMold.nombre)}</Text>
+                  <Image
+                    source={{ uri: selectedMold.imagen }}
+                    style={[styles.dropperImage, { tintColor: tintedColor, opacity: 0.8 }]}
+                    resizeMode="contain"
+                  />
+                  <Text style={[globalStyles.bodyText, { position: 'absolute', bottom: '7%' }]}>
+                    {capitalizeWord(selectedMold.nombre)}
+                  </Text>
                 </>
               ) : (
-                <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra un molde y un color aquí</Text>
+                <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>
+                  Arrastra un molde y un color aquí
+                </Text>
               )}
             </DraxView>
             <View style={styles.sideDroppers}>
@@ -349,7 +359,11 @@ const ProductPersonalization = memo(() => {
                     </Text>
                   </>
                 ) : (
-                  <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra un aroma aquí</Text>
+                  <Text
+                    style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}
+                  >
+                    Arrastra un aroma aquí
+                  </Text>
                 )}
               </DraxView>
               <DraxView
@@ -383,7 +397,11 @@ const ProductPersonalization = memo(() => {
                     )}
                   />
                 ) : (
-                  <Text style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}>Arrastra dos esencias aquí</Text>
+                  <Text
+                    style={[globalStyles.bodyText, { textAlign: 'center', fontWeight: 'bold' }]}
+                  >
+                    Arrastra dos esencias aquí
+                  </Text>
                 )}
               </DraxView>
             </View>
@@ -397,7 +415,7 @@ const ProductPersonalization = memo(() => {
               textStyle={styles.buttonText}
             />
             <Button
-              label="Finalizar creación"
+              label={personalizedProductId ? 'Actualizar creación' : 'Finalizar creación'}
               icon="thought-bubble"
               onPress={handleSubmit}
               buttonStyle={styles.finishButton}
@@ -478,7 +496,7 @@ const styles = StyleSheet.create({
     rowGap: 5,
   },
   finishButton: {
-    width: '40%',
+    width: '45%',
   },
   headerTitle: {
     color: 'white',
@@ -530,6 +548,8 @@ const styles = StyleSheet.create({
   dropperImage: {
     width: '75%',
     height: '75%',
+    position: 'absolute',
+    alignSelf: 'center',
   },
   sideDroppers: {
     width: '30%',
