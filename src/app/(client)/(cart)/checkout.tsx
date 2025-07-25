@@ -3,25 +3,19 @@ import { InputField } from '@/components/fields/InputField';
 import { Loading } from '@/components/Loading';
 import { InvoiceDetailsModal } from '@/components/modals/InvoiceDetailsModal';
 import {
-  GRAY_COLOR,
   GRAY_COLOR_DARK,
   GRAY_COLOR_LIGHT,
   PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
   REFRESH_COLORS,
+  TERTIARY_COLOR,
+  TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { getPaymentIntentRequest } from '@/services/CartService';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
-import {
-  CardForm,
-  confirmPaymentSheetPayment,
-  createPaymentMethod,
-  initPaymentSheet,
-  presentPaymentSheet,
-  StripeProvider,
-} from '@stripe/stripe-react-native';
+import { initPaymentSheet, presentPaymentSheet, StripeProvider } from '@stripe/stripe-react-native';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
@@ -49,6 +43,7 @@ const UpdateProfile = memo(function UpdateProfile() {
     clearErrors,
   } = useForm({ defaultValues });
   const [editable, setEditable] = useState<boolean>(false);
+  const [paymentIntentId, setPaymentIntentId] = useState<any>();
 
   const onSubmit = async (form: any) => {
     const formData = toFormData(form);
@@ -60,20 +55,15 @@ const UpdateProfile = memo(function UpdateProfile() {
     if (ok) setEditable(false);
   };
 
-  const [cardDetails, setCardDetails] = useState<any>(null);
   const [invoice, setInvoice] = useState<any>(null);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
 
   const handlePayment = async () => {
-    if (cardDetails) {
-      setLoadingPayment(true);
-      const { paymentMethod } = await createPaymentMethod({
-        paymentMethodType: 'Card',
-        paymentMethodData: cardDetails,
-      });
+    const { error } = await presentPaymentSheet();
 
-      const { venta, cliente, ok } = await checkout(paymentMethod?.id ?? '');
+    if (!error) {
+      const { venta, cliente, ok } = await checkout(paymentIntentId);
 
       if (ok) {
         setInvoice({
@@ -82,8 +72,9 @@ const UpdateProfile = memo(function UpdateProfile() {
         });
         setDetailsVisible(true);
       }
-      setLoadingPayment(false);
     }
+
+    setLoadingPayment(false);
   };
 
   useEffect(() => {
@@ -91,16 +82,17 @@ const UpdateProfile = memo(function UpdateProfile() {
     clearErrors();
 
     (async () => {
-      const { customer, paymentIntent, ephemeralKey } = await getPaymentIntentRequest();
+      const { customer, paymentIntentClientSecret, paymentIntentId, ephemeralKey } =
+        await getPaymentIntentRequest();
+
+      setPaymentIntentId(paymentIntentId);
 
       await initPaymentSheet({
         merchantDisplayName: 'Flor & Cera',
         customerId: customer,
         customerEphemeralKeySecret: ephemeralKey,
-        paymentIntentClientSecret: paymentIntent,
+        paymentIntentClientSecret,
         allowsDelayedPaymentMethods: true,
-        removeSavedPaymentMethodMessage: '¿Desea eliminar este método de pago?',
-        customFlow: true,
         appearance: {
           colors: {
             primary: PRIMARY_COLOR,
@@ -109,10 +101,11 @@ const UpdateProfile = memo(function UpdateProfile() {
           shapes: {
             borderRadius: 10,
           },
-          embeddedPaymentElement: {
-            row
-          },
-        }
+        },
+        googlePay: {
+          merchantCountryCode: 'EC',
+          testEnv: true,
+        },
       });
     })();
   }, [client]);
@@ -135,140 +128,91 @@ const UpdateProfile = memo(function UpdateProfile() {
         {loading ? (
           <Loading />
         ) : (
-          <>
-            <View style={styles.cardContainer}>
-              <Text
-                style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}
-              >
-                Datos de envío
-              </Text>
+          <View style={styles.cardContainer}>
+            <Text
+              style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}
+            >
+              Datos de envío
+            </Text>
 
-              <InputField
-                control={control}
-                name="cedula"
-                rules={{
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: 'La cédula debe tener 10 dígitos',
-                  },
-                  required: 'La cédula es requerida',
-                }}
-                icon="badge-account-horizontal"
-                label="Cédula"
-                placeholder="Ej: 1234567890"
-                error={errors.cedula?.message as string}
-                autoComplete="cc-number"
-                keyboardType="numeric"
-                textContentType="telephoneNumber"
-                editable={editable}
-              />
+            <InputField
+              control={control}
+              name="cedula"
+              rules={{
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: 'La cédula debe tener 10 dígitos',
+                },
+                required: 'La cédula es requerida',
+              }}
+              icon="badge-account-horizontal"
+              label="Cédula"
+              placeholder="Ej: 1234567890"
+              error={errors.cedula?.message as string}
+              autoComplete="cc-number"
+              keyboardType="numeric"
+              textContentType="telephoneNumber"
+              editable={editable}
+            />
 
-              <InputField
-                control={control}
-                name="telefono"
-                rules={{
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: 'El teléfono debe tener 10 dígitos',
-                  },
-                  required: 'El teléfono es requerido',
-                }}
-                icon="phone"
-                label="Teléfono"
-                placeholder="Ej: 1234567890"
-                error={errors.telefono?.message as string}
-                autoComplete="tel"
-                autoCapitalize="none"
-                textContentType="telephoneNumber"
-                keyboardType="phone-pad"
-                editable={editable}
-              />
+            <InputField
+              control={control}
+              name="telefono"
+              rules={{
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: 'El teléfono debe tener 10 dígitos',
+                },
+                required: 'El teléfono es requerido',
+              }}
+              icon="phone"
+              label="Teléfono"
+              placeholder="Ej: 1234567890"
+              error={errors.telefono?.message as string}
+              autoComplete="tel"
+              autoCapitalize="none"
+              textContentType="telephoneNumber"
+              keyboardType="phone-pad"
+              editable={editable}
+            />
 
-              <InputField
-                control={control}
-                name="direccion"
-                rules={{
-                  pattern: {
-                    value: /^[a-zA-Z0-9\s,.'-]{3,100}$/,
-                    message:
-                      'La dirección debe tener entre 3 y 100 caracteres y solo letras, números y algunos caracteres especiales',
-                  },
-                  required: 'La dirección es requerida',
-                }}
-                icon="map-marker"
-                label="Dirección"
-                placeholder="Ej: Sector A, Calle Falsetin 123"
-                error={errors.direccion?.message as string}
-                autoComplete="street-address"
-                autoCapitalize="words"
-                textContentType="fullStreetAddress"
-                editable={editable}
-              />
+            <InputField
+              control={control}
+              name="direccion"
+              rules={{
+                pattern: {
+                  value: /^[a-zA-Z0-9\s,.'-]{3,100}$/,
+                  message:
+                    'La dirección debe tener entre 3 y 100 caracteres y solo letras, números y algunos caracteres especiales',
+                },
+                required: 'La dirección es requerida',
+              }}
+              icon="map-marker"
+              label="Dirección"
+              placeholder="Ej: Sector A, Calle Falsetin 123"
+              error={errors.direccion?.message as string}
+              autoComplete="street-address"
+              autoCapitalize="words"
+              textContentType="fullStreetAddress"
+              editable={editable}
+            />
 
-              <Button
-                label={editable ? 'Actualizar datos de envío' : 'Modificar datos de envio'}
-                icon="truck-delivery"
-                onPress={() => {
-                  if (editable) {
-                    handleSubmit(onSubmit)();
-                  } else {
-                    setEditable(true);
-                  }
-                }}
-                buttonStyle={{ marginTop: 10, marginBottom: 5 }}
-              />
-            </View>
-            <View style={[styles.cardContainer, styles.billingContainer]}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
-                Datos de facturación
-              </Text>
-
-              <CardForm
-                style={{ width: '100%', height: 180, marginVertical: 10 }}
-                cardStyle={{
-                  textColor: GRAY_COLOR_DARK,
-                  placeholderColor: GRAY_COLOR,
-                  backgroundColor: GRAY_COLOR_LIGHT,
-                  borderRadius: 10,
-                  cursorColor: PRIMARY_COLOR,
-                  textErrorColor: 'red',
-                  fontSize: 12,
-                }}
-                defaultValues={{ countryCode: 'EC' }}
-                onFormComplete={cardDetails => setCardDetails(cardDetails)}
-              />
-
-              <Button
-                label="Completar compra"
-                icon="cash-check"
-                onPress={handlePayment}
-                buttonStyle={
-                  editable
-                    ? {
-                        backgroundColor: GRAY_COLOR_DARK,
-                        borderColor: 'black',
-                        marginBottom: 5,
-                      }
-                    : { marginBottom: 5 }
+            <Button
+              label={editable ? 'Actualizar datos de envío' : 'Modificar datos de envio'}
+              icon="truck-delivery"
+              onPress={() => {
+                if (editable) {
+                  handleSubmit(onSubmit)();
+                } else {
+                  setEditable(true);
                 }
-                disabled={loadingPayment}
-              />
-            </View>
+              }}
+              buttonStyle={{ marginTop: 10, marginBottom: 5 }}
+            />
             <Button
               label="Iniciar compra"
               icon="cash-check"
-              onPress={async () => {
-                const { error } = await presentPaymentSheet();
-
-                if (!error) {
-                  const { error: confirmError } = await confirmPaymentSheetPayment();
-                  if (confirmError) {
-                    Alert.alert('Error al confirmar el pago', confirmError.message);
-                  } else {
-                    Alert.alert('Pago exitoso', 'Su pago ha sido procesado correctamente.');
-                  }
-                }
-              }}
+              onPress={handlePayment}
               buttonStyle={
                 editable
                   ? {
@@ -276,17 +220,22 @@ const UpdateProfile = memo(function UpdateProfile() {
                       borderColor: 'black',
                       marginBottom: 5,
                     }
-                  : { marginBottom: 5 }
+                  : {
+                      marginBottom: 5,
+                      backgroundColor: TERTIARY_COLOR,
+                      borderColor: TERTIARY_COLOR_DARK,
+                    }
               }
               disabled={loadingPayment}
             />
-          </>
+          </View>
         )}
         <InvoiceDetailsModal
           invoice={invoice}
           isVisible={detailsVisible}
           onClose={() => {
             setDetailsVisible(false);
+            router.replace('/(client)/(cart)');
             router.replace('/(client)/(profile)/orders');
           }}
         />

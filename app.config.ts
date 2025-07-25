@@ -52,7 +52,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: 'com.florcera.app',
-    googleServicesFile: './google-services.json',
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.florcera.app',
     icon: './assets/images/icon.png',
     adaptiveIcon: {

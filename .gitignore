@@ -6,6 +6,7 @@ node_modules/
 # environment
 .env
 google-services.json
+firebase-cloud-messaging.json
 
 # Expo
 .expo/
@@ -41,3 +42,6 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+/android
+/ios
