@@ -33,7 +33,7 @@ export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
 const styles = StyleSheet.create({
   promotionImage: {
     width: '100%',
-    aspectRatio: 16 / 9,
+    aspectRatio: 16 / 11,
     borderRadius: 10,
   },
   promotionInfo: {

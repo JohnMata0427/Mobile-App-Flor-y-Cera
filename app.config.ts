@@ -34,21 +34,17 @@ const config: ExpoConfig = {
     silentLaunch: true,
   },
   androidNavigationBar: {
+    backgroundColor: '#ffffff',
     barStyle: 'dark-content',
   },
   notification: {
-    icon: './assets/images/icon.png',
-    color: '#000000',
-    androidCollapsedTitle: 'Notificaciones de Flor & Cera',
+    icon: './assets/images/notification-icon.png',
     androidMode: 'collapse',
   },
   splash: {
     backgroundColor: '#ffffff',
     image: './assets/images/icon.png',
     resizeMode: 'contain',
-  },
-  ios: {
-    supportsTablet: true,
   },
   android: {
     package: 'com.florcera.app',

@@ -8,15 +8,19 @@ import {
   PRIMARY_COLOR,
   PRIMARY_COLOR_EXTRA_LIGHT,
   REFRESH_COLORS,
-  TERTIARY_COLOR,
+  SECONDARY_COLOR,
+  SECONDARY_COLOR_DARK,
   TERTIARY_COLOR_DARK,
 } from '@/constants/Colors';
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
+import { globalStyles } from '@/globalStyles';
 import { getPaymentIntentRequest } from '@/services/CartService';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
 import { initPaymentSheet, presentPaymentSheet, StripeProvider } from '@stripe/stripe-react-native';
+import { ButtonType } from '@stripe/stripe-react-native/lib/typescript/src/types/PlatformPay';
 import Constants from 'expo-constants';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,10 +35,10 @@ const defaultValues = {
 const { STRIPE_API_KEY = process.env.EXPO_PUBLIC_STRIPE_API_KEY } =
   Constants.expoConfig?.extra ?? {};
 
-const UpdateProfile = memo(function UpdateProfile() {
+const Checkout = memo(() => {
   const { updateProfile, client, loading, refreshing, setRefreshing, getProfile } =
     use(ProfileContext);
-  const { checkout } = useCartStore();
+  const { checkout, totalProducts, totalPrice } = useCartStore();
   const {
     formState: { errors },
     handleSubmit,
@@ -104,7 +108,17 @@ const UpdateProfile = memo(function UpdateProfile() {
         },
         googlePay: {
           merchantCountryCode: 'EC',
-          testEnv: true,
+          testEnv: __DEV__,
+          currencyCode: 'USD',
+        },
+        defaultBillingDetails: {
+          phone: client.telefono,
+          address: {
+            line1: client.direccion,
+            country: 'EC',
+          },
+          email: client.email,
+          name: `${client.nombre} ${client.apellido}`,
         },
       });
     })();
@@ -129,10 +143,19 @@ const UpdateProfile = memo(function UpdateProfile() {
           <Loading />
         ) : (
           <View style={styles.cardContainer}>
+            <Image
+              source={require('@/assets/logo.png')}
+              style={{ width: 80, height: 80, alignSelf: 'center', marginBottom: 10 }}
+              contentFit='contain'
+            />
             <Text
               style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}
             >
               Datos de envío
+            </Text>
+            <Text style={[globalStyles.bodyText, { textAlign: 'center' }]}>
+              Para poder realizar la compra, es necesario que tengas tus datos de envío
+              actualizados.
             </Text>
 
             <InputField
@@ -207,27 +230,32 @@ const UpdateProfile = memo(function UpdateProfile() {
                   setEditable(true);
                 }
               }}
-              buttonStyle={{ marginTop: 10, marginBottom: 5 }}
+              buttonStyle={{
+                marginTop: 10,
+                marginBottom: 5,
+                backgroundColor: SECONDARY_COLOR,
+                borderColor: SECONDARY_COLOR_DARK,
+              }}
             />
-            <Button
-              label="Iniciar compra"
-              icon="cash-check"
-              onPress={handlePayment}
-              buttonStyle={
-                editable
-                  ? {
-                      backgroundColor: GRAY_COLOR_DARK,
-                      borderColor: 'black',
-                      marginBottom: 5,
-                    }
-                  : {
-                      marginBottom: 5,
-                      backgroundColor: TERTIARY_COLOR,
-                      borderColor: TERTIARY_COLOR_DARK,
-                    }
-              }
-              disabled={loadingPayment}
-            />
+            {!editable && (
+              <Button
+                label="Completar compra"
+                icon="tag"
+                onPress={handlePayment}
+                buttonStyle={
+                  editable
+                    ? {
+                        backgroundColor: GRAY_COLOR_DARK,
+                        borderColor: 'black',
+                        marginBottom: 5,
+                      }
+                    : {
+                        marginBottom: 5,
+                      }
+                }
+                disabled={loadingPayment}
+              />
+            )}
           </View>
         )}
         <InvoiceDetailsModal
@@ -240,9 +268,30 @@ const UpdateProfile = memo(function UpdateProfile() {
           }}
         />
       </ScrollView>
+      <View style={styles.footerContainer}>
+        <View>
+          <Text style={styles.priceText}>Total (IVA incluido): ${totalPrice?.toFixed(2)}</Text>
+          <Text style={globalStyles.subtitle}>Total de productos: {totalProducts} producto(s)</Text>
+        </View>
+        <Button
+          label="Volver al carrito"
+          icon="cart"
+          onPress={() => router.replace('/(client)/(cart)')}
+          buttonStyle={styles.orderButton}
+          textStyle={styles.orderText}
+        />
+      </View>
     </StripeProvider>
   );
 });
+
+export default function CheckoutScreen() {
+  return (
+    <ProfileProvider>
+      <Checkout />
+    </ProfileProvider>
+  );
+}
 
 const styles = StyleSheet.create({
   scrollContent: {
@@ -252,7 +301,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     marginHorizontal: 10,
-    marginTop: 50,
+    marginVertical: 'auto',
     rowGap: 5,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -264,12 +313,26 @@ const styles = StyleSheet.create({
   billingContainer: {
     marginTop: 20,
   },
-});
 
-export default function UpdateProfileScreen() {
-  return (
-    <ProfileProvider>
-      <UpdateProfile />
-    </ProfileProvider>
-  );
-}
+  orderButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  orderText: {
+    fontSize: 12,
+  },
+  footerContainer: {
+    backgroundColor: 'white',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderColor: GRAY_COLOR_LIGHT,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: TERTIARY_COLOR_DARK,
+  },
+});

@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
 
-  badgesContainer: { flexDirection: 'row', columnGap: 2, flexWrap: 'wrap' },
+  badgesContainer: { flexDirection: 'row', gap: 2, flexWrap: 'wrap' },
   badge: {
     fontWeight: 'bold',
     fontSize: 10,

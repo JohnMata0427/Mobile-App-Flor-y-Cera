@@ -9,15 +9,27 @@ import {
 import { ProfileContext, ProfileProvider } from '@/contexts/ProfileContext';
 import { globalStyles } from '@/globalStyles';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useNotificationsStore } from '@/store/useNotificationsStore';
 import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
+import { setItemAsync } from 'expo-secure-store';
 import { memo, use, useCallback } from 'react';
-import { Image, Linking, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  Linking,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ClientProfile = memo(() => {
   const { logout } = useAuthStore();
+  const { totalNotifications, readNotifications, setReadNotifications } = useNotificationsStore();
   const { top } = useSafeAreaInsets();
   const { client, loading, refreshing, setRefreshing, getProfile } = use(ProfileContext);
   const { nombre, apellido, email, imagen, genero } = client ?? {};
@@ -71,7 +83,11 @@ const ClientProfile = memo(() => {
             <Text style={globalStyles.labelText}>Configuración de la cuenta</Text>
 
             <Pressable
-              onPress={() => router.push('/(client)/(profile)/notifications')}
+              onPress={async () => {
+                setReadNotifications(false)
+                await setItemAsync('readNotifications', 'yes');
+                router.push('/(client)/(profile)/notifications');
+              }}
               style={styles.menuItem}
             >
               <View style={styles.menuItemLeft}>
@@ -79,7 +95,9 @@ const ClientProfile = memo(() => {
                 <Text style={globalStyles.bodyText}>Notificaciones</Text>
               </View>
               <View style={styles.menuItemRight}>
-                <Text style={styles.notificationBadge}>4</Text>
+                {readNotifications && (
+                  <Text style={styles.notificationBadge}>{totalNotifications}</Text>
+                )}
                 <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
               </View>
             </Pressable>
@@ -137,7 +155,11 @@ const ClientProfile = memo(() => {
               style={styles.menuItem}
             >
               <View style={styles.menuItemLeft}>
-                <MaterialCommunityIcons name="information-variant" size={20} color={GRAY_COLOR_DARK} />
+                <MaterialCommunityIcons
+                  name="information-variant"
+                  size={20}
+                  color={GRAY_COLOR_DARK}
+                />
                 <Text style={globalStyles.bodyText}>Sobre nosotros</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />
@@ -157,7 +179,11 @@ const ClientProfile = memo(() => {
               style={styles.menuItem}
             >
               <View style={styles.menuItemLeft}>
-                <MaterialCommunityIcons name="email-mark-as-unread" size={20} color={GRAY_COLOR_DARK} />
+                <MaterialCommunityIcons
+                  name="email-mark-as-unread"
+                  size={20}
+                  color={GRAY_COLOR_DARK}
+                />
                 <Text style={globalStyles.bodyText}>Contactanos</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color={GRAY_COLOR_DARK} />

@@ -1,4 +1,4 @@
-import { GRAY_COLOR_DARK } from '@/constants/Colors';
+import { GRAY_COLOR, GRAY_COLOR_DARK } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -13,6 +13,7 @@ export const AdminSearch = memo(({ setSearch, placeholder = 'Buscar...' }: Admin
     <TextInput
       style={styles.searchInput}
       placeholder={placeholder}
+      placeholderTextColor={GRAY_COLOR}
       onChangeText={text => setSearch(text)}
     />
     <Pressable style={styles.searchIcon}>

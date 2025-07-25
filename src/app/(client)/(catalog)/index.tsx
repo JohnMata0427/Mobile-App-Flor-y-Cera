@@ -97,7 +97,7 @@ const Catalog = memo(() => {
                 )}
               />
             </View>
-            <Text style={globalStyles.subtitle}>
+            <Text style={[globalStyles.subtitle, { marginVertical: 10 }]}>
               Explora nuestra amplia gama de productos artesanales, desde jabones naturales hasta
               velas aromáticas, todos hechos con amor y cuidado.
             </Text>
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   flatListContainer: {
     paddingHorizontal: 10,
     rowGap: 10,
+    paddingBottom: 10
   },
   searchContainer: {
     backgroundColor: PRIMARY_COLOR,

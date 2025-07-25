@@ -31,7 +31,7 @@ const Notifications = memo(() => {
 
   const getDataAndConfig = async () => {
     const { status } = await getPermissionsAsync();
-    setIsPermissionsGranted(status === PermissionStatus.GRANTED && !!client?.notificationPushToken);
+    setIsPermissionsGranted((status === PermissionStatus.GRANTED) && !!client?.notificationPushToken);
     const { notificaciones } = await getNotificationsClient();
     setNotifications(notificaciones);
   };
@@ -145,8 +145,9 @@ const Notifications = memo(() => {
 
             <Image
               source={{ uri: item.imagen }}
-              style={{ width: '100%', height: 100, borderRadius: 10 }}
-              contentFit="contain"
+              style={{ width: '100%', aspectRatio: 2, borderRadius: 10 }}
+              contentFit="cover"
+              contentPosition="bottom"
             />
           </View>
         )}

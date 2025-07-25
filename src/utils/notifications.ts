@@ -1,7 +1,9 @@
+import { PRIMARY_COLOR } from '@/constants/Colors';
 import Constants from 'expo-constants';
 import {
   AndroidImportance,
   AndroidNotificationPriority,
+  AndroidNotificationVisibility,
   getExpoPushTokenAsync,
   getPermissionsAsync,
   requestPermissionsAsync,
@@ -12,12 +14,11 @@ import { Platform } from 'react-native';
 
 setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
-    priority: AndroidNotificationPriority.HIGH,
+    priority: AndroidNotificationPriority.MAX,
   }),
 });
 
@@ -28,7 +29,13 @@ export async function registerForPushNotificationsAsync() {
         name: 'default',
         importance: AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: PRIMARY_COLOR,
+        showBadge: true,
+        description: 'Canal de notificaciones por defecto',
+        enableVibrate: true,
+        enableLights: true,
+        lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
+        sound: 'default',
       });
     }
 

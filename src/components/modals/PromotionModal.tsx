@@ -37,7 +37,7 @@ export const PromotionModal = memo(
     const pickImage = async () => {
       const { canceled, assets } = await launchImageLibraryAsync({
         allowsEditing: true,
-        aspect: [16, 9],
+        aspect: [16, 11],
       });
 
       if (!canceled) {
@@ -100,7 +100,7 @@ export const PromotionModal = memo(
           rules={{ required: 'Debe seleccionar una imagen' }}
           label="Imagen"
           error={errors.imagen?.message as string}
-          aspectRatio={16 / 9}
+          aspectRatio={16 / 11}
           selectedImage={selectedImage}
           onChange={pickImage}
         />

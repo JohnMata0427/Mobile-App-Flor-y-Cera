@@ -3,7 +3,7 @@ import { requestAPI } from '@/utils/requestAPI';
 const PROMOTIONS_ENDPOINT = '/promociones';
 
 export const getPromotionsRequest = (page: number, limit: number) =>
-  requestAPI(`${PROMOTIONS_ENDPOINT}?page=${page}&limit=${limit}`);
+  requestAPI(`${PROMOTIONS_ENDPOINT}?page=${page}&limit=${limit}&resolucion=móvil`);
 
 export const createPromotionRequest = (body: FormData) =>
   requestAPI(PROMOTIONS_ENDPOINT, { method: 'POST', body });

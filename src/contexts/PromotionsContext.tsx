@@ -83,11 +83,13 @@ export const PromotionsProvider = ({ children }: { children: ReactNode }) => {
   const createPromotion = useCallback(
     async (product: FormData) => {
       try {
+        product.append('resolucion', 'móvil');
+        
         const { promocion, msg } = await createPromotionRequest(product);
         if (promocion?._id) {
           setPromotions(prev => [...prev, promocion]);
           await sendNotificationToAllClients({
-            titulo: '¡Nueva promoción disponible 🎉!',
+            titulo: '¡Nueva promoción disponible 🕯️🧼!',
             mensaje: promocion.nombre,
             imagen: promocion.imagen,
           });

@@ -12,6 +12,7 @@ import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import { PromotionsContext, PromotionsProvider } from '@/contexts/PromotionsContext';
 import { globalStyles } from '@/globalStyles';
 import { useCartStore } from '@/store/useCartStore';
+import { useNotificationsStore } from '@/store/useNotificationsStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BlurView } from 'expo-blur';
 import { Link, router } from 'expo-router';
@@ -34,13 +35,8 @@ const { width } = Dimensions.get('window');
 
 const Home = memo(() => {
   const { searchedProducts, refreshing, setRefreshing, getProducts } = use(ProductsContext);
-  const { getClientCart } = useCartStore();
   const { promotions, getPromotions } = use(PromotionsContext);
   const progress = useSharedValue<number>(0);
-
-  useEffect(() => {
-    getClientCart();
-  }, []);
 
   return (
     <ScrollView
@@ -69,7 +65,7 @@ const Home = memo(() => {
 
       <Carousel
         width={width}
-        height={200}
+        height={250}
         data={promotions}
         onProgressChange={progress}
         autoPlay
@@ -128,7 +124,9 @@ const Home = memo(() => {
       />
 
       <View style={styles.faqSection}>
-        <Image source={require('@/assets/ia-banner.png')} style={styles.bannerIA} />
+        <Pressable onPress={() => router.replace('/(client)/(personalization)')}>
+          <Image source={require('@/assets/ia-banner.png')} style={styles.bannerIA} />
+        </Pressable>
         <View>
           <View style={styles.headerList}>
             <MaterialCommunityIcons name="cloud-question" size={18} color={GRAY_COLOR_DARK} />
@@ -215,10 +213,7 @@ const styles = StyleSheet.create({
   },
   promotionImage: {
     width: '100%',
-    height: '100%',
-    marginTop: 35,
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
+    aspectRatio: 16 / 11,
   },
   title: {
     fontSize: 18,
