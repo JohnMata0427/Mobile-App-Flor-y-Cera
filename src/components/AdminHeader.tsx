@@ -1,7 +1,8 @@
 import { PRIMARY_COLOR_EXTRA_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface AdminHeaderProps {
   children?: ReactNode;

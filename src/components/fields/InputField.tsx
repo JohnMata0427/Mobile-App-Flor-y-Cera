@@ -1,6 +1,7 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT, PRIMARY_COLOR } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type ReactNode } from 'react';
+import type { UseControllerProps } from 'react-hook-form';
 import type { TextInputProps } from 'react-native';
 import { StyleSheet, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import { BaseField } from './BaseField';
@@ -8,7 +9,7 @@ import { BaseField } from './BaseField';
 interface InputFieldProps {
   control: any;
   name: string;
-  rules?: any;
+  rules?: UseControllerProps['rules'];
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   placeholder: string;

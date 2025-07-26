@@ -3,8 +3,9 @@ import { globalStyles } from '@/globalStyles';
 import type { Ingredient } from '@/interfaces/Ingredient';
 import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
 
 interface AdminIngredientCardProps {
@@ -16,7 +17,7 @@ interface AdminIngredientCardProps {
 export const AdminIngredientCard = memo(
   ({ data: { imagen, nombre, precio, stock }, category, children }: AdminIngredientCardProps) => (
     <BaseCard styles={styles.card}>
-      <Image source={{ uri: imagen }} resizeMode="contain" style={styles.ingredientImage} />
+      <Image source={{ uri: imagen }} contentFit="contain" style={styles.ingredientImage} />
       <View style={styles.ingredientInfo}>
         <Text style={globalStyles.labelText}>{capitalizeWord(nombre)}</Text>
         <View style={styles.priceStockRow}>

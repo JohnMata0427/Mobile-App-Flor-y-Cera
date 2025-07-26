@@ -7,6 +7,7 @@ export const sendNotificationToAllClients = (body: {
   titulo: string;
   mensaje: string;
   imagen: string;
+  clienteId?: string;
 }) => requestAPI('/enviar-notificacion', { method: 'POST', body });
 
 export const getNotificationsClient = () => requestAPI('/notificaciones/cliente');

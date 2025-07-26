@@ -3,9 +3,10 @@ import { globalStyles } from '@/globalStyles';
 import type { Product } from '@/interfaces/Product';
 import { getProductsByNameRequest } from '@/services/ProductService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useEffect, useState } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const RenderItem = memo(({ item }: any) => (

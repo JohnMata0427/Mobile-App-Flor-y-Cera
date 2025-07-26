@@ -14,8 +14,8 @@ export const useNotificationsStore = create<NotificationsState>(set => ({
   notifications: [],
   totalNotifications: 0,
   readNotifications: false,
-  setReadNotifications: (readNotifications) => {
-    set({ readNotifications })
+  setReadNotifications: readNotifications => {
+    set({ readNotifications });
   },
   getNotificationsClient: async () => {
     const previousTotalNotifications = parseInt(

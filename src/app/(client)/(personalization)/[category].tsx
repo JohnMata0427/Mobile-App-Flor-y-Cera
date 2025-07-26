@@ -28,13 +28,12 @@ import { getIntelligenceArtificialRecomendation } from '@/services/ProductServic
 import { getDominantColor } from '@/utils/getDominantColor';
 import { capitalizeWord } from '@/utils/textTransform';
 import * as FileSystem from 'expo-file-system';
+import { Image, ImageBackground } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { memo, use, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
-  Image,
-  ImageBackground,
   RefreshControl,
   StyleSheet,
   Text,
@@ -261,11 +260,7 @@ const ProductPersonalization = memo(() => {
   }, [personalizedProductId]);
 
   return (
-    <ImageBackground
-      style={styles.backgroundImage}
-      source={require('@/assets/bg-game.png')}
-      resizeMode="cover"
-    >
+    <ImageBackground style={styles.backgroundImage} source={require('@/assets/bg-game.png')}>
       <View style={[styles.header, { paddingTop: top * 1.5 }]}>
         <View style={styles.headerContent}>
           <View style={styles.headerTextContainer}>
@@ -323,12 +318,12 @@ const ProductPersonalization = memo(() => {
                   <Image
                     source={{ uri: selectedMold.imagen }}
                     style={[styles.dropperImage]}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                   <Image
                     source={{ uri: selectedMold.imagen }}
                     style={[styles.dropperImage, { tintColor: tintedColor, opacity: 0.8 }]}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                   <Text style={[globalStyles.bodyText, { position: 'absolute', bottom: '7%' }]}>
                     {capitalizeWord(selectedMold.nombre)}
@@ -352,7 +347,7 @@ const ProductPersonalization = memo(() => {
                     <Image
                       source={{ uri: selectedAroma.imagen }}
                       style={styles.ingredientImage}
-                      resizeMode="contain"
+                      contentFit="contain"
                     />
                     <Text style={globalStyles.bodyText}>
                       {capitalizeWord(selectedAroma.nombre)}
@@ -382,15 +377,15 @@ const ProductPersonalization = memo(() => {
                 {selectedEssences.length > 0 ? (
                   <FlatList
                     data={selectedEssences}
+                    contentContainerStyle={styles.essenceList}
                     scrollEnabled={false}
                     keyExtractor={({ _id }) => _id}
-                    contentContainerStyle={styles.essenceList}
                     renderItem={({ item }) => (
                       <>
                         <Image
                           source={{ uri: item.imagen }}
                           style={styles.ingredientImage}
-                          resizeMode="contain"
+                          contentFit="contain"
                         />
                         <Text style={globalStyles.bodyText}>{capitalizeWord(item.nombre)}</Text>
                       </>
@@ -445,7 +440,7 @@ const ProductPersonalization = memo(() => {
                     <Image
                       source={{ uri: ingredient.imagen }}
                       style={styles.ingredientImage}
-                      resizeMode="contain"
+                      contentFit="contain"
                     />
                   </DraxView>
                   <Text style={globalStyles.bodyText}>{capitalizeWord(ingredient.nombre)}</Text>

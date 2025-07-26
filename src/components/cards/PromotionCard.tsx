@@ -2,8 +2,9 @@ import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import type { Promotion } from '@/interfaces/Promotion';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
 
 interface PromotionCardProps {
@@ -16,7 +17,7 @@ export const PromotionCard = memo(({ data, children }: PromotionCardProps) => {
 
   return (
     <BaseCard>
-      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.promotionImage} />
+      <Image source={{ uri: imagen }} style={styles.promotionImage} />
       <View style={styles.promotionInfo}>
         <Text style={styles.promotionName}>{nombre}</Text>
         <View style={styles.dateRow}>

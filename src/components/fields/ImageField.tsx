@@ -1,9 +1,9 @@
 import { GRAY_COLOR, GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo } from 'react';
 import type { FieldValues, RegisterOptions } from 'react-hook-form';
 import {
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -55,7 +55,7 @@ export const ImageField = memo(
               <Image
                 source={{ uri: selectedImage }}
                 style={styles.imageFull}
-                resizeMode="contain"
+                contentFit="contain"
               />
             ) : (
               <>

@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   flatListContainer: {
     paddingHorizontal: 10,
     rowGap: 10,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   searchContainer: {
     backgroundColor: PRIMARY_COLOR,

@@ -11,16 +11,14 @@ import {
 import { ProductsContext, ProductsProvider } from '@/contexts/ProductsContext';
 import { PromotionsContext, PromotionsProvider } from '@/contexts/PromotionsContext';
 import { globalStyles } from '@/globalStyles';
-import { useCartStore } from '@/store/useCartStore';
-import { useNotificationsStore } from '@/store/useNotificationsStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BlurView } from 'expo-blur';
+import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
-import { memo, use, useEffect } from 'react';
+import { memo, use } from 'react';
 import {
   Dimensions,
   FlatList,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,

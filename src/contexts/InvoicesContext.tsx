@@ -1,14 +1,8 @@
 import { useEntityManagement } from '@/hooks/useEntityManagement';
 import type { Invoice, InvoiceFilter } from '@/interfaces/Invoice';
 import { getInvoicesRequest, updateInvoiceStatusRequest } from '@/services/InvoiceService';
-import {
-  createContext,
-  useCallback,
-  useMemo,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from 'react';
+import { sendNotificationToAllClients } from '@/services/NotificationService';
+import { createContext, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 interface Response {
   msg: string;
@@ -80,20 +74,33 @@ export const InvoicesProvider = ({ children }: { children: ReactNode }) => {
     initialFilter: { key: 'estado', value: '' },
   });
 
-  const updateInvoiceStatus = useCallback(
-    async (id: string, estado: 'pendiente' | 'finalizado') => {
-      try {
-        const { msg } = await updateInvoiceStatusRequest(id, estado);
-        setInvoices(prev => prev.map(i => (i._id === id ? { ...i, estado } : i)));
-        return { msg };
-      } catch {
-        return {
-          msg: 'Ocurrio un error al actualizar el estado de la factura',
-        };
-      }
-    },
-    [setInvoices],
-  );
+  const updateInvoiceStatus = async (id: string, estado: 'pendiente' | 'finalizado') => {
+    try {
+      const { msg } = await updateInvoiceStatusRequest(id, estado);
+      setInvoices(prev =>
+        prev.map(i => {
+          if (i._id === id) {
+            if (estado === 'finalizado') {
+              sendNotificationToAllClients({
+                titulo: '¡Disfrute de sus productos 🕯️🧼!',
+                mensaje: 'Su pedido ha sido entregado exitosamente, muchas gracias por su compra.',
+                imagen: 'https://static.vecteezy.com/system/resources/thumbnails/003/340/078/large/motorcycle-delivering-order-to-customer-door-woman-getting-parcel-vector.jpg',
+                clienteId: i.cliente._id
+              });
+            }
+
+            return { ...i, estado };
+          }
+          return i;
+        }),
+      );
+      return { msg };
+    } catch {
+      return {
+        msg: 'Ocurrio un error al actualizar el estado de la factura',
+      };
+    }
+  };
 
   const contextValue = useMemo(
     () => ({

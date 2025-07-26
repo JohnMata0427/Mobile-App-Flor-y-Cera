@@ -7,8 +7,9 @@ import {
 import type { Invoice } from '@/interfaces/Invoice';
 import { capitalizeWord } from '@/utils/textTransform';
 import { toLocaleDate } from '@/utils/toLocaleDate';
+import { Image } from 'expo-image';
 import { memo } from 'react';
-import { Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface InvoiceDetailsModalProps {
   invoice: Invoice;

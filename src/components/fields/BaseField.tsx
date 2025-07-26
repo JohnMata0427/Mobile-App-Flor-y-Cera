@@ -1,18 +1,21 @@
 import { globalStyles } from '@/globalStyles';
 import { memo, type ReactNode } from 'react';
-import { Controller, type Control, type FieldValues, type RegisterOptions } from 'react-hook-form';
+import {
+  Controller,
+  type Control,
+  type ControllerRenderProps,
+  type FieldValues,
+  type UseControllerProps,
+} from 'react-hook-form';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface BaseFieldProps {
-  control: Control<FieldValues>;
+  control: UseControllerProps['control'];
   name: string;
-  rules?: Omit<
-    RegisterOptions<FieldValues, string>,
-    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
-  >;
+  rules?: UseControllerProps['rules'];
   label?: string;
   error?: string;
-  children: (field: any) => ReactNode;
+  children: (field: ControllerRenderProps<FieldValues, string>) => ReactNode;
 }
 
 export const BaseField = memo(

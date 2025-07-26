@@ -2,8 +2,9 @@ import { GRAY_COLOR, GRAY_COLOR_DARK } from '@/constants/Colors';
 import type { Category } from '@/interfaces/Category';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface CategoryCardProps {
   data: Category;
@@ -15,7 +16,7 @@ export const CategoryCard = memo(({ data, children }: CategoryCardProps) => {
 
   return (
     <View style={styles.categoryCard}>
-      <Image source={{ uri: imagen }} resizeMode="contain" style={styles.categoryImage} />
+      <Image source={{ uri: imagen }} contentFit="contain" style={styles.categoryImage} />
       <View style={styles.categoryInfo}>
         <Text style={styles.categoryName}>{nombre}</Text>
         <View style={styles.dateRow}>

@@ -84,7 +84,7 @@ export const PromotionsProvider = ({ children }: { children: ReactNode }) => {
     async (product: FormData) => {
       try {
         product.append('resolucion', 'móvil');
-        
+
         const { promocion, msg } = await createPromotionRequest(product);
         if (promocion?._id) {
           setPromotions(prev => [...prev, promocion]);

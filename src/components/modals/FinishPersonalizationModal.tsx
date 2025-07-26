@@ -1,8 +1,9 @@
 import { Button } from '@/components/Button';
 import { PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, type Dispatch, type SetStateAction } from 'react';
-import { Image, Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 interface FinishPersonalizationModalProps {
   message: string;
@@ -31,7 +32,7 @@ export const FinishPersonalizationModal = memo(
             <Image
               source={{ uri: imagePreview }}
               style={styles.imagePreview}
-              resizeMode="contain"
+              contentFit="contain"
             />
           )}
 

@@ -10,9 +10,10 @@ import {
 import type { Product } from '@/interfaces/Product';
 import { useCartStore } from '@/store/useCartStore';
 import { capitalizeWord } from '@/utils/textTransform';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, type DimensionValue } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type DimensionValue } from 'react-native';
 import { CartMessageModal } from '../modals/CartMessageModal';
 
 interface ClientProductCardProps {

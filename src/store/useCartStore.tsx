@@ -30,12 +30,12 @@ interface CartState {
     product: Product | PersonalizedProduct,
     quantity: number,
     productType: ProductType,
-  ) => void;
+  ) => Promise<void>;
   removeProductFromCart: (product_id: string, productType: ProductType) => Promise<void>;
   checkout: (
     paymentIntentId: string,
   ) => Promise<{ ok: boolean; venta: Invoice; msg: string; cliente: Client }>;
-  clearCart: () => void;
+  clearCart: () => Promise<void>;
 }
 
 export const useCartStore = create<CartState>(set => ({

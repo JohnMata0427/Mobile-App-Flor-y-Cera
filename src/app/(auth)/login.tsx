@@ -4,18 +4,11 @@ import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import { useAuthStore } from '@/store/useAuthStore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image, ImageBackground } from 'expo-image';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Image,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Login() {
@@ -131,21 +124,21 @@ export default function Login() {
                   <Image
                     source={require('@/assets/google-logo.png')}
                     style={styles.methodIcon}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                 </Pressable>
                 <Pressable style={styles.methodButton}>
                   <Image
                     source={require('@/assets/fb-logo.png')}
                     style={styles.methodIcon}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                 </Pressable>
                 <Pressable style={styles.methodButton}>
                   <Image
                     source={require('@/assets/apple-logo.png')}
                     style={styles.methodIcon}
-                    resizeMode="contain"
+                    contentFit="contain"
                   />
                 </Pressable>
               </View> */}

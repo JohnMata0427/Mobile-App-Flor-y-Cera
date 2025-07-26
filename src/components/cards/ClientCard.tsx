@@ -9,8 +9,9 @@ import {
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
 
 interface ClientCardProps {
@@ -30,11 +31,7 @@ export const ClientCard = memo(({ data, isActive, children }: ClientCardProps) =
     <BaseCard styles={styles.card}>
       <View style={styles.clientInfoRow}>
         <View style={styles.clientInnerInfo}>
-          <Image
-            style={styles.clientImage}
-            source={imagen ? { uri: imagen } : defaultImageUrl}
-            resizeMode="cover"
-          />
+          <Image style={styles.clientImage} source={imagen ? { uri: imagen } : defaultImageUrl} />
           <Text style={[styles.stateBadge, isActive ? styles.badgeActive : styles.badgeInactive]}>
             {estado}
           </Text>

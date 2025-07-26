@@ -4,8 +4,9 @@ import type { Category } from '@/interfaces/Category';
 import type { Product } from '@/interfaces/Product';
 import { getCategoryName } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo, type ReactNode } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { BaseCard } from './BaseCard';
 
 interface AdminProductCardProps {
@@ -21,7 +22,7 @@ export const AdminProductCard = memo(
     categories,
   }: AdminProductCardProps) => (
     <BaseCard styles={styles.card}>
-      <Image source={{ uri: imagen }} resizeMode="cover" style={styles.productImage} />
+      <Image source={{ uri: imagen }} style={styles.productImage} />
       <View style={styles.productInfo}>
         <Text style={globalStyles.labelText} numberOfLines={2}>
           {nombre}

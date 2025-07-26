@@ -8,17 +8,19 @@ export const registerClientRequest = (body: Partial<Client>) =>
   requestAPI('/registro', { method: 'POST', body });
 
 export const forgotPasswordRequest = async (email: string) => {
-  try {
-    return await requestAPI('/recuperarContraseniaAdmin', {
-      method: 'POST',
-      body: { email },
-    });
-  } catch (error) {
-    return requestAPI('/recuperar-contrasenia', {
+  const { ok, msg } = await requestAPI('/recuperarContraseniaAdmin', {
+    method: 'POST',
+    body: { email },
+  });
+
+  if (!ok) {
+    return await requestAPI('/recuperar-contrasenia', {
       method: 'POST',
       body: { email },
     });
   }
+
+  return { ok, msg };
 };
 
 export const resetPasswordRequest = async (
@@ -28,17 +30,19 @@ export const resetPasswordRequest = async (
     nuevaPassword: string;
   },
 ) => {
-  try {
-    return await requestAPI(`/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`, {
-      method: 'POST',
-      body,
-    });
-  } catch (error) {
-    return requestAPI(`/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {
+  const { ok, msg } = await requestAPI(`/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`, {
+    method: 'POST',
+    body,
+  });
+
+  if (!ok) {
+    return await requestAPI(`/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {
       method: 'POST',
       body,
     });
   }
+
+  return { ok, msg };
 };
 
 export const getClientProfileRequest = () => requestAPI('/perfil');

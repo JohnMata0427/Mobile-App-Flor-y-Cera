@@ -2,10 +2,11 @@ import { Button } from '@/components/Button';
 import { InputField } from '@/components/fields/InputField';
 import { globalStyles } from '@/globalStyles';
 import { forgotPasswordRequest } from '@/services/AuthService';
+import { Image, ImageBackground } from 'expo-image';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Image, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ForgotPasswordScreen() {
@@ -26,19 +27,15 @@ export default function ForgotPasswordScreen() {
     setIsLoading(true);
     const { msg, ok } = await forgotPasswordRequest(email);
 
-    Alert.alert('Mensaje del sistema', msg, [
-      {
-        text: 'Aceptar',
-        onPress: () => {
-          if (ok) {
-            router.push({
-              pathname: '/(auth)/recovery-password',
-              params: { email },
-            });
-          }
-        },
-      },
-    ]);
+    Alert.alert('Mensaje del sistema', msg, [{ text: 'Aceptar' }]);
+
+    if (ok) {
+      router.push({
+        pathname: '/(auth)/recovery-password',
+        params: { email },
+      });
+    }
+
     setIsLoading(false);
   };
 

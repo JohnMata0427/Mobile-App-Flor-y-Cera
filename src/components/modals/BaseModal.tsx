@@ -1,8 +1,8 @@
+import { Button } from '@/components/Button';
 import { PRIMARY_COLOR, SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { memo, type ReactNode } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, View, type DimensionValue } from 'react-native';
-import { Button } from '../Button';
 
 interface BaseModalProps {
   isVisible: boolean;

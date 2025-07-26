@@ -18,7 +18,6 @@ import { getPaymentIntentRequest } from '@/services/CartService';
 import { useCartStore } from '@/store/useCartStore';
 import { toFormData } from '@/utils/toFormData';
 import { initPaymentSheet, presentPaymentSheet, StripeProvider } from '@stripe/stripe-react-native';
-import { ButtonType } from '@stripe/stripe-react-native/lib/typescript/src/types/PlatformPay';
 import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -82,46 +81,59 @@ const Checkout = memo(() => {
   };
 
   useEffect(() => {
-    reset(client);
+    if (!editable) {
+      (async () => {
+        const { customer, paymentIntentClientSecret, paymentIntentId, ephemeralKey } =
+          await getPaymentIntentRequest();
+
+        setPaymentIntentId(paymentIntentId);
+
+        await initPaymentSheet({
+          merchantDisplayName: 'Flor & Cera',
+          customerId: customer,
+          customerEphemeralKeySecret: ephemeralKey,
+          paymentIntentClientSecret,
+          allowsDelayedPaymentMethods: true,
+          appearance: {
+            colors: {
+              primary: PRIMARY_COLOR,
+              icon: GRAY_COLOR_DARK,
+            },
+            shapes: {
+              borderRadius: 10,
+            },
+          },
+          googlePay: {
+            merchantCountryCode: 'EC',
+            testEnv: __DEV__,
+            currencyCode: 'USD',
+          },
+          defaultBillingDetails: {
+            phone: client.telefono,
+            address: {
+              line1: client.direccion,
+              country: 'EC',
+            },
+            email: client.email,
+            name: `${client.nombre} ${client.apellido}`,
+          },
+        });
+      })();
+    }
+  }, [editable]);
+
+  useEffect(() => {
+    const { direccion, telefono, cedula } = client;
+    reset({
+      direccion,
+      telefono,
+      cedula,
+    });
     clearErrors();
 
-    (async () => {
-      const { customer, paymentIntentClientSecret, paymentIntentId, ephemeralKey } =
-        await getPaymentIntentRequest();
-
-      setPaymentIntentId(paymentIntentId);
-
-      await initPaymentSheet({
-        merchantDisplayName: 'Flor & Cera',
-        customerId: customer,
-        customerEphemeralKeySecret: ephemeralKey,
-        paymentIntentClientSecret,
-        allowsDelayedPaymentMethods: true,
-        appearance: {
-          colors: {
-            primary: PRIMARY_COLOR,
-            icon: GRAY_COLOR_DARK,
-          },
-          shapes: {
-            borderRadius: 10,
-          },
-        },
-        googlePay: {
-          merchantCountryCode: 'EC',
-          testEnv: __DEV__,
-          currencyCode: 'USD',
-        },
-        defaultBillingDetails: {
-          phone: client.telefono,
-          address: {
-            line1: client.direccion,
-            country: 'EC',
-          },
-          email: client.email,
-          name: `${client.nombre} ${client.apellido}`,
-        },
-      });
-    })();
+    if (!direccion || !telefono || !cedula) {
+      setEditable(true);
+    }
   }, [client]);
 
   return (
@@ -146,7 +158,7 @@ const Checkout = memo(() => {
             <Image
               source={require('@/assets/logo.png')}
               style={{ width: 80, height: 80, alignSelf: 'center', marginBottom: 10 }}
-              contentFit='contain'
+              contentFit="contain"
             />
             <Text
               style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}
@@ -204,9 +216,9 @@ const Checkout = memo(() => {
               name="direccion"
               rules={{
                 pattern: {
-                  value: /^[a-zA-Z0-9\s,.'-]{3,100}$/,
+                  value: /^[a-zA-Z0-9\s,.'-]{10,50}$/,
                   message:
-                    'La dirección debe tener entre 3 y 100 caracteres y solo letras, números y algunos caracteres especiales',
+                    'La dirección debe tener entre 10 y 50 caracteres y solo letras, números y algunos caracteres especiales',
                 },
                 required: 'La dirección es requerida',
               }}

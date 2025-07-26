@@ -2,9 +2,10 @@ import { Button } from '@/components/Button';
 import { FloatingItem } from '@/components/FloatingItem';
 import { SECONDARY_COLOR, SECONDARY_COLOR_DARK } from '@/constants/Colors';
 import { CategoriesContext, CategoriesProvider } from '@/contexts/CategoryContext';
+import { Image, ImageBackground } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, use, useEffect, useState } from 'react';
-import { Image, ImageBackground, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 export const Personalization = memo(() => {
   const { categories } = use(CategoriesContext);
@@ -86,15 +87,11 @@ export const Personalization = memo(() => {
         />
         <Image
           source={require('@/assets/personalized-soap.png')}
-          resizeMode="contain"
+          contentFit="contain"
           style={styles.soapImage}
         />
       </Pressable>
-      <Image
-        source={require('@/assets/banner-game.png')}
-        resizeMode="contain"
-        style={styles.banner}
-      />
+      <Image source={require('@/assets/ia-banner.png')} style={styles.banner} />
       <Pressable
         style={styles.candleSection}
         onPress={() => {
@@ -106,7 +103,7 @@ export const Personalization = memo(() => {
       >
         <Image
           source={require('@/assets/personalized-candle.png')}
-          resizeMode="contain"
+          contentFit="contain"
           style={styles.candleImage}
         />
         <Button

@@ -5,14 +5,8 @@ import {
   deleteClientAccountRequest,
   getClientsRequest,
 } from '@/services/ClientService';
-import {
-  createContext,
-  useCallback,
-  useMemo,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from 'react';
+import { sendNotificationToAllClients } from '@/services/NotificationService';
+import { createContext, useMemo, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 
 interface ClientsContextProps {
   searchedClients: Client[];
@@ -79,31 +73,53 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
     initialFilter: { key: 'estado', value: '' },
   });
 
-  const activateClientAccount = useCallback(
-    async (id: string) => {
-      try {
-        const { msg } = await activateClientAccountRequest(id);
-        setClients(prev => prev.map(p => (p._id === id ? { ...p, estado: 'activo' } : p)));
-        return { msg };
-      } catch {
-        return { msg: 'Ocurrió un error al actualizar el cliente' };
-      }
-    },
-    [setClients],
-  );
+  const activateClientAccount = async (id: string) => {
+    try {
+      const { msg } = await activateClientAccountRequest(id);
+      setClients(prev =>
+        prev.map(c => {
+          if (c._id === id) {
+            sendNotificationToAllClients({
+              titulo: 'Su cuenta ha sido habilitada ✅',
+              mensaje: 'Hemos realizado una revisión de su cuenta y concluimos en que puede volver a utilizar su cuenta, lamentamos los inconvenientes.',
+              imagen:
+                'https://cdn-icons-png.flaticon.com/512/300/300220.png',
+              clienteId: c._id,
+            });
 
-  const deleteClientAccount = useCallback(
-    async (id: string) => {
-      try {
-        const { msg } = await deleteClientAccountRequest(id);
-        setClients(prev => prev.map(p => (p._id === id ? { ...p, estado: 'inactivo' } : p)));
-        return { msg };
-      } catch {
-        return { msg: 'Ocurrió un error al eliminar el cliente' };
-      }
-    },
-    [setClients],
-  );
+            return { ...c, estado: 'activo' };
+          }
+          return c;
+        }),
+      );
+      return { msg };
+    } catch {
+      return { msg: 'Ocurrió un error al actualizar el cliente' };
+    }
+  };
+
+  const deleteClientAccount = async (id: string) => {
+    try {
+      const { msg } = await deleteClientAccountRequest(id);
+      setClients(prev => prev.map(c => {
+          if (c._id === id) {
+            sendNotificationToAllClients({
+              titulo: 'Su cuenta ha sido inhabilitada 🚫',
+              mensaje: 'Lamentamos informarle que su cuenta no cumple con nuestros terminos y condiciones de uso.',
+              imagen:
+                'https://cdn-icons-png.flaticon.com/512/300/300220.png',
+              clienteId: c._id,
+            });
+
+            return { ...c, estado: 'inactivo' };
+          }
+          return c;
+        }));
+      return { msg };
+    } catch {
+      return { msg: 'Ocurrió un error al eliminar el cliente' };
+    }
+  };
 
   const contextValue = useMemo<ClientsContextProps>(
     () => ({

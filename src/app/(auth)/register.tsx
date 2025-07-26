@@ -5,13 +5,12 @@ import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import { registerClientRequest } from '@/services/AuthService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image, ImageBackground } from 'expo-image';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   Alert,
-  Image,
-  ImageBackground,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -238,21 +237,21 @@ export default function Login() {
                 <Image
                   source={require('@/assets/google-logo.png')}
                   style={styles.methodIcon}
-                  resizeMode="contain"
+                  contentFit="contain"
                 />
               </Pressable>
               <Pressable style={styles.methodButton}>
                 <Image
                   source={require('@/assets/fb-logo.png')}
                   style={styles.methodIcon}
-                  resizeMode="contain"
+                  contentFit="contain"
                 />
               </Pressable>
               <Pressable style={styles.methodButton}>
                 <Image
                   source={require('@/assets/apple-logo.png')}
                   style={styles.methodIcon}
-                  resizeMode="contain"
+                  contentFit="contain"
                 />
               </Pressable>
             </View> */}

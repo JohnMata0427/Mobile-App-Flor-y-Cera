@@ -14,7 +14,7 @@ import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { memo, use, useEffect, useState } from 'react';
+import { memo, use, useEffect, useOptimistic, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface CartItemCardProps {
@@ -26,6 +26,8 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
   const { categories } = use(CategoriesContext);
 
   const { producto, cantidad, tipo_producto } = data;
+
+  const [optimisticQuantity, setOptimisticQuantity] = useOptimistic(cantidad);
 
   const {
     _id = '',
@@ -41,7 +43,6 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
 
   const [int, decimal] = precio.toFixed(2).split('.');
 
-  const [quantity, setQuantity] = useState(cantidad);
   const [esencias, setEsencias] = useState<string[]>([]);
   const [molde, setMolde] = useState<string>('');
   const [color, setColor] = useState<string>('');
@@ -59,6 +60,17 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
       }
     });
   }, [ingredientes]);
+
+  const handleIncreaseQuantity = async () => {
+    setOptimisticQuantity(currentQuantity => currentQuantity + 1);
+    await modifyProductQuantity(producto, 1, tipo_producto);
+  };
+
+  const handleDecreaseQuantity = async () => {
+    if (optimisticQuantity <= 1) return;
+    setOptimisticQuantity(currentQuantity => currentQuantity - 1);
+    await modifyProductQuantity(producto, -1, tipo_producto);
+  };
 
   return (
     <View style={styles.cartItemCard}>
@@ -139,23 +151,11 @@ export const CartItemCard = memo(({ data }: CartItemCardProps) => {
             <Text style={styles.cardDecimalPrice}>.{decimal}</Text>
           </Text>
           <View style={styles.quantityContainer}>
-            <Pressable
-              onPress={() => {
-                setQuantity(prev => prev + 1);
-                modifyProductQuantity(producto, 1, tipo_producto);
-              }}
-            >
+            <Pressable onPress={handleIncreaseQuantity}>
               <MaterialCommunityIcons name="plus" size={16} color="gray" />
             </Pressable>
-            <Text style={styles.quantityText}>{quantity}</Text>
-            <Pressable
-              onPress={() => {
-                if (quantity > 1) {
-                  modifyProductQuantity(producto, -1, tipo_producto);
-                  setQuantity(prev => prev - 1);
-                }
-              }}
-            >
+            <Text style={styles.quantityText}>{optimisticQuantity}</Text>
+            <Pressable onPress={handleDecreaseQuantity}>
               <MaterialCommunityIcons name="minus" size={16} color="gray" />
             </Pressable>
           </View>

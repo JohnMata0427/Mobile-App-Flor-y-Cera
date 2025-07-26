@@ -12,11 +12,11 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useNotificationsStore } from '@/store/useNotificationsStore';
 import { showConfirmationAlert } from '@/utils/showAlert';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { setItemAsync } from 'expo-secure-store';
 import { memo, use, useCallback } from 'react';
 import {
-  Image,
   Linking,
   Pressable,
   RefreshControl,
@@ -72,7 +72,7 @@ const ClientProfile = memo(() => {
             <Image
               source={imagen ? { uri: imagen } : defaultImage}
               style={styles.profileImage}
-              resizeMode="contain"
+              contentFit="contain"
             />
             <Text style={globalStyles.title}>
               {nombre} {apellido}
@@ -84,7 +84,7 @@ const ClientProfile = memo(() => {
 
             <Pressable
               onPress={async () => {
-                setReadNotifications(false)
+                setReadNotifications(false);
                 await setItemAsync('readNotifications', 'yes');
                 router.push('/(client)/(profile)/notifications');
               }}

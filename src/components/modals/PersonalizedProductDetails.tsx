@@ -12,9 +12,10 @@ import type { Ingredient } from '@/interfaces/Ingredient';
 import type { PersonalizedProduct } from '@/interfaces/PersonalizedProduct';
 import { capitalizeWord } from '@/utils/textTransform';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { memo, useEffect, useState, type Dispatch, type SetStateAction } from 'react';
-import { Image, Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 interface PersonalizedProductDetailsProps {
   product: PersonalizedProduct;
@@ -68,7 +69,7 @@ export const PersonalizedProductDetails = memo(
           <Image
             source={{ uri: product.imagen }}
             style={styles.productImage}
-            resizeMode="contain"
+            contentFit="contain"
           />
 
           <View style={[styles.ingredientRow, { backgroundColor: PRIMARY_COLOR }]}>

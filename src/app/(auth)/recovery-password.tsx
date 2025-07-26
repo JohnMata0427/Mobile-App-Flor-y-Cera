@@ -4,19 +4,11 @@ import { GRAY_COLOR_DARK } from '@/constants/Colors';
 import { globalStyles } from '@/globalStyles';
 import { resetPasswordRequest } from '@/services/AuthService';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image, ImageBackground } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  Alert,
-  Image,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ForgotPasswordScreen() {
@@ -47,14 +39,10 @@ export default function ForgotPasswordScreen() {
       nuevaPassword,
     });
 
-    Alert.alert('Mensaje del sistema', msg, [
-      {
-        text: 'Aceptar',
-        onPress: () => {
-          if (ok) router.push('/(auth)/login');
-        },
-      },
-    ]);
+    Alert.alert('Mensaje del sistema', msg, [{ text: 'Aceptar' }]);
+    
+    if (ok) router.replace('/(auth)/login');
+
     setIsLoading(false);
   };
 

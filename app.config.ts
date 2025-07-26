@@ -16,7 +16,7 @@ const config: ExpoConfig = {
     enabled: true,
   },
   githubUrl: 'https://github.com/JohnMata0427/Mobile-App-Flor-y-Cera',
-  version: '1.1.0',
+  version: '1.2.5',
   orientation: 'portrait',
   primaryColor: '#9F93E7',
   icon: './assets/images/icon.png',
@@ -40,6 +40,7 @@ const config: ExpoConfig = {
   notification: {
     icon: './assets/images/notification-icon.png',
     androidMode: 'collapse',
+    androidCollapsedTitle: 'Notificaciones de Flor & Cera',
   },
   splash: {
     backgroundColor: '#ffffff',
@@ -71,7 +72,13 @@ const config: ExpoConfig = {
   plugins: [
     'expo-router',
     'expo-secure-store',
-    'expo-notifications',
+    [
+      'expo-notifications',
+      {
+        icon: './assets/images/notification-icon.png',
+        defaultChannel: 'default',
+      },
+    ],
     [
       'expo-splash-screen',
       {

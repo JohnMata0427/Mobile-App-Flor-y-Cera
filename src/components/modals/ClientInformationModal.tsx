@@ -1,10 +1,11 @@
+import { Button } from '@/components/Button';
 import { GRAY_COLOR_DARK, PRIMARY_COLOR_DARK } from '@/constants/Colors';
 import type { Client } from '@/interfaces/Client';
 import { toLocaleDate } from '@/utils/toLocaleDate';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { Image } from 'expo-image';
 import { memo } from 'react';
-import { Image, Modal, StyleSheet, Text, View } from 'react-native';
-import { Button } from '../Button';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 interface ClientInformationModalProps {
   isVisible: boolean;
@@ -46,11 +47,7 @@ export const ClientInformationModal = memo(
         navigationBarTranslucent
       >
         <View style={styles.modalContainer}>
-          <Image
-            source={imagen ? { uri: imagen } : defaultImage}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={imagen ? { uri: imagen } : defaultImage} style={styles.image} />
           <View style={styles.informationCard}>
             <Text style={styles.titleText}>Información del Cliente</Text>
             <View style={styles.detailRow}>

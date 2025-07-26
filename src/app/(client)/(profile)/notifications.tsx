@@ -31,14 +31,14 @@ const Notifications = memo(() => {
 
   const getDataAndConfig = async () => {
     const { status } = await getPermissionsAsync();
-    setIsPermissionsGranted((status === PermissionStatus.GRANTED) && !!client?.notificationPushToken);
+    setIsPermissionsGranted(status === PermissionStatus.GRANTED && !!client?.notificationPushToken);
     const { notificaciones } = await getNotificationsClient();
     setNotifications(notificaciones);
   };
 
   useEffect(() => {
     getDataAndConfig();
-  }, []);
+  }, [client]);
 
   const handleToggleNotifications = async () => {
     setLoading(true);
@@ -124,6 +124,11 @@ const Notifications = memo(() => {
           disabled={loading}
         />
       </View>
+
+      <Text style={[globalStyles.bodyText, { textAlign: 'center', marginBottom: 5, marginTop: 10 }]}>
+        En esta sección encontrará las notificaciones que se le envien: nuevas promociones, entrega de pedidos o estado de su cuenta
+      </Text>
+
       <FlatList
         data={notifications}
         scrollEnabled={false}
@@ -131,7 +136,7 @@ const Notifications = memo(() => {
         renderItem={({ item }) => (
           <View
             style={{
-              marginVertical: 10,
+              marginVertical: 5,
               padding: 10,
               backgroundColor: 'white',
               borderRadius: 10,

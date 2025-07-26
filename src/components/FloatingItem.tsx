@@ -1,12 +1,6 @@
+import { Image } from 'expo-image';
 import { memo, useEffect, useRef } from 'react';
-import {
-  Animated,
-  Dimensions,
-  Easing,
-  Image,
-  StyleSheet,
-  type ImageSourcePropType,
-} from 'react-native';
+import { Animated, Dimensions, Easing, StyleSheet, type ImageSourcePropType } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -68,7 +62,7 @@ export const FloatingItem = memo(({ image }: { image: ImageSourcePropType }) => 
         },
       ]}
     >
-      <Image source={image} style={styles.image} />
+      <Image source={image} style={styles.image} contentFit="contain" />
     </Animated.View>
   );
 });
@@ -82,7 +76,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'contain',
     opacity: 0.8,
   },
 });
