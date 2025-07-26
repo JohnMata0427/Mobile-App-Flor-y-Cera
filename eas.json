@@ -25,8 +25,7 @@
       "channel": "stable",
       "android": {
         "buildType": "app-bundle",
-        "image": "latest",
-        "autoIncrement": "version"
+        "image": "latest"
       },
       "environment": "production"
     }
