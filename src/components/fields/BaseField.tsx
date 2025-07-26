@@ -2,7 +2,6 @@ import { globalStyles } from '@/globalStyles';
 import { memo, type ReactNode } from 'react';
 import {
   Controller,
-  type Control,
   type ControllerRenderProps,
   type FieldValues,
   type UseControllerProps,

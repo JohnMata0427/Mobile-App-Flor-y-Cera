@@ -30,10 +30,13 @@ export const resetPasswordRequest = async (
     nuevaPassword: string;
   },
 ) => {
-  const { ok, msg } = await requestAPI(`/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`, {
-    method: 'POST',
-    body,
-  });
+  const { ok, msg } = await requestAPI(
+    `/cambiarContraseniaAdmin?codigoRecuperacion=${codigoRecuperacion}`,
+    {
+      method: 'POST',
+      body,
+    },
+  );
 
   if (!ok) {
     return await requestAPI(`/cambiar-contrasenia?codigoRecuperacion=${codigoRecuperacion}`, {

@@ -125,8 +125,11 @@ const Notifications = memo(() => {
         />
       </View>
 
-      <Text style={[globalStyles.bodyText, { textAlign: 'center', marginBottom: 5, marginTop: 10 }]}>
-        En esta sección encontrará las notificaciones que se le envien: nuevas promociones, entrega de pedidos o estado de su cuenta
+      <Text
+        style={[globalStyles.bodyText, { textAlign: 'center', marginBottom: 5, marginTop: 10 }]}
+      >
+        En esta sección encontrará las notificaciones que se le envien: nuevas promociones, entrega
+        de pedidos o estado de su cuenta
       </Text>
 
       <FlatList

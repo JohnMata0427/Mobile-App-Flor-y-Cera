@@ -84,8 +84,9 @@ export const InvoicesProvider = ({ children }: { children: ReactNode }) => {
               sendNotificationToAllClients({
                 titulo: '¡Disfrute de sus productos 🕯️🧼!',
                 mensaje: 'Su pedido ha sido entregado exitosamente, muchas gracias por su compra.',
-                imagen: 'https://static.vecteezy.com/system/resources/thumbnails/003/340/078/large/motorcycle-delivering-order-to-customer-door-woman-getting-parcel-vector.jpg',
-                clienteId: i.cliente._id
+                imagen:
+                  'https://static.vecteezy.com/system/resources/thumbnails/003/340/078/large/motorcycle-delivering-order-to-customer-door-woman-getting-parcel-vector.jpg',
+                clienteId: i.cliente._id,
               });
             }
 

@@ -40,7 +40,7 @@ export default function ForgotPasswordScreen() {
     });
 
     Alert.alert('Mensaje del sistema', msg, [{ text: 'Aceptar' }]);
-    
+
     if (ok) router.replace('/(auth)/login');
 
     setIsLoading(false);

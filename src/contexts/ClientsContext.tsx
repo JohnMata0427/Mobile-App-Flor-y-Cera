@@ -81,9 +81,9 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
           if (c._id === id) {
             sendNotificationToAllClients({
               titulo: 'Su cuenta ha sido habilitada ✅',
-              mensaje: 'Hemos realizado una revisión de su cuenta y concluimos en que puede volver a utilizar su cuenta, lamentamos los inconvenientes.',
-              imagen:
-                'https://cdn-icons-png.flaticon.com/512/300/300220.png',
+              mensaje:
+                'Hemos realizado una revisión de su cuenta y concluimos en que puede volver a utilizar su cuenta, lamentamos los inconvenientes.',
+              imagen: 'https://cdn-icons-png.flaticon.com/512/300/300220.png',
               clienteId: c._id,
             });
 
@@ -101,20 +101,22 @@ export const ClientsProvider = ({ children }: { children: ReactNode }) => {
   const deleteClientAccount = async (id: string) => {
     try {
       const { msg } = await deleteClientAccountRequest(id);
-      setClients(prev => prev.map(c => {
+      setClients(prev =>
+        prev.map(c => {
           if (c._id === id) {
             sendNotificationToAllClients({
               titulo: 'Su cuenta ha sido inhabilitada 🚫',
-              mensaje: 'Lamentamos informarle que su cuenta no cumple con nuestros terminos y condiciones de uso.',
-              imagen:
-                'https://cdn-icons-png.flaticon.com/512/300/300220.png',
+              mensaje:
+                'Lamentamos informarle que su cuenta no cumple con nuestros terminos y condiciones de uso.',
+              imagen: 'https://cdn-icons-png.flaticon.com/512/300/300220.png',
               clienteId: c._id,
             });
 
             return { ...c, estado: 'inactivo' };
           }
           return c;
-        }));
+        }),
+      );
       return { msg };
     } catch {
       return { msg: 'Ocurrió un error al eliminar el cliente' };

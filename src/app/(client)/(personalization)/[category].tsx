@@ -31,14 +31,7 @@ import * as FileSystem from 'expo-file-system';
 import { Image, ImageBackground } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { memo, use, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { DraxProvider, DraxView } from 'react-native-drax';
 import { GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
