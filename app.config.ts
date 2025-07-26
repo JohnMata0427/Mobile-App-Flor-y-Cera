@@ -7,6 +7,7 @@ const config: ExpoConfig = {
     'Flor & Cera es una aplicación que permite a los usuarios comprar productos artesanales como jabones y velas, así como también personalizar sus propios productos con la asistencia de inteligencia artificial.',
   owner: 'johnmata0427',
   updates: {
+    url: "https://u.expo.dev/da873e00-ecc2-497c-883d-ab85516b71e0",
     fallbackToCacheTimeout: 30000,
     assetPatternsToBeBundled: ['**/*'],
     checkAutomatically: 'ON_LOAD',
@@ -14,6 +15,9 @@ const config: ExpoConfig = {
     useEmbeddedUpdate: true,
     disableAntiBrickingMeasures: false,
     enabled: true,
+  },
+  runtimeVersion: {
+    policy: 'appVersion',
   },
   githubUrl: 'https://github.com/JohnMata0427/Mobile-App-Flor-y-Cera',
   version: '1.2.5',
