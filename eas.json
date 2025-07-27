@@ -21,6 +21,7 @@
       "environment": "preview"
     },
     "production": {
+      "autoIncrement": true,
       "distribution": "store",
       "channel": "stable",
       "android": {
