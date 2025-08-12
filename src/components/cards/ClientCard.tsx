@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1.5,
     borderColor: GRAY_COLOR_LIGHT,
+    aspectRatio: 1,
   },
   stateBadge: {
     fontSize: 10,

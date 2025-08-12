@@ -48,7 +48,7 @@ export const ClientProductCard = memo(({ data, width = 170 }: ClientProductCardP
           });
         }}
       >
-        <Image source={{ uri: imagen }} resizeMode="cover" style={styles.productImage} />
+        <Image source={{ uri: imagen }} style={styles.productImage} />
       </Pressable>
       <View style={styles.productInfo}>
         <Text style={styles.productName} numberOfLines={1} ellipsizeMode="tail">

@@ -86,7 +86,7 @@ export const ProductDetails = memo(() => {
           />
         }
       >
-        <Image source={{ uri: product?.imagen }} style={styles.productImage} resizeMode="cover" />
+        <Image source={{ uri: product?.imagen }} style={styles.productImage} />
 
         <Pressable style={styles.backButton} onPress={() => router.push('/(client)/(catalog)')}>
           <MaterialCommunityIcons name="arrow-left" size={20} color={GRAY_COLOR_DARK} />

@@ -63,13 +63,13 @@ const Home = memo(() => {
 
       <Carousel
         width={width}
-        height={250}
+        height={280}
         data={promotions}
         onProgressChange={progress}
         autoPlay
         autoPlayInterval={5000}
         renderItem={({ item: { imagen } }) => (
-          <Image source={{ uri: imagen }} style={styles.promotionImage} resizeMode="contain" />
+          <Image source={{ uri: imagen }} style={styles.promotionImage} contentFit="contain" />
         )}
       />
 
@@ -133,11 +133,7 @@ const Home = memo(() => {
         </View>
 
         <View style={styles.faqContent}>
-          <Image
-            source={require('@/assets/faq-banner.png')}
-            style={styles.faqBanner}
-            resizeMode="cover"
-          />
+          <Image source={require('@/assets/faq-banner.png')} style={styles.faqBanner} />
 
           <View style={[styles.faqItem, styles.faqItemTertiary]}>
             <Text style={[globalStyles.labelText, styles.faqTitle]}>

@@ -342,7 +342,7 @@ const ProductPersonalization = memo(() => {
                       style={styles.ingredientImage}
                       contentFit="contain"
                     />
-                    <Text style={globalStyles.bodyText}>
+                    <Text style={[globalStyles.bodyText, { textAlign: 'center' }]}>
                       {capitalizeWord(selectedAroma.nombre)}
                     </Text>
                   </>
@@ -380,7 +380,9 @@ const ProductPersonalization = memo(() => {
                           style={styles.ingredientImage}
                           contentFit="contain"
                         />
-                        <Text style={globalStyles.bodyText}>{capitalizeWord(item.nombre)}</Text>
+                        <Text style={[globalStyles.bodyText, { textAlign: 'center' }]}>
+                          {capitalizeWord(item.nombre)}
+                        </Text>
                       </>
                     )}
                   />
@@ -620,5 +622,6 @@ const styles = StyleSheet.create({
   ingredientImage: {
     width: 40,
     height: 40,
+    alignSelf: 'center',
   },
 });

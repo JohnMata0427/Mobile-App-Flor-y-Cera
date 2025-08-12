@@ -91,7 +91,7 @@ export const Personalization = memo(() => {
           style={styles.soapImage}
         />
       </Pressable>
-      <Image source={require('@/assets/ia-banner.png')} style={styles.banner} />
+      <Image source={require('@/assets/banner-game.png')} style={styles.banner} />
       <Pressable
         style={styles.candleSection}
         onPress={() => {
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 20,
+    paddingLeft: 25,
   },
   soapButton: {
     backgroundColor: SECONDARY_COLOR,
@@ -150,9 +150,11 @@ const styles = StyleSheet.create({
     width: '50%',
     alignSelf: 'flex-end',
     zIndex: 1,
+    aspectRatio: 1
   },
   banner: {
     width: '75%',
+    height: '25%',
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -164,11 +166,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingRight: 20,
+    paddingRight: 25,
   },
   candleImage: {
     width: '50%',
     alignSelf: 'flex-end',
     zIndex: 1,
+    aspectRatio: 1
   },
 });

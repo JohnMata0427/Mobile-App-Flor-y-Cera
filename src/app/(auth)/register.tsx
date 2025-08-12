@@ -1,4 +1,5 @@
 import { Button } from '@/components/Button';
+import { DateTimeInput } from '@/components/fields/DateTimeInput';
 import { InputField } from '@/components/fields/InputField';
 import { PickerField } from '@/components/fields/PickerField';
 import { GRAY_COLOR_DARK, GRAY_COLOR_LIGHT } from '@/constants/Colors';
@@ -27,6 +28,7 @@ export default function Login() {
       nombre: '',
       apellido: '',
       genero: '',
+      fecha_nacimiento: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -138,6 +140,28 @@ export default function Login() {
               ]}
               prompt="Selecciona un género"
               error={errors.genero?.message as string}
+            />
+
+            <DateTimeInput
+              control={control}
+              name="fecha_nacimiento"
+              rules={{
+                required: 'Este campo es obligatorio',
+                validate: {
+                  isFutureDate: (value: string) =>
+                    new Date(value) <= new Date() || 'La fecha no puede ser futura',
+                  isLegalAge: (value: string) => {
+                    const today = new Date();
+                    const selectedDate = new Date(value);
+                    const age = today.getFullYear() - selectedDate.getFullYear();
+                    const monthDiff = today.getMonth() - selectedDate.getMonth();
+                    return age > 18 || (age === 18 && monthDiff >= 0) || 'Debe ser mayor de edad';
+                  },
+                },
+              }}
+              icon="calendar"
+              label="Fecha de Nacimiento"
+              error={errors.fecha_nacimiento?.message as string}
             />
 
             <InputField
