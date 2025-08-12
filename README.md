@@ -18,10 +18,10 @@
 
 ```mermaid
 flowchart LR
-  APP@{ shape: lean-r, label: "📱 **Aplicación Móvil**<br>React Native" }
-  WEB@{ shape: lean-r, label: "💻 **Sitio Web**<br>Angular" }
-  API@{ shape: subproc, label: "🔗 **API RESTful**<br>Express.js" }
-  DB@{ shape: cylinder, label: "🗄️ **Base de Datos**<br>MongoDB" }
+  APP@{ shape: lean-r, label: "📱 **Aplicación Móvil**<br/>React Native" }
+  WEB@{ shape: lean-r, label: "💻 **Sitio Web**<br/>Angular" }
+  API@{ shape: subproc, label: "🔗 **API RESTful**<br/>Express.js" }
+  DB@{ shape: cylinder, label: "🗄️ **Base de Datos**<br/>MongoDB" }
 
   APP -. Petición HTTPS .-> API
   WEB -. Petición HTTPS .-> API
@@ -43,4 +43,5 @@ flowchart LR
 ```
 
 ---
+
 
