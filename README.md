@@ -21,10 +21,7 @@
 | 🏢 **Certificado de Cumplimiento** | Certificado de cumplimiento de requisitos emitido por Flor & Cera | [![Ver PDF](https://img.shields.io/badge/Ver_PDF-%23F72015.svg?logo=readme&logoColor=white)](/documents/Certificado_Flor_y_Cera.pdf) |
 | 🎥 **Manual de Usuario** | Video completo publicado en YouTube | [![YouTube](https://img.shields.io/badge/YouTube-%23FF0033.svg?logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=tmhaJpqpyWY&t=5s) |
 
-
----
-
-### 🧩 Arquitectura Completa del Sistema
+### 🧩 Arquitectura Completa del Proyecto de TIC
 
 ```mermaid
 flowchart TB
@@ -33,23 +30,20 @@ flowchart TB
   API@{ shape: subproc, label: "🔗 **API RESTful**<br/>Express.js + Mongoose" }
   DB@{ shape: cylinder, label: "🗄️ **Base de Datos**<br/>MongoDB" }
 
-  APP -. Petición HTTPS .-> API
-  WEB -. Petición HTTPS .-> API
-  API -. Consultas SQL .-> DB
+  APP APP_API@-. Petición HTTPS .-> API
+  WEB WEB_API@-. Petición HTTPS .-> API
+  API API_DB@-. Consultas SQL .-> DB
 
-  APP:::application
-  WEB:::frontend
-  API:::backend
-  DB:::database
+  APP_API@{ animation: slow }
+  WEB_API@{ animation: slow }
+  API_DB@{ animation: slow }
 
-  classDef application stroke-width:2px,stroke:#374D7C,fill:#E2EBFF,color:#374D7C,stroke-dasharray: 2
-  classDef frontend stroke-width:2px,stroke:#FF5978,fill:#FFDFE5,color:#8E2236,stroke-dasharray: 2
-  classDef backend fill:#FFF4E6,stroke:#FFB74D,stroke-width:2px,color:#E65100,shadow,stroke-dasharray: 2
-  classDef database fill:#E9FBEF,stroke:#81C784,stroke-width:2px,color:#1B5E20,shadow,stroke-dasharray: 2
+  style APP fill:#E2EBFF,stroke:#374D7C,stroke-width:2px,color:#374D7C,shadow,stroke-dasharray:3
+  style WEB fill:#FFDFE5,stroke:#FF5978,stroke-width:2px,color:#8E2236,shadow,stroke-dasharray:3
+  style API fill:#FFF4E6,stroke:#FFB74D,stroke-width:2px,color:#E65100,shadow,stroke-dasharray:3
+  style DB fill:#E9FBEF,stroke:#81C784,stroke-width:2px,color:#1B5E20,shadow,stroke-dasharray:3
 
-  linkStyle 0 stroke:#42A5F5,stroke-width:2px,stroke-dasharray: 5 5
-  linkStyle 1 stroke:#42A5F5,stroke-width:2px,stroke-dasharray: 5 5
-  linkStyle 2 stroke:#42A5F5,stroke-width:2px,stroke-dasharray: 5 5
+  linkStyle 0 stroke:#42A5F5,stroke-width:2px,stroke-dasharray:5
+  linkStyle 1 stroke:#42A5F5,stroke-width:2px,stroke-dasharray:5
+  linkStyle 2 stroke:#42A5F5,stroke-width:2px,stroke-dasharray:5
 ```
-
----
