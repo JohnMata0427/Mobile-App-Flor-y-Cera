@@ -14,6 +14,14 @@
 
 ### 💼 Documentos de Respaldo del Trabajo de Integración Curricular
 
+| Documento | Descripción | Enlace |
+|-----------|-------------|--------|
+| 📄 **TIC Completo** | Documento final del Trabajo de Integración Curricular | [![Ver PDF](https://img.shields.io/badge/Ver_PDF-%23F72015.svg?logo=readme&logoColor=white)](/documents/Trabajo_de_Integración_Curricular.pdf) |
+| 📝 **Formulario F_AA_233A** | Formulario de aprobación para iniciar el proyecto de TIC | [![Ver PDF](https://img.shields.io/badge/Ver_PDF-%23F72015.svg?logo=readme&logoColor=white)](/documents/Formulario_AA_233.pdf) |
+| 🏢 **Certificado de Cumplimiento** | Certificado de cumplimiento de requisitos emitido por Flor & Cera | [![Ver PDF](https://img.shields.io/badge/Ver_PDF-%23F72015.svg?logo=readme&logoColor=white)](/documents/Certificado_Flor_y_Cera.pdf) |
+| 🎥 **Manual de Usuario** | Video completo publicado en YouTube | [![YouTube](https://img.shields.io/badge/YouTube-%23FF0033.svg?logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=tmhaJpqpyWY&t=5s) |
+
+
 ---
 
 ### 🧩 Arquitectura Completa del Sistema
@@ -45,6 +53,3 @@ flowchart TB
 ```
 
 ---
-
-
-
